@@ -12,17 +12,13 @@ function setup(){
 	fill(255, 255, 255);
 	noStroke();
 
-	rectMode(CENTER);
-
-	let size = 40.0;
-	let cols = width / size;
-	let rows = height / size;
+	let padding = 20;
+	let cols = width / padding;
+	let rows = height / padding;
 	for(let r=0; r<rows; r++){
 		for(let c=0; c<cols; c++){
-			let tTop = new Triangle(c*size, r*size, size, 0.0);
-			tTop.draw(150, 200, 150);
-			let tBtm = new Triangle(c*size+size, r*size+size, size, 180.0);
-			tBtm.draw(150, 200, 150);
+			let inv = new Invader(c*padding, r*padding);
+			inv.draw(200, 200, 200);
 		}
 	}
 }
@@ -32,14 +28,16 @@ function draw(){
 	console.log("draw");
 }
 
-class Triangle{
+class Invader{
 
-	constructor(x, y, size, deg){
+	constructor(x, y){
 		this.x = x;
 		this.y = y;
-		this.radius  = size;
-		this.radFrom = deg * DEG_TO_RAD;
-		this.radTo   = (deg + 90.0) * DEG_TO_RAD;
+		let seed  = "111111111111111";
+		let max   = parseInt(seed, 2);
+		this.num  = Math.floor(Math.random() * max);
+		this.str  = this.num.toString(2);
+		this.size = 4;
 	}
 
 	draw(r, g, b){
@@ -47,11 +45,15 @@ class Triangle{
 			Math.floor(Math.random() * r) + 255 - r,
 			Math.floor(Math.random() * g) + 255 - g,
 			Math.floor(Math.random() * b) + 255 - b);
-		triangle(
-			this.x, this.y,
-			this.x + this.radius * Math.cos(this.radFrom),
-			this.y + this.radius * Math.sin(this.radFrom),
-			this.x + this.radius * Math.cos(this.radTo),
-			this.y + this.radius * Math.sin(this.radTo));
+		for(let i=0; i<this.str.length; i++){
+			if(this.str[i] === "1"){
+				let odd = i % 3;
+				let posX = this.x + this.size * odd;
+				let posY = this.y + this.size * Math.floor(i / 3);
+				rect(posX, posY, this.size, this.size);
+				if(odd === 0) rect(posX+this.size*4, posY, this.size, this.size);
+				if(odd === 1) rect(posX+this.size*2, posY, this.size, this.size);
+			}
+		}
 	}
 }
