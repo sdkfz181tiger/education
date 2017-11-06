@@ -1,0 +1,90 @@
+<html>
+<head>
+	<meta charset="UTF-8">
+	<!-- Framework -->
+	<script language="javascript" type="text/javascript" 
+	src="./js/d3.v4.min.js"></script>
+	<script language="javascript" type="text/javascript" 
+	src="./js/rainbowvis.js"></script>
+	<!-- CSS -->
+	<style>
+		body{padding: 0; margin: 0;}
+		svg{background-color: #eeeeee}
+	</style>
+</head>
+<body>
+	<!-- Div -->
+	<svg width="480" height="320"></svg>
+	<!-- Custom -->
+	<script>
+		console.log("Hello D3.js!!");
+
+		var rainbow = null;
+
+		// CSVを読み込む
+		d3.csv("./csv/data_bubble.csv", function(data){
+			console.log("data:" + data);
+
+			// Rainbow
+			rainbow = new Rainbow();
+			rainbow.setSpectrum("#ff0000", "#00ff00", "#0000ff");
+			rainbow.setNumberRange(1, data.length);
+			
+			makeBubble(data);
+		});
+
+		function makeBubble(array){
+			console.log("array:" + array);
+
+			var svg    = d3.select("svg"),
+				width  = +svg.attr("width"),
+				height = +svg.attr("height");
+
+			var pack = d3.pack()
+				.size([width, height])
+				.padding(1.5);
+
+			var format = d3.format(",d");
+
+			var root = d3.hierarchy({children: array})
+				.sum(function(d){return d.value;})
+				.each(function(d){
+					if(id = d.data.id){
+						var id, i = id.lastIndexOf(".");
+						d.id = id;
+						d.package = id.slice(0, i);
+						d.class = id.slice(i + 1);
+					}
+				});
+
+			var node = svg.selectAll(".node")
+				.data(pack(root).leaves())
+				.enter().append("g")
+				.attr("class", "node")
+				.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+
+			node.append("circle")
+				.attr("id", function(d){return d.id;})
+				.attr("r", function(d){return d.r;})
+				.style("fill", function(d, i){return rainbow.colourAt(i);});
+
+			node.append("clipPath")
+				.attr("id", function(d) { return "clip-" + d.id; })
+				.append("use")
+				.attr("xlink:href", function(d) { return "#" + d.id; });
+
+			node.append("text")
+				.attr("clip-path", function(d) { return "url(#clip-" + d.id + ")"; })
+				.selectAll("tspan")
+				.data(function(d) { return d.class.split(/(?=[A-Z][^A-Z])/g); })
+				.enter().append("tspan")
+				.attr("x", 0)
+				.attr("y", function(d, i, nodes) { return 13 + (i - nodes.length / 2 - 0.5) * 10; })
+				.text(function(d) { return d; });
+
+			node.append("title")
+			.text(function(d) { return d.id + "\n" + format(d.value); });
+		}
+	</script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+{"root":[
+	{
+		"size": 32,
+		"str": "C!!",
+		"color": "red"
+	},
+	{
+		"size": 32,
+		"str": "C++!!",
+		"color": "plum"
+	},
+	{
+		"size": 32,
+		"str": "JAVA!!",
+		"color": "yellow"
+	},
+	{
+		"size": 32,
+		"str": "C#!!",
+		"color": "green"
+	},
+	{
+		"size": 32,
+		"str": "Obj-C!!",
+		"color": "deeppink"
+	},
+	{
+		"size": 24,
+		"str": "JavaScript!!",
+		"color": "olivedrab"
+	},
+	{
+		"size": 24,
+		"str": "Ruby!!",
+		"color": "mediumaquamarine"
+	},
+	{
+		"size": 24,
+		"str": "PHP!!",
+		"color": "slateblue"
+	},
+	{
+		"size": 24,
+		"str": "Python!!",
+		"color": "hotpink"
+	},
+	{
+		"size": 24,
+		"str": "Swift!!",
+		"color": "lightgreen"
+	},
+	{
+		"size": 24,
+		"str": "Kotlin!!",
+		"color": "tomato"
+	},
+	{
+		"size": 20,
+		"str": "Scala!!",
+		"color": "gold"
+	},
+	{
+		"size": 20,
+		"str": "Perl!!",
+		"color": "indianred"
+	},
+	{
+		"size": 20,
+		"str": "Haskel!!",
+		"color": "lemonchiffon"
+	},
+	{
+		"size": 20,
+		"str": "Go!!",
+		"color": "khaki"
+	},
+	{
+		"size": 20,
+		"str": "D!!",
+		"color": "lightcoral"
+	},
+	{
+		"size": 16,
+		"str": "Dart!!",
+		"color": "lightcyan"
+	},
+	{
+		"size": 16,
+		"str": "Fortran!!",
+		"color": "lightseagreen"
+	},
+	{
+		"size": 16,
+		"str": "Closure!!",
+		"color": "lightskyblue"
+	},
+	{
+		"size": 16,
+		"str": "Groovy!!",
+		"color": "mistyrose"
+	},
+	{
+		"size": 32,
+		"str": "C!!",
+		"color": "red"
+	},
+	{
+		"size": 32,
+		"str": "C++!!",
+		"color": "plum"
+	},
+	{
+		"size": 32,
+		"str": "JAVA!!",
+		"color": "yellow"
+	},
+	{
+		"size": 32,
+		"str": "C#!!",
+		"color": "green"
+	},
+	{
+		"size": 32,
+		"str": "Obj-C!!",
+		"color": "deeppink"
+	},
+	{
+		"size": 24,
+		"str": "JavaScript!!",
+		"color": "olivedrab"
+	},
+	{
+		"size": 24,
+		"str": "Ruby!!",
+		"color": "mediumaquamarine"
+	},
+	{
+		"size": 24,
+		"str": "PHP!!",
+		"color": "slateblue"
+	},
+	{
+		"size": 24,
+		"str": "Python!!",
+		"color": "hotpink"
+	},
+	{
+		"size": 24,
+		"str": "Swift!!",
+		"color": "lightgreen"
+	},
+	{
+		"size": 24,
+		"str": "Kotlin!!",
+		"color": "tomato"
+	},
+	{
+		"size": 20,
+		"str": "Scala!!",
+		"color": "gold"
+	},
+	{
+		"size": 20,
+		"str": "Perl!!",
+		"color": "indianred"
+	},
+	{
+		"size": 20,
+		"str": "Haskel!!",
+		"color": "lemonchiffon"
+	},
+	{
+		"size": 20,
+		"str": "Go!!",
+		"color": "khaki"
+	},
+	{
+		"size": 20,
+		"str": "D!!",
+		"color": "lightcoral"
+	},
+	{
+		"size": 16,
+		"str": "Dart!!",
+		"color": "lightcyan"
+	},
+	{
+		"size": 16,
+		"str": "Fortran!!",
+		"color": "lightseagreen"
+	},
+	{
+		"size": 16,
+		"str": "Closure!!",
+		"color": "lightskyblue"
+	},
+	{
+		"size": 16,
+		"str": "Groovy!!",
+		"color": "mistyrose"
+	}
+]}

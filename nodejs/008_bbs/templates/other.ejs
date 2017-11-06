@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta http-equiv="content-type" content="text/html" charset="utf-8">
+	<title><%=title %></title>
+	<link type="text/css" rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+	<ul>
+		<li><a href="./">index</a></li>
+		<li><a href="./?msg=MsgA">index?msg=MsgA</a></li>
+		<li><a href="./other">other</a></li>
+		<li><a href="./other?msg=MsgB">other?msg=MsgB</a></li>
+	</ul>
+	<p><%=content %></p>
+	<p><%=cookieMsg %></p>
+	<p><%=queryMsg %></p>
+	<!-- <p><%=dataArr %></p> -->
+
+	<p>Data</p>
+	<table>
+	<% for(var key in dataArr){ %>
+	<% var obj = JSON.parse(dataArr[key]); %>
+	<tr>
+	<th><%=obj.user_name %></th>
+	<td><%=obj.user_msg %></td>
+	<td><%=obj.user_time %></td>
+	</tr>
+	<% } %>
+	</table>
+</body>
+</html>

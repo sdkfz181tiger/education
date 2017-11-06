@@ -1,0 +1,102 @@
+<html>
+<head>
+	<meta charset="UTF-8">
+	<!-- Framework -->
+	<script language="javascript" type="text/javascript" 
+	src="./js/d3.v4.min.js"></script>
+	<script language="javascript" type="text/javascript" 
+	src="./js/rainbowvis.js"></script>
+	<!-- CSS -->
+	<style>
+		body{padding: 0; margin: 0;}
+		svg{background-color: #eeeeee}
+	</style>
+</head>
+<body>
+	<!-- Div -->
+	<svg width="480" height="320"></svg>
+	<!-- Custom -->
+	<script>
+		console.log("Hello D3.js!!");
+
+		var DEG_TO_RAD = Math.PI / 180;
+		var rainbow = null;
+
+		// CSVを読み込む
+		d3.csv("./csv/data_graph.csv", function(data){
+			console.log("data:" + data);
+
+			var array = [];
+			for (var i = 0; i < data.length; i++){
+				array.push(data[i]["value"]);
+			};
+
+			// Rainbow
+			rainbow = new Rainbow();
+			rainbow.setSpectrum("#ff0000", "#00ff00", "#0000ff");
+			rainbow.setNumberRange(1, array.length);
+
+			makeText(array, 0, 320, 20, 5);  // 文字を表示する
+			makeGraph(array, 0, 320, 20, 5); // グラフを描く
+			makePie(array, 240, 160, 50, 70);// 円グラフ
+		});
+
+		function makeText(array, x, y, width, padding){
+			console.log("array:" + array);
+
+			// Text
+			d3.select("svg").selectAll("text").data(array).enter()
+				.append("text")
+				.text(function(d, i){return d;})
+				.attr("x",     function(d, i){return x + (width + padding) * i;})
+				.attr("y",     function(d, i){return 30;})
+				.style("fill", function(d, i){return rainbow.colourAt(i)});
+		}
+
+		// グラフ(棒グラフ)
+		function makeGraph(array, x, y, width, padding){
+			console.log("array:" + array);
+
+			// Bar
+			d3.select("svg").selectAll("rect").data(array).enter()
+				.append("rect")
+				.attr("x",      function(d, i){return x + (width + padding) * i;})
+				.attr("y",      function(d, i){return y - d;})
+				.attr("width",  function(d, i){return width;})
+				.attr("height", function(d, i){return d;})
+				.style("fill",  function(d, i){return rainbow.colourAt(i)});
+		}
+
+		// グラフ(円グラフ)
+		function makePie(array, cX, cY, rInner, rOuter){
+			console.log("array:" + array);
+
+			// Total
+			var total = 0;
+			for(var i=0; i<array.length; i++){
+				total += Number(array[i]);
+			}
+
+			// Pie
+			var offset = 0;
+			var arc = d3.arc()
+				.innerRadius(rInner)
+				.outerRadius(rOuter)
+				.startAngle(function(d, i){
+					var start = offset;
+					return (start/total) * 360 * DEG_TO_RAD;})
+				.endAngle(function(d, i){
+					var end = offset + Number(d);
+					offset += Number(d);
+					return (end/total) * 360 * DEG_TO_RAD;});
+
+			d3.select("svg")
+				.append("g").attr("transform", "translate(" + cX + "," + cY + ")")
+				.selectAll("path").data(array).enter().append("path")
+				.attr("d", arc)
+				.style("fill", function(d, i){return rainbow.colourAt(i)});
+		}
+
+	</script>
+</body>
+</html>

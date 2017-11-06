@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>Hello Cocos2d-JS</title> 
+    <script type="text/javascript" src="cocos2d-js-v3.9-lite.js" charset="UTF-8" async="async"></script>
+</head>
+<body>   
+    <canvas id="gameCanvas" width="320" height="480"></canvas>
+    <script type="text/javascript">
+          window.onload = function(){
+              console.log("Hello Cocos2d-JS!!");
+              cc.game.onStart = function(){
+                  //load resources
+                  cc.LoaderScene.preload(g_resources, function () {
+                      cc.director.runScene(new HelloWorldScene());
+                  }, this);
+              };
+              cc.game.run("gameCanvas");
+          };
+    </script>
+</body>
+</html>

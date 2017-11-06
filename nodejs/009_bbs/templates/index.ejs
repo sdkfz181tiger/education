@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta http-equiv="content-type" content="text/html" charset="utf-8">
+	<title><%=title %></title>
+	<link type="text/css" rel="stylesheet" href="./css/custom.css">
+	<script type="text/javascript" src="./lib_files/jquery/jquery.min.js"></script>
+	<script type="text/javascript" src="./js/custom.js"></script>
+</head>
+<body>
+	<ul>
+		<li><a href="./">index</a></li>
+		<li><a href="./?msg=MsgA">index?msg=MsgA</a></li>
+		<li><a href="./list">list</a></li>
+		<li><a href="./list?msg=MsgB">list?msg=MsgB</a></li>
+	</ul>
+	<p><%=content %></p>
+	<p><%=cookieMsg %></p>
+	<p><%=queryMsg %></p>
+	<!-- <p><%=dataArr %></p> -->
+	
+	<p>
+		<form method="POST" action="/list">
+			<input type="text" name="user_name" id="userName">
+			<input type="text" name="user_msg" id="userMsg">
+			<input type="submit" value="Submit" id="userSubmit">
+			<input type="reset" value="Reset" id="userReset">
+		</form>
+	</p>
+</body>
+</html>

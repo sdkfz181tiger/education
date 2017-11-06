@@ -1,0 +1,11 @@
+{
+    "debugMode"     : 1,
+    "frameRate"     : 20,
+    "id"            : "gameCanvas",
+    "renderMode"    : 1,
+    "jsList" : [
+        "src/resource.js",
+        "src/ozateck.gameManager.js",
+        "src/app.js"
+    ]
+}

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta http-equiv="content-type" content="text/html" charset="utf-8">
+	<title><%=title %></title>
+	<link type="text/css" rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+	<ul>
+		<li><a href="./?msg=MsgA">Index <-</a></li>
+		<li><a href="./other?msg=MsgB">Other</a></li>
+	</ul>
+	<h1><%=content %></h1>
+	<p><%=queryMsg %></p>
+	<p>
+		<form method="POST" action="/other?msg=MsgB">
+			<input type="text" name="msg">
+			<input type="submit" value="Submit">
+		</form>
+	</p>
+</body>
+</html>

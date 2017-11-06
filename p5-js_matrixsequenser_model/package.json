@@ -1,0 +1,26 @@
+{
+  "name": "matrix_sequencer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "browser-sync start -b chrome --directory --server --files **/*.css, **/*.js, **/*.html",
+    "watch:js": "",
+    "watch": "run-p serve"
+  },
+  "keywords": [
+    "p5.js"
+  ],
+  "author": "dev001hajipro",
+  "license": "ISC",
+  "devDependencies": {
+    "browser-sync": "^2.18.11",
+    "npm-run-all": "^4.0.2",
+    "rimraf": "^2.6.1"
+  },
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/dev001hajipro/matrix_sequencer.git"
+  }
+}
