@@ -8,21 +8,5 @@
 <body>
 	<p><%=title %></p>
 	<p><%=content %></p>
-	<p>
-		<a href="<%=link.href %>"><%=link.text %></a>
-	</p>
-	<table>
-	<% for(let item of data.items){ %>
-		<tr>
-			<td><%=item.id %></td>
-			<td><%=item.psw %></td>
-			<td><%=item.birth %></td>
-		</tr>
-	<% } %>
-	</table>
-	<form action="/other" method="post">
-		<input type="text" name="price"/>
-		<input type="submit" value="Submit"/>
-	</form>
 </body>
 </html>
