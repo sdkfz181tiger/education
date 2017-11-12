@@ -1,8 +1,9 @@
 console.log("Hello Node JS!!");
 
 const ws = require("websocket.io");
-
 const PORT = 3030;
+const PREFIX_CLIENT = "client_";
+let counter = 0;
 
 // Server
 let server = ws.listen(PORT, ()=>{
@@ -10,10 +11,14 @@ let server = ws.listen(PORT, ()=>{
 });
 
 server.on("connection", (client)=>{
+	console.log("connection");
+	client.id = PREFIX_CLIENT + counter++;
+	console.log("id:" + client.id);
+
 	// Client
 	client.on("message", (e)=>{
-		console.log("message:" + e);
-		sendAll(e);
+		let message = '{"id": "' + client.id + '", "text": "' + e + '"}';
+		sendAll(message);
 	});
 	client.on("error", (e)=>{
 		console.log("error");

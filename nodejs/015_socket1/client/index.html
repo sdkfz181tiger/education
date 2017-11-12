@@ -25,23 +25,17 @@
 
 		// Initialize
 		ws = new WebSocket("ws://localhost:3030");
-
-		// onOpen
 		ws.onopen = (e)=>{
 			console.log("onOpen");
 		}
-
 		ws.onmessage = (e)=>{
 			console.log("onMessage:" + e.data);
-			appendMessage(e.data);
+			let jsonObj = JSON.parse(e.data);
+			appendMessage(jsonObj);
 		}
-
-		// onClose
 		ws.onclose = (e)=>{
 			console.log("onClose");
 		}
-
-		// onError
 		ws.onerror = (e)=>{
 			console.log("onError");
 		}
@@ -56,20 +50,26 @@
 	// Ready
 	$(document).ready(()=>{
 		console.log("Hello Client!!");
-
-		//==========
 		// UI
 		$("#myBtn").on("click", (e)=>{
 			// Send massage
-			let msg = $("#myInput").val();
+			let msg = escapeStr($("#myInput").val());
 			if(ws !== null) ws.send(msg);
 		});
 	});
 
-	function appendMessage(msg){
+	// Escape
+	function escapeStr(str){
+		return str.replace(/\&/g, '&amp;').
+		replace(/</g, '&lt;').replace(/>/g, '&gt;').
+		replace(/"/g, '').replace(/'/g, '');
+	}
 
+	function appendMessage(jsonObj){
 		// Append
-		let tag = "<tr><td>" + msg + "</td></tr>";
+		let id = jsonObj.id;
+		let text = jsonObj.text;
+		let tag = "<tr><th>" + id + "</th><td>" + text + "</td></tr>";
 		$("#myTable").append(tag);
 	}
 	</script>
