@@ -43,7 +43,6 @@ function setup(){
 
 	// Total
 	total = myFft.waveform().length / NUM_OFFSET;
-	console.log("total:" + total);
 
 	// Markers
 	markers = new Array();
