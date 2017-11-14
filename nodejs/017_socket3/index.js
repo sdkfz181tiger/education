@@ -27,10 +27,7 @@ app.get("/", (req, res)=>{
 // Chat
 app.get("/chat", (req, res)=>{
 	let msg  = "Chatページです";
-	let json = {items:[
-		{id: "ex001", psw: "a", birth: "19790213"},
-		{id: "ex002", psw: "b", birth: "19800314"},
-	]}
+	let json = {items:[]}
 	res.render("index_chat.ejs", 
 		{title: "This is Get!!", content: msg, data: json});
 });
@@ -54,7 +51,7 @@ server.on("connection", (client)=>{
 
 	// Client
 	client.on("message", (e)=>{
-		let message = '{"id": "' + client.id + '", "text": "' + e + '"}';
+		let message = '{"id": "' + client.id + '", "msg": ' + e + '}';
 		sendAll(message);
 	});
 	client.on("error", (e)=>{
