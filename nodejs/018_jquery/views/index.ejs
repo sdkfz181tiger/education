@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta http-equiv="content-type" content="text/html" charset="utf-8">
+	<title><%=title %></title>
+	<link type="text/css" rel="stylesheet" href="./css/custom.css">
+	<script src="/jquery"></script>
+</head>
+<body>
+	<p><%=title %></p>
+	<p><%=content %></p>
+
+	<%-include("table_items", data) %>
+
+	<input id="myInput" type="text" value="This is test!!"/>
+	<button id="myBtn">Send</button>
+	<table id="myTable"></table>
+
+	<script>
+	$(document).ready(()=>{
+		$("#myBtn").click(()=>{
+			console.log("Hello jQuery!!");
+			let msg = $("#myInput").val();
+			$("#myTable").append("<tr><td>" + msg + "</td></tr>")
+		});
+	});
+	</script>
+</body>
+</html>
