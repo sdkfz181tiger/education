@@ -1,0 +1,15 @@
+<table>
+<% for(let row of rows){ %>
+	<tr>
+		<td><%=row.uid %></td>
+		<td><%=row.name %></td>
+		<td><%=row.birth %></td>
+		<td>
+			<form action="/delete" method="post">
+				<input type="hidden" name="uid" value="<%=row.uid %>" />
+				<input type="submit" value="Delete"/>
+			</form>
+		</td>
+	</tr>
+<% } %>
+</table>
