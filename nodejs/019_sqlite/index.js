@@ -53,6 +53,38 @@ app.post("/insert", (req, res)=>{
 	});
 });
 
+app.post("/update", (req, res)=>{
+	let title = "Hello World!!";
+	let msg = "Update!!";
+
+	let uid = escapeStr(req.body["uid"]);
+	let keys = [];
+	let binders = [];
+	let obj = {};
+
+	let set = [];
+	for(key in req.body){
+		keys.push(key);
+		binders.push("$" + key);
+		obj["$" + key] = escapeStr(req.body[key]);
+		set.push(key + "='" + escapeStr(req.body[key]) + "'");
+	}
+	let sql = "UPDATE " + tableName + " SET " + set.join(",") + " WHERE uid = ?";
+
+	// Database
+	db.serialize(()=>{
+		db.run(sql, uid, (err)=>{
+			if(err != false){
+				console.log("Updated!!");
+				showRows(req, res, title, msg);
+			}else{
+				console.log("Error!!");
+				console.log(err);
+			}
+		});
+	});
+});
+
 app.post("/delete", (req, res)=>{
 	let title = "Hello World!!";
 	let msg = "Delete!!";
@@ -92,6 +124,8 @@ function showRows(req, res, title, msg){
 	});
 }
 
+//==========
+// Utility
 function escapeStr(str){
 	return str.replace(/\&/g, '&amp;').
 	replace(/</g, '&lt;').replace(/>/g, '&gt;').
