@@ -4,12 +4,22 @@ let sSpr;
 let score;
 let total;
 
+let bSpr;
+let aWait;
+let aAttack;
+
 function preload(){
 
 	// Font
-	var font = loadFont("assets/misaki_gothic.ttf");
+	let font = loadFont("assets/misaki_gothic.ttf");
 	textSize(64);
 	textFont(font);
+
+	// SpriteSheet
+	let sWait = loadSpriteSheet("assets/boy_wait.png", 32, 32, 5);
+	aWait = loadAnimation(sWait);
+	let sAttack  = loadSpriteSheet("assets/boy_attack.png",  32, 32, 5);
+	aAttack = loadAnimation(sAttack);
 }
 
 // 初期化
@@ -22,6 +32,16 @@ function setup(){
 	rectMode(CENTER);
 	fill(255, 255, 255);
 	noStroke();
+
+	// Boy
+	bSpr = createSprite(width/2, height/2 - 50, 30, 30);
+	bSpr.shapeColor = color(255, 255, 255);
+	bSpr.scale = 3.0;
+
+	// Animation
+	bSpr.addAnimation("wait", aWait);
+	bSpr.addAnimation("attack", aAttack);
+	bSpr.changeAnimation("wait");
 
 	// Sashimi
 	sSpr = createSprite(0, height/2, 30, 30);
@@ -63,7 +83,9 @@ function mousePressed(){
 	console.log("mousePressed");
 
 	// Judge
-	judgeSashimi();
+	if(0 < sSpr.getSpeed()){
+		judgeSashimi();
+	}
 }
 
 function startSashimi(){
@@ -72,7 +94,7 @@ function startSashimi(){
 	sSpr.position.x = 0;
 	sSpr.position.y = height / 2;
 
-	let speed = random(5, 10);
+	let speed = random(5, 30);
 	let delay = random(1, 2);
 	setTimeout(()=>{
 		sSpr.setSpeed(speed, 0);
@@ -95,9 +117,11 @@ function judgeSashimi(){
 	console.log("judge!!");
 
 	total += score;
+	bSpr.changeAnimation("attack");
 
 	sSpr.setSpeed(0);
 	setTimeout(()=>{
 		startSashimi();
+		bSpr.changeAnimation("wait");
 	}, 2000);
 }
