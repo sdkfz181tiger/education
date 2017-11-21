@@ -1,170 +1,32 @@
 console.log("Hello Node JS!!");
 
-const express   = require("express");
-const jquery    = require("express-jquery");
-const ejs       = require("ejs");
-const bParser   = require("body-parser");
-const validator = require("validator");
-const sqlite3   = require("sqlite3");
-
 const http      = require("http");
 const fs        = require("fs");
 
-const PORT = 3030;
+// Test
+let urlPath  = "http://ozateck.sakura.ne.jp/";
+let savePath = "./data/" + getClientDate() + ".html";
+let saveFile = fs.createWriteStream(savePath);
 
-let app = express();
-app.engine("ejs", ejs.renderFile);
-app.use(express.static("public"));
-app.use(jquery("/jquery"));
-app.use(bParser.urlencoded({extended: false}));
-
-let db = new sqlite3.Database("db.sqlite");
-let tableName = "users";
-
-//=========
-// Root
-app.get("/", (req, res)=>{
-	let title = "Hello World!!";
-	let msg = "Root!!";
-	showRows(req, res, title, msg);
-
-	// Test
-	let urlPath  = "http://ozateck.sakura.ne.jp/";
-	let savePath = "./data/saved.html";
-	let saveFile = fs.createWriteStream(savePath);
-
-	http.get(urlPath, (res)=>{
-		console.log("Test!!");
-		res.pipe(saveFile);
-		res.on("end", ()=>{
-
-			console.log("End!!");
-
-			// if(err != false){
-			// 	console.log("Success!!");
-			// }else{
-			// 	console.log("Failed!!");
-			// }
-			saveFile.close();
-		});
+http.get(urlPath, (res)=>{
+	res.pipe(saveFile);
+	res.on("end", ()=>{
+		saveFile.close();
 	});
 });
 
-app.post("/insert", (req, res)=>{
-	let title = "Hello World!!";
-	let msg = "Insert!!";
-
-	// Validation
-	let flg1 = validator.isEmpty(req.body["name"]);
-	console.log("name:" + flg1);
-	let flg2 = validator.isEmpty(req.body["birth"]);
-	console.log("birth:" + flg2);
-
-	let keys = [];
-	let binders = [];
-	let obj = {};
-	for(key in req.body){
-		keys.push(key);
-		binders.push("$" + key);
-		obj["$" + key] = escapeStr(req.body[key]);
-	}
-	let sql = "INSERT INTO " + tableName + "(" + keys.join(",") + ") VALUES(" + binders.join(",") + ")";
-
-	// Database
-	db.serialize(()=>{
-		db.run(sql, obj, (err)=>{
-			if(err != false){
-				console.log("Inserted!!");
-				showRows(req, res, title, msg);
-			}else{
-				console.log("Error!!");
-				console.log(err);
-			}
-		});
-	});
-});
-
-app.post("/update", (req, res)=>{
-	let title = "Hello World!!";
-	let msg = "Update!!";
-
-	let uid = escapeStr(req.body["uid"]);
-	let keys = [];
-	let binders = [];
-	let obj = {};
-
-	let set = [];
-	for(key in req.body){
-		keys.push(key);
-		binders.push("$" + key);
-		obj["$" + key] = escapeStr(req.body[key]);
-		set.push(key + "='" + escapeStr(req.body[key]) + "'");
-	}
-	let sql = "UPDATE " + tableName + " SET " + set.join(",") + " WHERE uid = ?";
-
-	// Database
-	db.serialize(()=>{
-		db.run(sql, uid, (err)=>{
-			if(err != false){
-				console.log("Updated!!");
-				showRows(req, res, title, msg);
-			}else{
-				console.log("Error!!");
-				console.log(err);
-			}
-		});
-	});
-});
-
-app.post("/delete", (req, res)=>{
-	let title = "Hello World!!";
-	let msg = "Delete!!";
-
-	let uid = escapeStr(req.body["uid"]);
-	let sql = "DELETE FROM " + tableName + " WHERE uid = ?";
-
-	// Database
-	db.serialize(()=>{
-		db.run(sql, uid, (err)=>{
-			if(err != false){
-				console.log("Deleted!!");
-				showRows(req, res, title, msg);
-			}else{
-				console.log("Error!!");
-				console.log(err);
-			}
-		});
-	});
-});
-
-function showRows(req, res, title, msg){
-	let sql = "SELECT * FROM " + tableName;
-	// Database
-	db.serialize(()=>{
-		db.all(sql, (err, rows)=>{
-			console.log("Connected!!");
-			if(err != false){
-				console.log("Success!!");
-				res.render("index.ejs",
-					{title: title, content: msg, rows: rows});
-			}else{
-				console.log("Error!!");
-				console.log(err);
-			}
-		});
-	});
+function getClientDate(){
+	let date = new Date();
+	let year = date.getFullYear();
+	let mon  = date.getMonth() + 1;
+	let day  = date.getDate();
+	let hour = date.getHours();
+	let min  = date.getMinutes();
+	let sec  = date.getSeconds();
+	if(mon  < 10) mon  = "0" + mon;
+	if(day  < 10) day  = "0" + day;
+	if(hour < 10) hour = "0" + hour;
+	if(min  < 10) min  = "0" + min;
+	if(sec  < 10) sec  = "0" + sec;
+	return year + "-" + mon + "-" + day + "_" + hour + "-" + min + "-" + sec;
 }
-
-//==========
-// Utility
-function escapeStr(str){
-	return str.replace(/\&/g, '&amp;').
-	replace(/</g, '&lt;').replace(/>/g, '&gt;').
-	replace(/"/g, '').replace(/'/g, '');
-}
-
-//==========
-// Listen
-app.listen(PORT, ()=>{
-	console.log("Start server port:" + PORT);
-});
