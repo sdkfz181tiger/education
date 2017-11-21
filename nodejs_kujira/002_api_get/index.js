@@ -3,7 +3,7 @@ console.log("Hello Node JS!!");
 const http = require("http");
 
 // URL
-const apiURL = "http://api.openweathermap.org/data/2.5/weather?q=Osaka&appid=59989d1bbb000897547adda699bbc18f";
+const apiURL = "http://localhost:3030?name=CameraBig&birth=1970-01-01";
 
 // Request
 let req = http.request(apiURL, (res)=>{
