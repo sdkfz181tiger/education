@@ -3,7 +3,7 @@ console.log("Hello p5.js!!");
 const DEG_TO_RAD = Math.PI / 180;
 const RAD_TO_DEG = 180 / Math.PI;
 
-const ANGLE = 30 * DEG_TO_RAD;
+const angles = [0*DEG_TO_RAD, -60*DEG_TO_RAD, 120*DEG_TO_RAD, -60*DEG_TO_RAD];
 
 function preload(){
 	console.log("preload");
@@ -29,9 +29,13 @@ function draw(){
 	console.log("draw");
 	background(0);
 
-	let sPoint = new Point(0, height / 2);
-	let ePoint = new Point(width, height / 2);
-	let points = [sPoint, ePoint];
+	let pA = new Point(width / 2 - 120, height / 2 - 80);
+	let pB = new Point(width / 2 + 120, height / 2 - 80);
+	let length = calcDistance(pA, pB);
+	let pC = new Point(
+		pB.x + length * Math.cos(120 * DEG_TO_RAD),
+		pB.y + length * Math.sin(120 * DEG_TO_RAD));
+	let points = [pA, pB, pC, pA];
 	createFractal(points);
 }
 
@@ -40,18 +44,22 @@ function createFractal(points){
 	for(let i=0; i<points.length-1; i++){
 		let sPoint = points[i];
 		let ePoint = points[i+1];
-		let length = calcDistance(sPoint, ePoint) / 3;
-		if(length < 5) return;
 
 		let kochs = createKochs(sPoint, ePoint);
-		createFractal(kochs);
 
-		if(10 < length) continue;
-		beginShape();
-		for(let i=0; i<kochs.length; i++){
-			vertex(kochs[i].x, kochs[i].y);
-		}
-		endShape();
+		let length = calcDistance(sPoint, ePoint) / 3;
+		if(length < 4){
+			return;// 再帰処理の終了
+		}else if(length < 10){
+			beginShape();
+			for(let i=0; i<kochs.length; i++){
+				vertex(kochs[i].x, kochs[i].y);
+			}
+			endShape();
+		}	
+
+		// 再帰処理
+		createFractal(kochs);
 	}
 }
 
@@ -59,16 +67,14 @@ function createKochs(sPoint, ePoint){
 
 	let x = ePoint.x - sPoint.x;
 	let y = ePoint.y - sPoint.y;
-	let atan = Math.atan2(y, x);
-	let deg = atan * RAD_TO_DEG;
 	let length = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)) / 3;
+	let angle = Math.atan2(y, x);
 	let cPoint = sPoint;
-	let degs = [0, -60, 120, -60];
 	let kochs = [cPoint];
-	for(let i=0; i<degs.length; i++){
-		deg += degs[i];
-		let pX = cPoint.x + length * Math.cos(deg * DEG_TO_RAD);
-		let pY = cPoint.y + length * Math.sin(deg * DEG_TO_RAD);
+	for(let i=0; i<angles.length; i++){
+		angle += angles[i];
+		let pX = cPoint.x + length * Math.cos(angle);
+		let pY = cPoint.y + length * Math.sin(angle);
 		let point = new Point(pX, pY);
 		kochs.push(point);
 		cPoint = point;
