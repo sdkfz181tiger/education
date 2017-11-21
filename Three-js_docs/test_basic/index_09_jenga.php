@@ -16,12 +16,12 @@
 	<script src="../js/libs/stats.min.js"></script>
     <script src="../js/renderers/Projector.js"></script>
 	<script src="../js/loaders/TGALoader.js"></script>
-	<script src="../../tween-js/Tween.min.js"></script>
-	<script src="../../physi-js/physi.js"></script>
+	<script src="../tween-js/Tween.min.js"></script>
+	<script src="../physi-js/physi.js"></script>
 	<script>
 
 		// Physijs
-		Physijs.scripts.worker = '../../physi-js/physijs_worker.js';
+		Physijs.scripts.worker = '../physi-js/physijs_worker.js';
 		Physijs.scripts.ammo   = '../physi-js/ammo.js';
 
 		var width  = 800;
