@@ -43,7 +43,7 @@ function draw(){
 
 	// Lines
 	for(let a=0; a<nodes.length; a++){
-		for(let b=a; b<nodes.length; b++){
+		for(let b=a+1; b<nodes.length; b++){
 			if(isClose(nodes[a], nodes[b])){
 				stroke(100, 100, 100);
 				strokeWeight(1);

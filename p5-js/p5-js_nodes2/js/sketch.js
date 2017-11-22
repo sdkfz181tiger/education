@@ -56,7 +56,7 @@ function draw(){
 
 	// Lines
 	for(let a=0; a<array.length; a++){
-		for(let b=a; b<array.length; b++){
+		for(let b=a+1; b<array.length; b++){
 			if(isClose(array[a], array[b])){
 				stroke(100, 100, 100);
 				strokeWeight(1);

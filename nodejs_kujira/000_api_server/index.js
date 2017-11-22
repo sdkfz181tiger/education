@@ -13,8 +13,11 @@ let app = express();
 app.engine("ejs", ejs.renderFile);
 app.use(express.static("public"));
 app.use(jquery("/jquery"));
-app.use(bParser.urlencoded({extended: true}));
-app.use(bParser.json());
+// POST(normal)
+app.use(bParser.urlencoded({extended: false}));
+// JSON(json)
+//app.use(bParser.urlencoded({extended: true}));
+//app.use(bParser.json());
 
 let db = new sqlite3.Database("db.sqlite");
 let tableName = "users";
