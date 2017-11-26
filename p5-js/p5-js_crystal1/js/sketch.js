@@ -51,12 +51,15 @@ class Crystal extends Shape{
 
 	draw(){
 
-		let steps = floor(random(3, 8));
-		this.drawA(40, steps);
-		this.drawB(40, steps);
-		this.drawC(40, steps);
-		this.drawD(40, steps);
-		this.drawE(40, steps);
+		let steps = floor(random(3, 6));
+		if(steps % 2 == 0){
+			this.drawA(40, steps);
+			this.drawB(40, steps);
+			this.drawC(40, steps);
+		}else{
+			this.drawD(40, steps);
+			this.drawE(40, steps);
+		}
 	}
 
 	drawA(radius, steps){
