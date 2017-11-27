@@ -6,6 +6,8 @@ const WORD_H    = TEXT_SIZE;
 const WORD_P    = 4;
 
 let words;
+let adjustArea;
+let code;
 
 function preload(){
 
@@ -21,20 +23,26 @@ function setup(){
 	createCanvas(480, 320);
 	background(0);
 	fill(255, 255, 255);
-	frameRate(8);
+	frameRate(16);
 	noStroke();
+
+	// AdjustArea
+	adjustArea = new AdjustArea(20, 20, 440, 50);
 
 	// Words
 	words = [];
 
 	// Word
-	words.push(new WordBox(random(30, 450), random(160, 290), "let"));
-	words.push(new WordBox(random(30, 450), random(160, 290), "spr"));
-	words.push(new WordBox(random(30, 450), random(160, 290), "="));
-	words.push(new WordBox(random(30, 450), random(160, 290), "new"));
-	words.push(new WordBox(random(30, 450), random(160, 290), "Sprite(32, 32);"));
-	words.push(new WordBox(random(30, 450), random(160, 290), "32"));
-	words.push(new WordBox(random(30, 450), random(160, 290), "32"));
+	words.push(new WordBox(random(30, 450), random(180, 290), "let"));
+	words.push(new WordBox(random(30, 450), random(180, 290), "spr"));
+	words.push(new WordBox(random(30, 450), random(180, 290), "="));
+	words.push(new WordBox(random(30, 450), random(180, 290), "new"));
+	words.push(new WordBox(random(30, 450), random(180, 290), "Sprite(32, 32);"));
+	words.push(new WordBox(random(30, 450), random(180, 290), "function(){}"));
+	words.push(new WordBox(random(30, 450), random(180, 290), "if(){}"));
+	words.push(new WordBox(random(30, 450), random(180, 290), "for(){}"));
+	words.push(new WordBox(random(30, 450), random(180, 290), "moveTo();"));
+	words.push(new WordBox(random(30, 450), random(180, 290), "moveBy();"));
 }
 
 // 連続処理
@@ -42,14 +50,19 @@ function draw(){
 	//console.log("draw");
 	background(0);
 
-	for(word of words){
+	// AdjustArea
+	adjustArea.draw();
+
+	// Words
+	for(let word of words){
 		word.draw();
 	}
 }
 
 function mousePressed(e){
-	console.log("mousePressed");
+	//console.log("mousePressed");
 
+	// Words
 	for(let i=words.length-1; 0<=i; i--){
 		if(words[i].mousePressed(e)){
 			let word = words[i];
@@ -61,9 +74,10 @@ function mousePressed(e){
 }
 
 function mouseDragged(e){
-	console.log("mouseDragged");
+	//console.log("mouseDragged");
 
-	for(word of words){
+	// Words
+	for(let word of words){
 		if(word.mouseDragged(e)) break;
 	}
 }
@@ -71,7 +85,11 @@ function mouseDragged(e){
 function mouseReleased(e){
 	//console.log("mouseReleased");
 
-	for(word of words){
+	// AdjustArea
+	adjustArea.sort(words);
+
+	// Words
+	for(let word of words){
 		word.mouseReleased(e);
 	}
 }
@@ -89,12 +107,39 @@ class WordBox{
 		this._x   = x;
 		this._y   = y;
 		this._str = str;
-		this._isCaptured = false;
 		this._w = this._str.length * WORD_W + WORD_P * 2;
 		this._h = WORD_H + WORD_P * 2;
 
+		this._isCaptured = false;
 		this._offsetX = 0;
 		this._offsetY = 0;
+	}
+	get x(){
+		return this._x;
+	}
+	set x(x){
+		this._x = x;
+	}
+	get y(){
+		return this._y;
+	}
+	set y(y){
+		this._y = y;
+	}
+	get w(){
+		return this._w;
+	}
+	get h(){
+		return this._h;
+	}
+	get centerX(){
+		return this._x + this._w * 0.5;
+	}
+	get centerY(){
+		return this._y + this._h * 0.5;
+	}
+	get str(){
+		return this._str;
 	}
 	mousePressed(e){
 		let cX = e.clientX;
@@ -127,5 +172,51 @@ class WordBox{
 		fill(33, 33, 33);
 		textAlign(CENTER);
 		text(this._str, this._x + this._w * 0.5, this._y + WORD_H + WORD_P * 0.5);
+	}
+}
+
+class AdjustArea{
+	constructor(x, y, w, h){
+		this._x = x;
+		this._y = y;
+		this._w = w;
+		this._h = h;
+		this._paddingX = 5;
+		this._paddingY = 5;
+
+		this._code = "Hello World!!";
+	}
+	sort(words){
+
+		let array = [];
+		for(let word of words){
+			if(word.centerY < this._y + this._h){
+				array.push({centerX: word.centerX, centerY: word.centerY, word: word});
+			}
+		}
+		array.sort((a, b)=>{
+			if(a.centerX < b.centerX) return -1;
+			if(a.centerX > b.centerX) return 1;
+			return 0;
+		});
+		this._code = "";
+		let totalW = 0;
+		for(let obj of array){
+			this._code += obj.word.str + " ";
+			totalW += obj.word.w + this._paddingX;
+		}
+		let pointerX = this._x + this._w * 0.5 - totalW * 0.5
+		for(let obj of array){
+			obj.word.x = pointerX;
+			obj.word.y = this._y + this._paddingY;
+			pointerX += obj.word.w + this._paddingX;
+		}
+	}
+	draw(){
+		fill(66, 66, 66);
+		rect(this._x, this._y, this._w, this._h);
+		fill(255, 255, 255);
+		textAlign(CENTER);
+		text(this._code, this._x + this._w * 0.5, this._y + this._h - this._paddingY);
 	}
 }
