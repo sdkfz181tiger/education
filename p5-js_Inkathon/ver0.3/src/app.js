@@ -1,14 +1,14 @@
 console.log("app.js");
 
-const FONT_SIZE = 24;
-const FONT_RECT_W = 16;
-const FONT_RECT_H = 26;
+const FONT_SIZE   = 26;
+const FONT_RECT_W = 20;
+const FONT_RECT_H = 28;
 
 const MARK_PARAM = "*";
 
 const resources = [
 	"res/HelloWorld.png", "res/t_tanu_32.png",
-	"res/FiraCode-Regular.ttf"
+	"res/DroidSansMono.ttf"
 ];
 
 // Main
@@ -20,7 +20,7 @@ window.onload = function(){
 	cc.game.run("gameCanvas");
 };
 
-var wSize = null;
+var wSize  = null;
 
 // Game start
 function gameStart(){
@@ -47,25 +47,53 @@ function gameStart(){
 			this.addChild(cLayer);
 
 			// Test
-			var myWord = new MyWord("Sprite(*);");
-			myWord.x = 100;
-			myWord.y = 100;
-			cLayer.addChild(myWord);
+			var panels = [];
+			
+			var panel1 = new MyPanel("function(*){}");
+			panel1.x = 100;
+			panel1.y = 150;
+			panels.push(panel1);
+			cLayer.addChild(panel1);
+
+			var panel2 = new MyPanel("Sprite(*);");
+			panel2.x = 200;
+			panel2.y = 200;
+			panels.push(panel2);
+			cLayer.addChild(panel2);
 
 			// Event
 			cc.eventManager.addListener({
 				event:cc.EventListener.TOUCH_ONE_BY_ONE,
 				onTouchBegan:function(touch, event){
-					console.log("onTouchBegan");
+					//console.log("onTouchBegan");
 					var touchX = touch.getLocationX();
-
-					if(touchX < wSize.width * 0.5){
-						myWord.pushParam(777);
-					}else{
-						myWord.clearParam();
+					var touchY = touch.getLocationY();
+					for(var i=panels.length-1; 0<=i; i--){
+						if(panels[i].startDrag(touchX, touchY)){
+							var panel = panels[i];
+							panel.setLocalZOrder(1);
+							panels.splice(i, 1);
+							panels.push(panel);
+							break;
+						};
 					}
-
 					return true;
+				},
+				onTouchMoved: function (touch, event){
+					//console.log("onTouchMoved");
+					var touchX = touch.getLocationX();
+					var touchY = touch.getLocationY();
+					for(panel of panels){
+						panel.moveDrag(touchX, touchY);
+					}
+				},
+				onTouchEnded: function (touch, event){
+					//console.log("onTouchEnded");
+					var touchX = touch.getLocationX();
+					var touchY = touch.getLocationY();
+					for(panel of panels){
+						panel.endDrag(touchX, touchY);
+					}
 				}
 			}, this);
 		},
@@ -77,7 +105,85 @@ function gameStart(){
 	cc.director.runScene(scene);
 }
 
-// MyDrawDot
+// MyPanel
+var MyPanel = cc.DrawNode.extend({
+	ctor: function(format){
+		this._super();
+		this._format = format;
+
+		this._padding  = 5;
+		this._dragFlg  = false;
+		this._dragOffX = 0.0;
+		this._dragOffY = 0.0;
+
+		// MyWord
+		this._myWord = new MyWord(this._format);
+		this._myWord.x = this._padding;
+		this._myWord.y = this._padding;
+		this.addChild(this._myWord);
+
+		this._width  = this._myWord.getWidth() + this._padding * 2;
+		this._height = this._myWord.getHeight() + this._padding * 2;
+
+		// Reflesh
+		this.reflesh();
+	},
+	reflesh: function(){
+		// Clear
+		this.clear();
+
+		// MyWord
+		this._myWord.reflesh();
+		this._width  = this._myWord.getWidth() + this._padding * 2;
+		this._height = this._myWord.getHeight() + this._padding * 2;
+
+		// Rect
+		this.drawRect(
+			cc.p(0.0, 0.0), cc.p(this._width, this._height), 
+			cc.color(99, 99, 99, 255), 0, cc.color(255, 255, 255, 0));
+	},
+	pushParam: function(val){
+		this._myWord.pushParam(val);
+		this.reflesh();
+	},
+	clearParam: function(){
+		this._myWord.clearParam();
+		this.reflesh();
+	},
+	getWidth: function(){
+		return this._width;
+	},
+	getHeight: function(){
+		return this._height;
+	},
+	containsPoint: function(x, y){
+		if(x < this.x) return false;
+		if(this.x + this._width < x) return false;
+		if(y < this.y) return false;
+		if(this.y + this._height < y) return false;
+		return true;
+	},
+	startDrag: function(x, y){
+		if(this.containsPoint(x, y)){
+			this._dragFlg = true;
+			this._dragOffX = this.x - x;
+			this._dragOffY = this.y - y;
+			return true;
+		}
+		return false;
+	},
+	moveDrag: function(x, y){
+		if(this._dragFlg){
+			this.x = x + this._dragOffX;
+			this.y = y + this._dragOffY;
+		}
+	},
+	endDrag: function(x, y){
+		this._dragFlg = false;
+	}
+});
+
+// MyWord
 var MyWord = cc.DrawNode.extend({
 	ctor: function(format){
 		this._super();
@@ -85,8 +191,14 @@ var MyWord = cc.DrawNode.extend({
 		this._word   = "";
 		this._params = [];
 
+		this._width  = 0.0;
+		this._height = 0.0;
+
 		// Reflesh
 		this.reflesh();
+	},
+	getWord: function(){
+		return this._word;
 	},
 	reflesh: function(){
 		// Clear
@@ -103,16 +215,16 @@ var MyWord = cc.DrawNode.extend({
 		}
 
 		for(var i=0; i<this._word.length; i++){
-			// Rect
-			this.drawRect(
-				cc.p(FONT_RECT_W * i, 0.0), cc.p(FONT_RECT_W * i + FONT_RECT_W, FONT_RECT_H), 
-				cc.color(255, 255, 255, 100), 0, cc.color(255, 255, 255, 0));
 			// Label
-			var label = cc.LabelTTF.create(this._word[i], "FiraCode-Regular",
-				FONT_SIZE, cc.size(FONT_RECT_W, FONT_SIZE), cc.TEXT_ALIGNMENT_CENTER);
+			var label = cc.LabelTTF.create(this._word[i], "DroidSansMono",
+				FONT_SIZE, cc.size(FONT_RECT_W, FONT_RECT_H), cc.TEXT_ALIGNMENT_CENTER);
 			label.setAnchorPoint(cc.p(0.0, 0.0));
 			label.setPositionX(FONT_RECT_W * i);
 			this.addChild(label, 1);
+			// Rect
+			this.drawRect(
+				cc.p(FONT_RECT_W * i, 0.0), cc.p(FONT_RECT_W * i + FONT_RECT_W, FONT_RECT_H), 
+				cc.color(66, 66, 66, 255), 0, cc.color(255, 255, 255, 0));
 		}
 	},
 	pushParam: function(val){
@@ -122,6 +234,12 @@ var MyWord = cc.DrawNode.extend({
 	clearParam: function(){
 		this._params = [];
 		this.reflesh();
+	},
+	getWidth: function(){
+		return FONT_RECT_W * this._word.length;
+	},
+	getHeight: function(){
+		return FONT_RECT_H;
 	}
 });
 
