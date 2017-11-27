@@ -4,7 +4,7 @@ const FONT_SIZE = 24;
 const FONT_RECT_W = 16;
 const FONT_RECT_H = 26;
 
-const FONT_REPLACE_MARK = "*";
+const MARK_PARAM = "*";
 
 const resources = [
 	"res/HelloWorld.png", "res/t_tanu_32.png",
@@ -47,13 +47,10 @@ function gameStart(){
 			this.addChild(cLayer);
 
 			// Test
-			var myWord = new MyWord("Sprite(*, *);");
+			var myWord = new MyWord("Sprite(*);");
 			myWord.x = 100;
 			myWord.y = 100;
 			cLayer.addChild(myWord);
-
-
-
 
 			// Event
 			cc.eventManager.addListener({
@@ -61,6 +58,13 @@ function gameStart(){
 				onTouchBegan:function(touch, event){
 					console.log("onTouchBegan");
 					var touchX = touch.getLocationX();
+
+					if(touchX < wSize.width * 0.5){
+						myWord.pushParam(777);
+					}else{
+						myWord.clearParam();
+					}
+
 					return true;
 				}
 			}, this);
@@ -75,28 +79,49 @@ function gameStart(){
 
 // MyDrawDot
 var MyWord = cc.DrawNode.extend({
-	ctor: function(word){
+	ctor: function(format){
 		this._super();
-		this._word  = word;
-		this._chars = [];
+		this._format = format;
+		this._word   = "";
+		this._params = [];
+
+		// Reflesh
+		this.reflesh();
+	},
+	reflesh: function(){
+		// Clear
+		this.clear();
+		this.removeAllChildren();
+
+		this._word = "";
+		for(var i=0; i<this._format.length; i++){
+			if(this._format[i] !== MARK_PARAM){
+				this._word += this._format[i];
+			}else{
+				this._word += this._params.join(", ");
+			}
+		}
 
 		for(var i=0; i<this._word.length; i++){
-
-			var color = cc.color(255, 255, 255, 100);
-			if(this._word[i] == FONT_REPLACE_MARK){
-				color = cc.color(255, 33, 33, 100);
-			}
-
+			// Rect
 			this.drawRect(
 				cc.p(FONT_RECT_W * i, 0.0), cc.p(FONT_RECT_W * i + FONT_RECT_W, FONT_RECT_H), 
-				color, 0, cc.color(255, 255, 255, 0));
-
+				cc.color(255, 255, 255, 100), 0, cc.color(255, 255, 255, 0));
+			// Label
 			var label = cc.LabelTTF.create(this._word[i], "FiraCode-Regular",
 				FONT_SIZE, cc.size(FONT_RECT_W, FONT_SIZE), cc.TEXT_ALIGNMENT_CENTER);
 			label.setAnchorPoint(cc.p(0.0, 0.0));
 			label.setPositionX(FONT_RECT_W * i);
 			this.addChild(label, 1);
 		}
+	},
+	pushParam: function(val){
+		this._params.push(val);
+		this.reflesh();
+	},
+	clearParam: function(){
+		this._params = [];
+		this.reflesh();
 	}
 });
 
