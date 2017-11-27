@@ -1,9 +1,9 @@
 console.log("Hello p5.js!!");
 
-const TEXT_SIZE = 18;
-const CHAR_W    = 12;
-const CHAR_H    = TEXT_SIZE;
-const WORD_P_H  = 5;
+const TEXT_SIZE = 12;
+const WORD_W    = 7;
+const WORD_H    = TEXT_SIZE + 2;
+const WORD_P_H  = 8;
 const WORD_P_V  = 5;
 
 let words;
@@ -28,85 +28,81 @@ function setup(){
 	noStroke();
 
 	// AdjustArea
-	//adjustArea = new AdjustArea(20, 20, 440, 50);
+	adjustArea = new AdjustArea(20, 20, 440, 50);
 
 	// Words
 	words = [];
 
 	// Word
-	// words.push(new WordBox(random(30, 450), random(180, 290), "let"));
-	// words.push(new WordBox(random(30, 450), random(180, 290), "spr"));
-	// words.push(new WordBox(random(30, 450), random(180, 290), "="));
-	// words.push(new WordBox(random(30, 450), random(180, 290), "."));
-	// words.push(new WordBox(random(30, 450), random(180, 290), "new"));
-	// words.push(new WordBox(random(30, 450), random(180, 290), "Sprite(@, @);"));
-	// words.push(new WordBox(random(30, 450), random(180, 290), "function(@, @){}"));
-	// words.push(new WordBox(random(30, 450), random(180, 290), "if(@ @ @){}"));
-	// words.push(new WordBox(random(30, 450), random(180, 290), "for(@; @; @){}"));
-	// words.push(new WordBox(random(30, 450), random(180, 290), "moveTo(@, @, @);"));
-	// words.push(new WordBox(random(30, 450), random(180, 290), "moveBy(@, @, @);"));
-
-	let c = new Word(width/2, height/2, "@oo@d!!");
-	c.init();
+	words.push(new WordBox(random(30, 450), random(180, 290), "let"));
+	words.push(new WordBox(random(30, 450), random(180, 290), "spr"));
+	words.push(new WordBox(random(30, 450), random(180, 290), "="));
+	words.push(new WordBox(random(30, 450), random(180, 290), "."));
+	words.push(new WordBox(random(30, 450), random(180, 290), "new"));
+	words.push(new WordBox(random(30, 450), random(180, 290), "Sprite(@, @);"));
+	words.push(new WordBox(random(30, 450), random(180, 290), "function(@, @){}"));
+	words.push(new WordBox(random(30, 450), random(180, 290), "if(@ @ @){}"));
+	words.push(new WordBox(random(30, 450), random(180, 290), "for(@; @; @){}"));
+	words.push(new WordBox(random(30, 450), random(180, 290), "moveTo(@, @, @);"));
+	words.push(new WordBox(random(30, 450), random(180, 290), "moveBy(@, @, @);"));
 }
-
-
-
-
 
 // 連続処理
 function draw(){
 	//console.log("draw");
 	background(0);
 
-	// Sprites
-	drawSprites();
+	// AdjustArea
+	adjustArea.draw();
+
+	// Words
+	for(let word of words){
+		word.draw();
+	}
 }
 
 function mousePressed(e){
 	//console.log("mousePressed");
 
+	// Words
+	for(let i=words.length-1; 0<=i; i--){
+		if(words[i].mousePressed(e)){
+			let word = words[i];
+			words.splice(i, 1);
+			words.push(word);
+			break;
+		};
+	}
 }
 
 function mouseDragged(e){
 	//console.log("mouseDragged");
 
+	// Words
+	for(let word of words){
+		if(word.mouseDragged(e)) break;
+	}
 }
 
 function mouseReleased(e){
 	//console.log("mouseReleased");
 
-}
+	// AdjustArea
+	adjustArea.sort(words);
 
-class Word extends p5.prototype.Group{
-
-	constructor(x, y, word){
-		super();
-
-		this._x = x;
-		this._y = y;
-		this._word = word;
-
-		//this.test();
-	}
-
-	function init(){
-		this._sprites = [];
-		for(let i=0; i<this._word.length; i++){
-			let spr = createSprite(this._x + CHAR_W * i, this._y, 0, 0);
-			spr.draw = ()=>{
-				fill(200, 200, 200);
-				rect(0, 0, CHAR_W, CHAR_H);
-				fill(33, 33, 33);
-				text(this._word[i], CHAR_W*-0.5, CHAR_H*0.4);
-			}
-			this._sprites.push(spr);
-			this.add(spr);
-		}
+	// Words
+	for(let word of words){
+		word.mouseReleased(e);
 	}
 }
 
-/*
+// ランダム値を生成する
+function getRandom(min, max){
+	var range = max + 1 - min;
+	var result = Math.floor(Math.random() * range + min);
+	return result;
+}
+
 // WordBox
 class WordBox{
 	constructor(x, y, str){
@@ -257,4 +253,3 @@ class AdjustArea{
 		text(this._code, this._x + this._w * 0.5, this._y + this._h - this._paddingY);
 	}
 }
-*/
