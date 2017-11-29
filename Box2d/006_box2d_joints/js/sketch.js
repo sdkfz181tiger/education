@@ -1,22 +1,18 @@
 console.log("Hello Box2dWeb!!");
 
-const DEG_TO_RAD = Math.PI / 180;
-
-const PTM_RATIO  = 30.0;
-
-const C_WIDTH  = 480;
-const C_HEIGHT = 320;
-
-const C_NAME   = "canvas";
-
-// Manager
+// Global
+let canvasPosition = null;
+let world = null;
 let b2dManager = null;
 
 // Main
 window.onload = function(){
+
+	// CanvasPosition
+	canvasPosition = getElementPosition(document.getElementById(C_NAME));
 	
 	// World
-	let world = new b2World(new b2Vec2(0, 10), true);
+	world = new b2World(new b2Vec2(0, 10), true);
 
 	// Manager
 	b2dManager = new Box2dManager(world);
@@ -73,7 +69,7 @@ window.onload = function(){
 	function createPachinko(cX, cY, rMax, cMax, padX, padY){
 
 		let type = b2Body.b2_staticBody;
-		let size     = 5;
+		let size = 5;
 
 		let rows = rMax;
 		for(let r=0; r<rows; r++){
@@ -84,7 +80,7 @@ window.onload = function(){
 				let sY = cY;
 				let x = sX + c * padX;
 				let y = sY + r * padY;
-				b2dManager.createBody(type, x, y, size, size);
+				b2dManager.createBody(type, x, y, size, size, 45);
 			}
 		}
 	}
@@ -113,30 +109,6 @@ window.onload = function(){
 	window.setInterval(update, 1000 / 30);
 	function update(){
 
-		// Mouse
-		if(isMouseDown && (!mouseJoint)){
-			let body = getBodyAtMouse();
-			if(body){
-				let md = new b2MouseJointDef();
-				md.bodyA = world.GetGroundBody();
-				md.bodyB = body;
-				md.target.Set(mouseX, mouseY);
-				md.collideConnected = true;
-				md.maxForce = 300.0 * body.GetMass();
-				mouseJoint = world.CreateJoint(md);
-				body.SetAwake(true);
-		   }
-		}
-		
-		if(mouseJoint){
-			if(isMouseDown){
-				mouseJoint.SetTarget(new b2Vec2(mouseX, mouseY));
-			}else{
-				world.DestroyJoint(mouseJoint);
-				mouseJoint = null;
-			}
-		}
-
 		// Box2dManager
 		b2dManager.update();
 	};
@@ -147,68 +119,5 @@ window.onload = function(){
 		let type = b2Body.b2_dynamicBody;
 		let x    = Math.random() * C_WIDTH;
 		let body = b2dManager.createBody(type, x, 5, 8, 8);
-	}, 1000 * 1);
-
-	//==========
-	// Mouse
-	let mouseX, mouseY, mousePVec, isMouseDown, selectedBody, mouseJoint;
-	let canvasPosition = getElementPosition(document.getElementById(C_NAME));
-
-	function handleMouseDown(e){
-		isMouseDown = true;
-		handleMouseMove(e);
-		document.addEventListener("mousemove", handleMouseMove, true);
-		document.addEventListener("touchmove", handleMouseMove, true);
-	}
-	document.addEventListener("mousedown", handleMouseDown, true);
-	document.addEventListener("touchstart", handleMouseDown, true);
-	
-	function handleMouseUp(){
-		document.removeEventListener("mousemove", handleMouseMove, true);
-		document.removeEventListener("touchmove", handleMouseMove, true);
-		isMouseDown = false;
-		mouseX = undefined;
-		mouseY = undefined;
-	}
-	document.addEventListener("mouseup", handleMouseUp, true);
-	document.addEventListener("touchend", handleMouseUp, true);
-
-	function handleMouseMove(e){
-		let clientX, clientY;
-		if(e.clientX){
-			clientX = e.clientX; clientY = e.clientY;
-		}else if(e.changedTouches && e.changedTouches.length > 0){
-			let touch = e.changedTouches[e.changedTouches.length - 1];
-			clientX = touch.clientX; clientY = touch.clientY;
-		}else{
-		   return;
-		}
-		mouseX = (clientX - canvasPosition.x) / PTM_RATIO;
-		mouseY = (clientY - canvasPosition.y) / PTM_RATIO;
-		e.preventDefault();
-	};
-
-	//==========
-	// Get body
-	function getBodyAtMouse(){
-		mousePVec = new b2Vec2(mouseX, mouseY);
-		let aabb = new b2AABB();
-		aabb.lowerBound.Set(mouseX - 0.001, mouseY - 0.001);
-		aabb.upperBound.Set(mouseX + 0.001, mouseY + 0.001);
-		
-		// Query the world for overlapping shapes.
-		selectedBody = null;
-		world.QueryAABB(getBodyCB, aabb);
-		return selectedBody;
-	}
-
-	function getBodyCB(fixture){
-		if(fixture.GetBody().GetType() != b2Body.b2_staticBody){
-			if(fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), mousePVec)){
-				selectedBody = fixture.GetBody();
-				return false;
-			}
-		}
-		return true;
-	}
+	}, 1000 * 5);
 };

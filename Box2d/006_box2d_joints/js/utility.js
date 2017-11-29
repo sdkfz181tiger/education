@@ -1,5 +1,14 @@
 console.log("Hello Box2dManager!!");
 
+const DEG_TO_RAD = Math.PI / 180;
+
+const PTM_RATIO  = 30.0;
+
+const C_WIDTH  = 480;
+const C_HEIGHT = 320;
+
+const C_NAME   = "canvas";
+
 //==========
 // Box2dManager
 
@@ -66,10 +75,11 @@ class Box2dManager{
 		this._world.SetDebugDraw(debugDraw);
 	}
 
-	createBody(type, x, y, w, h){
+	createBody(type, x, y, w, h, deg=0){
 
 		// Box
 		this._bodyDef.position.Set(x / PTM_RATIO, y / PTM_RATIO);
+		this._bodyDef.angle = deg * DEG_TO_RAD;
 		this._bodyDef.type = type;
 		this._bodyDef.userData = null;
 
@@ -81,10 +91,11 @@ class Box2dManager{
 		return body;
 	}
 
-	createBodyImage(type, x, y, img){
+	createBodyImage(type, x, y, img, deg=0){
 
 		// Box
 		this._bodyDef.position.Set(x / PTM_RATIO, y / PTM_RATIO);
+		this._bodyDef.angle = deg * DEG_TO_RAD;
 		this._bodyDef.type = type;
 		this._bodyDef.userData = null;
 
@@ -153,6 +164,31 @@ class Box2dManager{
 	}
 
 	update(){
+
+		// Mouse
+		if(isMouseDown && (!mouseJoint)){
+			let body = getBodyAtMouse();
+			if(body){
+				let md = new b2MouseJointDef();
+				md.bodyA = world.GetGroundBody();
+				md.bodyB = body;
+				md.target.Set(mouseX, mouseY);
+				md.collideConnected = true;
+				md.maxForce = 300.0 * body.GetMass();
+				mouseJoint = world.CreateJoint(md);
+				body.SetAwake(true);
+		   }
+		}
+		
+		if(mouseJoint){
+			if(isMouseDown){
+				mouseJoint.SetTarget(new b2Vec2(mouseX, mouseY));
+			}else{
+				world.DestroyJoint(mouseJoint);
+				mouseJoint = null;
+			}
+		}
+
 		// Step
 		this._world.Step(1 / 30, 10, 10);
 		this._world.DrawDebugData();
@@ -185,6 +221,68 @@ class Box2dManager{
 			}
 		}
 	}
+}
+
+//==========
+// Mouse
+let mouseX, mouseY, mousePVec, isMouseDown, selectedBody, mouseJoint;
+
+function handleMouseDown(e){
+	isMouseDown = true;
+	handleMouseMove(e);
+	document.addEventListener("mousemove", handleMouseMove, true);
+	document.addEventListener("touchmove", handleMouseMove, true);
+}
+document.addEventListener("mousedown", handleMouseDown, true);
+document.addEventListener("touchstart", handleMouseDown, true);
+
+function handleMouseUp(){
+	document.removeEventListener("mousemove", handleMouseMove, true);
+	document.removeEventListener("touchmove", handleMouseMove, true);
+	isMouseDown = false;
+	mouseX = undefined;
+	mouseY = undefined;
+}
+document.addEventListener("mouseup", handleMouseUp, true);
+document.addEventListener("touchend", handleMouseUp, true);
+
+function handleMouseMove(e){
+	let clientX, clientY;
+	if(e.clientX){
+		clientX = e.clientX; clientY = e.clientY;
+	}else if(e.changedTouches && e.changedTouches.length > 0){
+		let touch = e.changedTouches[e.changedTouches.length - 1];
+		clientX = touch.clientX; clientY = touch.clientY;
+	}else{
+	   return;
+	}
+	mouseX = (clientX - canvasPosition.x) / PTM_RATIO;
+	mouseY = (clientY - canvasPosition.y) / PTM_RATIO;
+	e.preventDefault();
+};
+
+//==========
+// Get body
+function getBodyAtMouse(){
+	mousePVec = new b2Vec2(mouseX, mouseY);
+	let aabb = new b2AABB();
+	aabb.lowerBound.Set(mouseX - 0.001, mouseY - 0.001);
+	aabb.upperBound.Set(mouseX + 0.001, mouseY + 0.001);
+	
+	// Query the world for overlapping shapes.
+	selectedBody = null;
+	world.QueryAABB(getBodyCB, aabb);
+	return selectedBody;
+}
+
+function getBodyCB(fixture){
+	if(fixture.GetBody().GetType() != b2Body.b2_staticBody){
+		if(fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), mousePVec)){
+			selectedBody = fixture.GetBody();
+			return false;
+		}
+	}
+	return true;
 }
 
 //==========
