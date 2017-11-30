@@ -117,7 +117,10 @@ window.onload = function(){
 	window.setInterval(()=>{
 		// Create
 		let type = b2Body.b2_dynamicBody;
-		let x    = Math.random() * C_WIDTH;
-		let body = b2dManager.createBody(type, x, 5, 8, 8);
-	}, 1000 * 5);
+		let body = b2dManager.createBody(type, 240, 20, 5, 5);
+		let vX   = 0.1;
+		let vec = new b2Vec2(-0.1, 0.0);
+		let pos = new b2Vec2(body.GetPosition().x, body.GetPosition().y);
+		body.ApplyImpulse(vec, pos);
+	}, 1000 * 1);
 };
