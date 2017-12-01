@@ -82,7 +82,7 @@ class b2Manager{
 		this._world.SetDebugDraw(debugDraw);
 	}
 
-	createBody(type, x, y, w, h, deg=0){
+	createBox(type, x, y, w, h, deg=0){
 
 		// Box
 		this._bodyDef.position.Set(x / PTM_RATIO, y / PTM_RATIO);
@@ -98,7 +98,7 @@ class b2Manager{
 		return body;
 	}
 
-	createBodyImage(type, x, y, img, deg=0){
+	createBoxImage(type, x, y, img, deg=0){
 
 		// Box
 		this._bodyDef.position.Set(x / PTM_RATIO, y / PTM_RATIO);
@@ -116,7 +116,7 @@ class b2Manager{
 		return body;
 	}
 
-	createBodyCircle(type, x, y, w, deg=0){
+	createCircle(type, x, y, w, deg=0){
 
 		// Box
 		this._bodyDef.position.Set(x / PTM_RATIO, y / PTM_RATIO);
@@ -126,6 +126,24 @@ class b2Manager{
 
 		// Shape
 		this._fixDef.shape = new b2CircleShape(w / PTM_RATIO);
+		let body = this._world.CreateBody(this._bodyDef);
+		body.CreateFixture(this._fixDef);
+		return body;
+	}
+
+	createCircleImage(type, x, y, img, deg=0){
+
+		// Box
+		this._bodyDef.position.Set(x / PTM_RATIO, y / PTM_RATIO);
+		this._bodyDef.angle = deg * DEG_TO_RAD;
+		this._bodyDef.type = type;
+		this._bodyDef.userData = null;
+
+		let w = img.width;
+		let h = img.height;
+		let radius = ((w < h) ? w : h) / 2;
+		this._bodyDef.userData = {shape_type: "circle", img: img, radius: radius};
+		this._fixDef.shape = new b2CircleShape(radius / PTM_RATIO);
 		let body = this._world.CreateBody(this._bodyDef);
 		body.CreateFixture(this._fixDef);
 		return body;
@@ -242,19 +260,19 @@ class b2Manager{
 				let userData = bodyItem.GetUserData();
 				context.save();
 				if(userData && userData.img && userData.img.complete){
-					if(userData.shape_type && userData.shape_type == "circle"){
-						let slideX = position.x * PTM_RATIO;
-						let slideY = position.y * PTM_RATIO;
-						context.translate(slideX, slideY);
-						context.rotate(bodyItem.GetAngle());
-						context.drawImage(userData.img, -userData.radius, -userData.radius);
-					}
 					if(userData.shape_type && userData.shape_type == "box"){
 						let slideX = position.x * PTM_RATIO;
 						let slideY = position.y * PTM_RATIO;
 						context.translate(slideX, slideY);
 						context.rotate(bodyItem.GetAngle());
 						context.drawImage(userData.img, -userData.width / 2.0, -userData.height / 2.0);
+					}
+					if(userData.shape_type && userData.shape_type == "circle"){
+						let slideX = position.x * PTM_RATIO;
+						let slideY = position.y * PTM_RATIO;
+						context.translate(slideX, slideY);
+						context.rotate(bodyItem.GetAngle());
+						context.drawImage(userData.img, -userData.img.width/2, -userData.img.height/2);
 					}
 				}
 				context.restore();

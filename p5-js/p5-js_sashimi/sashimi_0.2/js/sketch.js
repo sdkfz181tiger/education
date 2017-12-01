@@ -22,71 +22,97 @@ function setup(){
 
 	// SceneManager
 	sManager = new SceneManager();
-	sManager.addScene(Scene1);
-	sManager.addScene(Scene2);
-	sManager.addScene(Scene3);
-	sManager.showNextScene();
+	sManager.wire();
+	sManager.showScene(SceneTitle);
 }
 
-function draw(){
-	// SceneManager
-	sManager.draw();
-}
+//==========
+// タイトル
+function SceneTitle(){
 
-function mousePressed(){
-	console.log("mousePressed");
+	this.enter = function(){
+		console.log("Title:enter");
+		removeAllSprites();
 
-	// SceneManager
-	sManager.mousePressed();
-}
-
-function Scene1(){
-
-	this.setup = function(){
-
+		// ゲームへ
+		let btnGame = createSprite(240, 280, 20, 20);
+		btnGame.shapeColor = color(255, 255, 255);
+		btnGame.onMousePressed = ()=>{
+			sManager.showScene(SceneGame);
+		}
 	}
 
 	this.draw = function(){
 		background(200, 100, 100);
 		textAlign(CENTER);
-		text("Scene1", width*0.5, height*0.5);
-	}
-
-	this.mousePressed = function(){
-		this.sceneManager.showNextScene();
+		text("Title!!", width*0.5, height*0.5);
+		drawSprites();
 	}
 }
 
-function Scene2(){
+//==========
+// ゲーム
+function SceneGame(){
 
-	this.setup = function(){
-
+	this.enter = function(){
+		console.log("Game:enter");
+		removeAllSprites();
 	}
 
 	this.draw = function(){
 		background(100, 200, 100);
 		textAlign(CENTER);
-		text("Scene2", width*0.5, height*0.5);
+		text("Game!!", width*0.5, height*0.5);
+		drawSprites();
 	}
 
 	this.mousePressed = function(){
-		this.sceneManager.showNextScene();
+		// リザルトへ
+		sManager.showScene(SceneResult);
 	}
 }
 
-function Scene3(){
+//==========
+// リザルト
+function SceneResult(){
 
-	this.setup = function(){
+	this.enter = function(){
+		console.log("Result:enter");
+		removeAllSprites();
 
+		// タイトルへ
+		let btnTitle = createSprite(200, 280, 20, 20);
+		btnTitle.shapeColor = color(255, 200, 255);
+		btnTitle.onMousePressed = ()=>{
+			sManager.showScene(SceneTitle);
+		}
+
+		// ゲームへ
+		let btnGame = createSprite(280, 280, 20, 20);
+		btnGame.shapeColor = color(255, 33, 255);
+		btnGame.onMousePressed = ()=>{
+			sManager.showScene(SceneTitle);
+		}
+
+		let sample1 = createSprite(10, 10, 10, 10);
+		let sample2 = createSprite(20, 10, 10, 10);
+		let sample3 = createSprite(30, 10, 10, 10);
+		let sample4 = createSprite(40, 10, 10, 10);
+		let sample5 = createSprite(50, 10, 10, 10);
 	}
 
 	this.draw = function(){
 		background(100, 100, 200);
 		textAlign(CENTER);
-		text("Scene3", width*0.5, height*0.5);
+		text("Result!!", width*0.5, height*0.5);
+		drawSprites();
 	}
+}
 
-	this.mousePressed = function(){
-		this.sceneManager.showNextScene();
+//==========
+// Utility
+function removeAllSprites(){
+	for(let i=allSprites.length-1; 0<=i; i--){
+		allSprites[i].remove();
 	}
 }
