@@ -4,6 +4,7 @@ let sManager;
 let score, time;
 let intervals, sashimis;
 let counterNow, counterMax;
+let captureFlg;
 
 function preload(){
 
@@ -74,6 +75,7 @@ function SceneGame(){
 		sashimis   = [];
 		counterNow = 0;
 		counterMax = intervals.length;
+		captureFlg = false;
 
 		// カウントダウン
 		// startCountDown(time, 1000, (t)=>{
@@ -122,8 +124,31 @@ function SceneGame(){
 	}
 
 	this.mousePressed = function(){
-		// Score
-		score++;
+
+		// キャプチャー
+		if(captureFlg) return;
+		captureFlg = true;
+		startInterval(800, ()=>{
+			captureFlg = false;
+		});
+		let capture = createSprite(240, 160, 50, 50);
+		startInterval(100, ()=>{
+			capture.remove();
+		});
+		for(let i=sashimis.length-1; 0<=i; i--){
+			if(sashimis[i].collide(capture)){
+				sashimis[i].remove();
+				sashimis.splice(i, 1);
+				// カウントアップ
+				counterNow++;
+				if(counterMax <= counterNow){
+					// リザルトへ
+					sManager.showScene(SceneResult);
+				}
+				// スコアアップ
+				score += 100;
+			}
+		}
 	}
 }
 
