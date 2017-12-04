@@ -65,7 +65,7 @@ function mousePressed(){
 function startGenerate(){
 	window.setTimeout(()=>{
 		clear();
-		//background("rgba(0, 0, 0, 0)");
+		background(0);
 		for(invader of invaders){
 			let num = Math.floor(Math.random() * max);
 			invader.draw(num);
@@ -76,7 +76,7 @@ function startGenerate(){
 		let prefix = "invaders_";
 		if(counter < 10) prefix += "0";
 		let fileName = prefix + counter + ".png";
-		saveCanvas(fileName);
+		//saveCanvas(fileName);
 	}, 5000);
 }
 
@@ -85,7 +85,7 @@ class Invader{
 	constructor(x, y){
 		this._x = x;
 		this._y = y;
-		this._size = 4;
+		this._size = 2;
 	}
 
 	draw(num){

@@ -69,29 +69,22 @@ function SceneGame(){
 		console.log("Game:enter");
 		removeAllSprites();
 
+		// 初期化
 		score      = 0;
 		time       = 6;
-		intervals  = [3000, 2000, 1000, 3000, 2000, 4000];
+		intervals  = [3000, 3000, 3000, 3000, 3000, 3000];
 		sashimis   = [];
 		counterNow = 0;
 		counterMax = intervals.length;
 		captureFlg = false;
 
-		// カウントダウン
-		// startCountDown(time, 1000, (t)=>{
-		// 	time = t;
-		// 	if(time <= 0){
-		// 		// リザルトへ
-		// 		sManager.showScene(SceneResult);
-		// 	}
-		// });
-
 		// 刺身インターバル
 		startIntervals(intervals, (i)=>{
 			let x = 0;
 			let y = height / 2;
+			let speed = random(10, 30);
 			let sashimi = createSprite(x, y, 30, 30);
-			sashimi.setSpeed(10, 0);
+			sashimi.setSpeed(speed, 0);
 			sashimis.push(sashimi);
 		});
 	}
@@ -111,6 +104,7 @@ function SceneGame(){
 		// ゲーム終了判定
 		for(let i=sashimis.length-1; 0<=i; i--){
 			if(width-50 < sashimis[i].position.x){
+				// 刺身削除
 				sashimis[i].remove();
 				sashimis.splice(i, 1);
 				// カウントアップ
@@ -128,25 +122,24 @@ function SceneGame(){
 		// キャプチャー
 		if(captureFlg) return;
 		captureFlg = true;
+		let capture = createSprite(240, 160, 50, 50);
 		startInterval(800, ()=>{
 			captureFlg = false;
-		});
-		let capture = createSprite(240, 160, 50, 50);
-		startInterval(100, ()=>{
 			capture.remove();
 		});
 		for(let i=sashimis.length-1; 0<=i; i--){
 			if(sashimis[i].collide(capture)){
+				// 刺身削除
 				sashimis[i].remove();
 				sashimis.splice(i, 1);
+				// スコアアップ
+				score += 100;
 				// カウントアップ
 				counterNow++;
 				if(counterMax <= counterNow){
 					// リザルトへ
 					sManager.showScene(SceneResult);
 				}
-				// スコアアップ
-				score += 100;
 			}
 		}
 	}
