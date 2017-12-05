@@ -51,6 +51,7 @@ class MyNote{
 		if(e.clientY < this.y) return;
 		if(this.y + this.size < e.clientY) return;
 		this.activeFlg ? this.activeFlg = false : this.activeFlg = true;
+		if(this.activeFlg) this.play();
 	}
 
 	play(){
