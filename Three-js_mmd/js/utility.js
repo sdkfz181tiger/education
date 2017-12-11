@@ -5,7 +5,7 @@ function initMMD(modelFile, vmdFiles){
 	let loader = new THREE.MMDLoader();
 	loader.load(modelFile, vmdFiles, function(obj){
 		console.log("Loaded!!");
-		obj.position.y = -7;
+		obj.position.y = 0;
 		scene.add(obj);
 
 		// Helper
