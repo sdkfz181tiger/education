@@ -1,0 +1,21 @@
+<table>
+<% for(let row of rows){ %>
+	<tr>
+		<form action="/update" method="post">
+			<th><input type="hidden" name="uid" value="<%=row.uid %>" /><%=row.uid %></th>
+			<td><input type="text" name="name" value="<%=row.name %>" /></td>
+			<td><input type="text" name="birth" value="<%=row.birth %>" /></td>
+			<td><input type="text" name="text" value="<%=row.text %>" /></td>
+			<td><input type="text" name="posX" value="<%=row.posX %>" /></td>
+			<td><input type="text" name="posY" value="<%=row.posY %>" /></td>
+			<td><input type="submit" value="Update" /></td>
+		</form>
+		<form action="/delete" method="post">
+			<td>
+				<input type="hidden" name="uid" value="<%=row.uid %>" />
+				<input type="submit" value="Delete" />
+			</td>
+		</form>
+	</tr>
+<% } %>
+</table>
