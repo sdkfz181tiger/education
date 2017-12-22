@@ -1,0 +1,10 @@
+/* custom.css */
+body{
+	margin: 0px;
+	padding: 0px;
+}
+
+#mapid{
+	width: 480px;
+	height: 320px;
+}

@@ -1,6 +1,13 @@
 console.log("Hello p5.js!!");
 
 let sManager;
+let score, high;
+let intervals, sashimis;
+let counterNow, counterMax;
+let captureFlg;
+
+let imgTitleBack;
+let imgTitleLogo;
 
 function preload(){
 
@@ -8,6 +15,9 @@ function preload(){
 	let font = loadFont("assets/misaki_gothic.ttf");
 	textFont(font);
 	textSize(32);
+
+	imgTitleBack = loadImage("assets/title_back.png");
+	imgTitleLogo = loadImage("assets/title_logo.png");
 }
 
 function setup(){
@@ -24,6 +34,10 @@ function setup(){
 	sManager = new SceneManager();
 	sManager.wire();
 	sManager.showScene(SceneTitle);
+
+	// スコアの初期化
+	score = 0;
+	high  = 0;
 }
 
 //==========
@@ -33,6 +47,14 @@ function SceneTitle(){
 	this.enter = function(){
 		console.log("Title:enter");
 		removeAllSprites();
+
+		// Back
+		let sprBack = createSprite(240, 160, 10, 10);
+		sprBack.addImage(imgTitleBack);
+
+		// Logo
+		let sprLogo = createSprite(240, 130, 10, 10);
+		sprLogo.addImage(imgTitleLogo);
 	}
 
 	this.draw = function(){
@@ -41,6 +63,8 @@ function SceneTitle(){
 		textAlign(CENTER);
 		textSize(16);
 		text("tap to start!!", width*0.5, 210);
+		// スコア表示
+		drawScores();
 	}
 
 	this.mousePressed = function(){
@@ -58,8 +82,6 @@ function SceneGame1(){
 
 		// 文章
 		this._str = "1枚目にハンコを押せ!!";
-
-		// 1枚目
 	}
 
 	this.draw = function(){
@@ -69,17 +91,21 @@ function SceneGame1(){
 		textSize(32);
 		text(this._str, width*0.5, 80);
 		// スコア表示
+		drawScores();
+
+		// ハンコを押せなかった時
+
 	}
 
 	this.mousePressed = function(){
 		// ポイントを計算
-		
+
 		this.nextStage();
 	}
 
 	this.nextStage = function(){
 		setTimeout(()=>{
-			sManager.showScene(SceneResult);
+			sManager.showScene(SceneResult);// 結果画面へ
 		}, 1500);
 	}
 }
@@ -93,21 +119,23 @@ function SceneResult(){
 		removeAllSprites();
 
 		// 文章
-		this._str = "結果!!";
+		this._str = "結果画面です!!";
+
+		// ゲームレベル判定
+
+		// ハイスコア判定
 
 		// タイトルへ
 		let btnTitle = createSprite(200, 230, 60, 30);
 		btnTitle.onMousePressed = function(){
-			// スコア初期化
-
+			score = 0;// スコア初期化
 			sManager.showScene(SceneTitle);
 		}
 
 		// ゲームへ
 		let btnGame = createSprite(280, 230, 60, 30);
 		btnGame.onMousePressed = function(){
-			// スコア初期化
-
+			score = 0;// スコア初期化
 			sManager.showScene(SceneGame1);
 		}
 	}
@@ -119,12 +147,29 @@ function SceneResult(){
 		textSize(32);
 		text(this._str, width*0.5, 80);
 		// スコア表示
+		drawScores();
 	}
 }
 
 //==========
 // スコアを判定する
 function judgeHanko(card){
-	// スコア判定
-	return 0;
+	let x = card.position.x;
+	if(220 < x && x < 260){
+		return 100;
+	}else if(200 < x && x < 280){
+		return 80;
+	}
+	return -40;
+}
+
+//==========
+// スコアを表示する
+function drawScores(){
+	textAlign(LEFT);
+	textSize(24);
+	text("SCORE:" + score, 5, 30);
+	textAlign(RIGHT);
+	textSize(24);
+	text("HIGH:" + high, width-5, 30);
 }
