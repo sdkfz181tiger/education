@@ -62,16 +62,18 @@ let pmxs = [
 	// プロ生ちゃん_著作表示不要、改変/再配布可、商用利用(許諾要)
 	'./models/mmd/pronama/pronama.pmx',
 	// 香風智乃 Ver. 1.02 (ニコニ・コモンズ)
-	'./models/mmd/chino/Chino and Tippy.pmx',
-	'./models/mmd/chino/Chino Kafuu Ver. 1.02.pmx',
-	'./models/mmd/chino/Chino Winter Uniform.pmx',
+	// './models/mmd/chino/Chino and Tippy.pmx',
+	// './models/mmd/chino/Chino Kafuu Ver. 1.02.pmx',
+	// './models/mmd/chino/Chino Winter Uniform.pmx',
 	// 中野シスターズ_表記不要、改変可、商業利用可(法人含む)、二次創作可
-	'./models/mmd/nakashis/naka/naka.pmx',
-	'./models/mmd/nakashis/kano/kano.pmx',
+	//'./models/mmd/nakashis/naka/naka.pmx',
+	//'./models/mmd/nakashis/kano/kano.pmx',
 	// ニコニ立体ちゃん_表記不要、改変/配布可、商用利用可(法人除く)
-	'./models/mmd/alicia/Alicia_solid.pmx',
+	//'./models/mmd/alicia/Alicia_solid.pmx',
 	// 九十九みる_表記必要、改変可、再配布可、個人同人利用可、企業商用利用(連絡要)
-	'./models/mmd/tsukumo/TsukumoMil_mmd.pmx'
+	//'./models/mmd/tsukumo/TsukumoMil_mmd.pmx',
+	// KizunaAI
+	'./models/mmd/kizunaai/kizunaai.pmx'
 ];
 
 let index = Math.floor(Math.random() * pmxs.length);
