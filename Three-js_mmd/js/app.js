@@ -27,7 +27,7 @@ document.getElementById("stage").appendChild(stats.domElement);
 
 // Camera
 let camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-camera.position.set(0, 20, 8);
+camera.position.set(0, 10, 20);
 camera.lookAt(scene.position);
 
 // Light
@@ -60,28 +60,45 @@ let phyHelper, ikHelper;
 
 let pmxs = [
 	// プロ生ちゃん_著作表示不要、改変/再配布可、商用利用(許諾要)
-	'./models/mmd/pronama/pronama.pmx',
+	 './models/mmd/pronama_normal/pronama.pmx',
+	 //'./models/mmd/pronama_tshirt/pronama.pmx',
+	 //'./models/mmd/pronama_3d/pronama.pmx',
+	// 九十九みる_表記必要、改変可、再配布可、個人同人利用可、企業商用利用(連絡要)
+	 './models/mmd/tsukumo/TsukumoMil_mmd.pmx',
+	// KizunaAI
+	 './models/mmd/kizunaai/kizunaai.pmx',
+	// ミライアカリ
+	 './models/mmd/miraiakari/MiraiAkari_v1.0.pmx',
+	// ゴメラ
+	'./models/mmd/gomera/GOMERA_2m_Ver1.0.pmx',
+	// 結月ゆかり
+	'./models/mmd/yuitsuki/yuitsuki_ver1.0.pmd',
+
+	//ニコニ立体ちゃん_表記不要、改変/配布可、商用利用可(法人除く)
+	// './models/mmd/alicia/Alicia_solid.pmx',
+	//中野シスターズ_表記不要、改変可、商業利用可(法人含む)、二次創作可
+	// './models/mmd/nakashis/naka/naka.pmx',
+	// './models/mmd/nakashis/kano/kano.pmx',
+
 	// 香風智乃 Ver. 1.02 (ニコニ・コモンズ)
 	// './models/mmd/chino/Chino and Tippy.pmx',
 	// './models/mmd/chino/Chino Kafuu Ver. 1.02.pmx',
 	// './models/mmd/chino/Chino Winter Uniform.pmx',
-	// 中野シスターズ_表記不要、改変可、商業利用可(法人含む)、二次創作可
-	//'./models/mmd/nakashis/naka/naka.pmx',
-	//'./models/mmd/nakashis/kano/kano.pmx',
-	// ニコニ立体ちゃん_表記不要、改変/配布可、商用利用可(法人除く)
-	//'./models/mmd/alicia/Alicia_solid.pmx',
-	// 九十九みる_表記必要、改変可、再配布可、個人同人利用可、企業商用利用(連絡要)
-	//'./models/mmd/tsukumo/TsukumoMil_mmd.pmx',
-	// KizunaAI
-	'./models/mmd/kizunaai/kizunaai.pmx'
+	// 涼風青葉
+	// './models/mmd/aoba/Aoba Suzukaze_Normal.pmx',
+	// './models/mmd/aoba/Aoba Suzukaze_Swimsuit.pmx',
+	// 社畜ちゃん
+	// './models/mmd/office_syachiku/syachiku_Ver.2.1.pmd',
+	// フェリス
+	// './models/mmd/felix/Felix Argyle Ver. 1.01.pmx',
 ];
 
 let index = Math.floor(Math.random() * pmxs.length);
-initMMD(pmxs[index], ['./models/mmd/vmds/wavefile_v2.vmd']);
+initMMD(pmxs[index], ['./models/vmds/cinderela/a.vmd']);
 
 // Camera
 let deg    = 90;
-let radius = 25;
+let radius = 20;
 let radian = DEG_TO_RAD * deg;
 
 // Loop
@@ -98,10 +115,11 @@ function loop(){
 	effect.render(scene, camera);
 
 	// Camera
-	deg += 0.5;
+	deg += 0.2;
 	if(360 <= deg) deg = 0;
 	radian = DEG_TO_RAD * deg;
 	camera.position.x = Math.cos(radian) * radius;
+	camera.position.y = 10;
 	camera.position.z = Math.sin(radian) * radius;
 	camera.lookAt({x: 0, y: 10, z: 0});
 
