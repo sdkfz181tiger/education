@@ -91,29 +91,33 @@ function initMMD(modelFile, vmdFiles){
 		helper.unifyAnimationDuration({afterglow: 2.0});
 
 		// UI
-		for(vmd of vmds){
-
-			console.log(vmd.id);
-
-			$(vmd.id).click((e)=>{
-				console.log(vmd.id);
-				mesh.mixer.stopAllAction();
-				changeAction(mesh, vmd.name);
+		for(let i=0; i<vmds.length; i++){
+			$(vmds[i].id).click((e)=>{
+				console.log("Click:" + vmds[i].id);
+				changeAction(mesh, vmds[i].name);
 			});
 		}
 	}
 
 	// Change
 	function changeAction(mesh, name){
+
+
+
 		for(let i=0; i<mesh.geometry.animations.length; ++i){
 			if(mesh.geometry.animations[i].name === name){
+
+				mesh.mixer.stopAllAction();
+
 				// Bone
 				let clipA = mesh.geometry.animations[i];
 				let actionA = mesh.mixer.clipAction(clipA);
+				actionA.repetitions = 0;
 				actionA.reset(); actionA.play();
-				// Face
+				// Morph
 				let clipB = mesh.geometry.animations[i+1];
 				let actionB = mesh.mixer.clipAction(clipB);
+				actionB.repetitions = 0;
 				actionB.reset(); actionB.play();
 			} 
 		}

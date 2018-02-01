@@ -27,8 +27,8 @@ document.getElementById("stage").appendChild(stats.domElement);
 
 // Camera
 let camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-camera.position.set(0, 15, 25);
-camera.lookAt({x:0, y:12, z:0});
+camera.position.set(0, 17, 7);
+camera.lookAt({x:0, y:17, z:0});
 
 // Light
 let directionalLight = new THREE.DirectionalLight(0xffffff);
@@ -52,11 +52,11 @@ scene.add(plane);
 
 // Controls
 let controls = new THREE.TrackballControls(camera);
-controls.target.set(0, 12, 0);
+controls.target.set(0, 17, 0);
 
 let pmxs = [
 	// KizunaAI
-	"./models/mmd/kizunaai/kizunaai.pmx",
+	//"./models/mmd/kizunaai/kizunaai.pmx",
 	// プロ生ちゃん_著作表示不要、改変/再配布可、商用利用(許諾要)
 	//"./models/mmd/pronama_normal/pronama.pmx",
 	//"./models/mmd/pronama_tshirt/pronama.pmx",
@@ -64,9 +64,9 @@ let pmxs = [
 	// 九十九みる_表記必要、改変可、再配布可、個人同人利用可、企業商用利用(連絡要)
 	//"./models/mmd/tsukumo/TsukumoMil_mmd.pmx",
 	// ミライアカリ
-	//"./models/mmd/miraiakari/MiraiAkari_v1.0.pmx",
+	// "./models/mmd/miraiakari/MiraiAkari_v1.0.pmx",
 	// ゴメラ
-	//"./models/mmd/gomera/GOMERA_2m_Ver1.0.pmx",
+	"./models/mmd/gomera/GOMERA_2m_Ver1.0.pmx",
 	// 結月ゆかり
 	//"./models/mmd/yuitsuki/yuitsuki_ver1.0.pmd",
 	// アイマリン
@@ -89,21 +89,22 @@ let pmxs = [
 	//"./models/mmd/felix/Felix Argyle Ver. 1.01.pmx",
 ];
 
-// let vmds = [
-// 	"./models/vmds/cinderela/a.vmd",
-// 	"./models/vmds/cinderela/b.vmd"
-// ];
-
-// let vmds = [
-// 	{id:"#btnA", name: "cinderela",   path:"./models/vmds/cinderela/a.vmd"},
-// 	{id:"#btnB", name: "seidenki",    path:"./models/vmds/seidenki/seidenki.vmd"},
-// 	{id:"#btnC", name: "wavefile_v2", path:"./models/vmds/wavefile_v2/wavefile_v2.vmd"}
-// ];
-
 let vmds = [
-	{id:"#btnA", name: "ahahahaha", path:"./models/vmds/motions/ahahahaha.vmd"},
-	{id:"#btnB", name: "ehehehehe", path:"./models/vmds/motions/ehehehehe.vmd"},
-	{id:"#btnC", name: "ehonto",    path:"./models/vmds/motions/ehonto.vmd"}
+	{id:"#btnDanceA", name: "cinderela",    path:"./models/vmds/cinderela/a.vmd"},
+	{id:"#btnDanceB", name: "seidenki",     path:"./models/vmds/seidenki/seidenki.vmd"},
+	{id:"#btnDanceC", name: "wavefile_v2",  path:"./models/vmds/wavefile_v2/wavefile_v2.vmd"},
+	{id:"#btnA", name: "ahahahaha",         path:"./models/vmds/motions/ahahahaha.vmd"},
+	{id:"#btnB", name: "asanonobi",         path:"./models/vmds/motions/asanonobi.vmd"},
+	{id:"#btnC", name: "baan",              path:"./models/vmds/motions/baan.vmd"},
+	{id:"#btnD", name: "biku",              path:"./models/vmds/motions/biku.vmd"},
+	{id:"#btnE", name: "denwakirareru",     path:"./models/vmds/motions/denwakirareru.vmd"},
+	{id:"#btnF", name: "ehehehehe",         path:"./models/vmds/motions/ehehehehe.vmd"},
+	{id:"#btnG", name: "ehonto",            path:"./models/vmds/motions/ehonto.vmd"},
+	{id:"#btnH", name: "funn",              path:"./models/vmds/motions/funn.vmd"},
+	{id:"#btnI", name: "furimuki1",         path:"./models/vmds/motions/furimuki1.vmd"},
+	{id:"#btnJ", name: "furimuki2",         path:"./models/vmds/motions/furimuki2.vmd"},
+	{id:"#btnK", name: "inemuri",           path:"./models/vmds/motions/inemuri.vmd"},
+	{id:"#btnL", name: "itaiashikakaejump", path:"./models/vmds/motions/itaiashikakaejump.vmd"},
 ];
 
 // Init
