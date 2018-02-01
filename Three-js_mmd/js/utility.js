@@ -9,6 +9,9 @@ let helper    = null;
 let phyHelper = null;
 let ikHelper  = null;
 
+// MMD
+let mmd       = null;
+
 function initMMD(modelFile, vmdFiles){
 
 	// Effect
@@ -24,12 +27,15 @@ function initMMD(modelFile, vmdFiles){
 	loader.loadModel(modelFile, (mesh)=>{
 		console.log("Loaded:" + modelFile);
 
+		// MMD
+		mmd = mesh;
+
 		// Add to scene
-		mesh.position.set(0, 0, 0);
-		scene.add(mesh);
+		mmd.position.set(0, 0, 0);
+		scene.add(mmd);
 
 		// Load vmds
-		loadVmdsChain(mesh);
+		loadVmdsChain();
 
 	}, (e)=>{
 		// onProgress
@@ -43,20 +49,21 @@ function initMMD(modelFile, vmdFiles){
 	});
 
 	// Load vmds
-	function loadVmdsChain(mesh, index=0){
+	function loadVmdsChain(index=0){
 		console.log("loadVmdsChain:" + index);
 
 		// VMD
-		loader.loadVmd(vmdFiles[index].path, (vmd)=>{
-			console.log("Loaded:" + vmdFiles[index].name + ", " +  vmdFiles[index].path);
+		loader.loadVmd(vmdFiles[index].name, (vmd)=>{
+			console.log("Loaded:" + vmdFiles[index].name);
 
-			loader.createAnimation(mesh, vmd, vmdFiles[index].name);
+			// Create
+			loader.createAnimation(mmd, vmd, vmdFiles[index].name);
 
 			// Next
 			if(index < vmdFiles.length-1){
-				loadVmdsChain(mesh, ++index);
+				loadVmdsChain(++index);
 			}else{
-				loadVmdsCompleted(mesh);
+				initHelper();
 			}
 
 		}, (e)=>{
@@ -72,55 +79,23 @@ function initMMD(modelFile, vmdFiles){
 	}
 
 	// Completed vmds
-	function loadVmdsCompleted(mesh){
-		console.log("loadVmdsCompleted");
+	function initHelper(){
+		console.log("initHelper");
 
 		// Helper
-		helper.add(mesh);
-		helper.setAnimation(mesh);
-		helper.setPhysics(mesh);
+		helper.add(mmd);
+		helper.setAnimation(mmd);
+		helper.setPhysics(mmd);
 
-		ikHelper = new THREE.CCDIKHelper(mesh);
+		ikHelper = new THREE.CCDIKHelper(mmd);
 		ikHelper.visible = false;
 		scene.add(ikHelper);
 
-		physicsHelper = new THREE.MMDPhysicsHelper(mesh);
+		physicsHelper = new THREE.MMDPhysicsHelper(mmd);
 		physicsHelper.visible = false;
 		scene.add(physicsHelper);
 
 		helper.unifyAnimationDuration({afterglow: 2.0});
-
-		// UI
-		for(let i=0; i<vmds.length; i++){
-			$(vmds[i].id).click((e)=>{
-				console.log("Click:" + vmds[i].id);
-				changeAction(mesh, vmds[i].name);
-			});
-		}
-	}
-
-	// Change
-	function changeAction(mesh, name){
-
-
-
-		for(let i=0; i<mesh.geometry.animations.length; ++i){
-			if(mesh.geometry.animations[i].name === name){
-
-				mesh.mixer.stopAllAction();
-
-				// Bone
-				let clipA = mesh.geometry.animations[i];
-				let actionA = mesh.mixer.clipAction(clipA);
-				actionA.repetitions = 0;
-				actionA.reset(); actionA.play();
-				// Morph
-				let clipB = mesh.geometry.animations[i+1];
-				let actionB = mesh.mixer.clipAction(clipB);
-				actionB.repetitions = 0;
-				actionB.reset(); actionB.play();
-			} 
-		}
 	}
 }
 
@@ -129,4 +104,30 @@ function updateMMD(){
 	if(phyHelper != null && phyHelper !== undefined && phyHelper.visible) phyHelper.update();
 	if(ikHelper != null && ikHelper !== undefined && ikHelper.visible) ikHelper.update();
 	if(effect != null) effect.render(scene, camera);
+}
+
+// Change
+function changeAction(name){
+
+	if(mmd == null) return;
+
+	for(let i=0; i<mmd.geometry.animations.length; ++i){
+
+		if(mmd.geometry.animations[i].name === name){
+
+			mmd.mixer.stopAllAction();
+
+			// Bone
+			let clipA = mmd.geometry.animations[i];
+			let actionA = mmd.mixer.clipAction(clipA);
+			actionA.repetitions = 0;
+			actionA.reset(); actionA.play();
+			
+			// Morph
+			let clipB = mmd.geometry.animations[i+1];
+			let actionB = mmd.mixer.clipAction(clipB);
+			actionB.repetitions = 0;
+			actionB.reset(); actionB.play();
+		} 
+	}
 }

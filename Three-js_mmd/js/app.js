@@ -11,7 +11,7 @@ const far    = 100;
 
 // Scene
 let scene = new THREE.Scene();
-//scene.background = new THREE.Color(0x333333);
+scene.background = new THREE.Color(0x333366);
 
 // Axis
 let axis = new THREE.AxisHelper(20);
@@ -32,7 +32,7 @@ camera.lookAt({x:0, y:17, z:0});
 
 // Light
 let directionalLight = new THREE.DirectionalLight(0xffffff);
-directionalLight.position.set(0, 0.5, 0.7);
+directionalLight.position.set(0.0, 30.0, 0.0);
 scene.add(directionalLight);
 
 // Renderer
@@ -56,7 +56,7 @@ controls.target.set(0, 17, 0);
 
 let pmxs = [
 	// KizunaAI
-	//"./models/mmd/kizunaai/kizunaai.pmx",
+	"./models/mmd/kizunaai/kizunaai.pmx",
 	// プロ生ちゃん_著作表示不要、改変/再配布可、商用利用(許諾要)
 	//"./models/mmd/pronama_normal/pronama.pmx",
 	//"./models/mmd/pronama_tshirt/pronama.pmx",
@@ -66,11 +66,11 @@ let pmxs = [
 	// ミライアカリ
 	// "./models/mmd/miraiakari/MiraiAkari_v1.0.pmx",
 	// ゴメラ
-	"./models/mmd/gomera/GOMERA_2m_Ver1.0.pmx",
+	//"./models/mmd/gomera/GOMERA_2m_Ver1.0.pmx",
 	// 結月ゆかり
 	//"./models/mmd/yuitsuki/yuitsuki_ver1.0.pmd",
 	// アイマリン
-	//"./models/mmd/imarine/iMarine_DeepBlueTown_he_Oideyo.pmx"
+	//"./models/mmd/imarine/iMarine_DeepBlueTown_he_Oideyo.pmx",
 	// ニコニ立体ちゃん_表記不要、改変/配布可、商用利用可(法人除く)
 	//"./models/mmd/alicia/Alicia_solid.pmx",
 	// 中野シスターズ_表記不要、改変可、商業利用可(法人含む)、二次創作可
@@ -83,29 +83,33 @@ let pmxs = [
 	// 涼風青葉
 	//"./models/mmd/aoba/Aoba Suzukaze_Normal.pmx",
 	//"./models/mmd/aoba/Aoba Suzukaze_Swimsuit.pmx",
-	// 社畜ちゃん
-	//"./models/mmd/office_syachiku/syachiku_Ver.2.1.pmd",
-	// フェリス
-	//"./models/mmd/felix/Felix Argyle Ver. 1.01.pmx",
 ];
 
 let vmds = [
-	{id:"#btnDanceA", name: "cinderela",    path:"./models/vmds/cinderela/a.vmd"},
-	{id:"#btnDanceB", name: "seidenki",     path:"./models/vmds/seidenki/seidenki.vmd"},
-	{id:"#btnDanceC", name: "wavefile_v2",  path:"./models/vmds/wavefile_v2/wavefile_v2.vmd"},
-	{id:"#btnA", name: "ahahahaha",         path:"./models/vmds/motions/ahahahaha.vmd"},
-	{id:"#btnB", name: "asanonobi",         path:"./models/vmds/motions/asanonobi.vmd"},
-	{id:"#btnC", name: "baan",              path:"./models/vmds/motions/baan.vmd"},
-	{id:"#btnD", name: "biku",              path:"./models/vmds/motions/biku.vmd"},
-	{id:"#btnE", name: "denwakirareru",     path:"./models/vmds/motions/denwakirareru.vmd"},
-	{id:"#btnF", name: "ehehehehe",         path:"./models/vmds/motions/ehehehehe.vmd"},
-	{id:"#btnG", name: "ehonto",            path:"./models/vmds/motions/ehonto.vmd"},
-	{id:"#btnH", name: "funn",              path:"./models/vmds/motions/funn.vmd"},
-	{id:"#btnI", name: "furimuki1",         path:"./models/vmds/motions/furimuki1.vmd"},
-	{id:"#btnJ", name: "furimuki2",         path:"./models/vmds/motions/furimuki2.vmd"},
-	{id:"#btnK", name: "inemuri",           path:"./models/vmds/motions/inemuri.vmd"},
-	{id:"#btnL", name: "itaiashikakaejump", path:"./models/vmds/motions/itaiashikakaejump.vmd"},
+	{id:"#btnA",   name:"./models/vmds/motions/ahahahaha.vmd"},
+	{id:"#btnB",   name:"./models/vmds/motions/asanonobi.vmd"},
+	{id:"#btnC",   name:"./models/vmds/motions/baan.vmd"},
+	{id:"#btnD",   name:"./models/vmds/motions/biku.vmd"},
+	{id:"#btnE",   name:"./models/vmds/motions/denwakirareru.vmd"},
+	{id:"#btnF",   name:"./models/vmds/motions/ehehehehe.vmd"},
+	{id:"#btnG",   name:"./models/vmds/motions/ehonto.vmd"},
+	{id:"#btnH",   name:"./models/vmds/motions/funn.vmd"},
+	{id:"#btnI",   name:"./models/vmds/motions/furimuki1.vmd"},
+	{id:"#btnJ",   name:"./models/vmds/motions/furimuki2.vmd"},
+	{id:"#btnK",   name:"./models/vmds/motions/inemuri.vmd"},
+	{id:"#btnL",   name:"./models/vmds/motions/itaiashikakaejump.vmd"},
+	{id:"#danceA", name:"./models/vmds/cinderela/a.vmd"},
+	{id:"#danceB", name:"./models/vmds/seidenki/seidenki.vmd"},
+	{id:"#danceC", name:"./models/vmds/wavefile_v2/wavefile_v2.vmd"},
 ];
+
+// UI
+for(let i=0; i<vmds.length; i++){
+	$(vmds[i].id).click((e)=>{
+		console.log("Click:" + vmds[i].id);
+		changeAction(vmds[i].name);
+	});
+}
 
 // Init
 let index = Math.floor(Math.random() * pmxs.length);
