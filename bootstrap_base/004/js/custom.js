@@ -31,20 +31,26 @@ window.onload = function(){
 		let check = $("#inputCheck").prop("checked");
 		console.log("check:" + check);
 
-		// 1件分のデータを用意する
-		let item = {
-			name: name,
-			email: email,
-			password: password,
-			check: check
-		};
-		items.push(item);
+		if(name == "" || email == "" || password == "" || check == false){
+			// Error
+			$("#alert").attr("class", "alert alert-danger");
+			$("#alert").text("入力エラーです");
+		}else{
+			// 1件分のデータを用意する
+			let item = {
+				name: name,
+				email: email,
+				password: password,
+				check: check
+			};
+			items.push(item);
 
-		// データのセーブ
-		saveData();
+			// データのセーブ
+			saveData();
 
-		// データを表示
-		showData();
+			// データを表示
+			showData();
+		}
 
 		return false;
 	});
