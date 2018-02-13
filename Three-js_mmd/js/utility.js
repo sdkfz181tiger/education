@@ -1,4 +1,4 @@
-console.log("Hello Three.js!!");
+console.log("utility.js!!");
 
 // Effect
 let effect    = null;
@@ -12,7 +12,11 @@ let ikHelper  = null;
 // MMD
 let mmd       = null;
 
-function initMMD(modelFile, vmdFiles){
+//==========
+// Character
+//==========
+
+function initMMDCharacter(modelFile, vmdFiles){
 
 	// Effect
 	effect = new THREE.OutlineEffect(renderer);
@@ -31,11 +35,13 @@ function initMMD(modelFile, vmdFiles){
 		mmd = mesh;
 
 		// Add to scene
-		mmd.position.set(0, 0, 0);
+		mmd.position.set(3, 1, -13);
 		scene.add(mmd);
 
 		// Load vmds
-		loadVmdsChain();
+		if(vmdFiles != null && 0 < vmdFiles.length){
+			loadVmdsChain();
+		}
 
 	}, (e)=>{
 		// onProgress
@@ -130,4 +136,32 @@ function changeAction(name){
 			actionB.reset(); actionB.play();
 		} 
 	}
+}
+
+//==========
+// Scene
+//==========
+
+function initMMDScene(modelFile){
+
+	let loader = new THREE.MMDLoader();
+
+	// ModelData
+	loader.loadModel(modelFile, (mesh)=>{
+		console.log("Loaded:" + modelFile);
+
+		// Add to scene
+		mesh.position.set(0, 0, 0);
+		scene.add(mesh);
+
+	}, (e)=>{
+		// onProgress
+		if(e.lengthComputable){
+			let percentComplete = e.loaded / e.total * 100;
+			console.log(Math.round(percentComplete, 2) + "% downloaded");
+		}
+	}, (e)=>{
+		// onEffor
+		console.log("onError:" + e);
+	});
 }
