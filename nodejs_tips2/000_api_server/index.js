@@ -32,6 +32,8 @@ app.get("/", (req, res)=>{
 	let name = escapeStr(req.query["name"]);
 	let birth = escapeStr(req.query["birth"]);
 	msg += "[" + name + ", " + birth + "]";
+
+	console.log("GET:" + msg);
 	
 	res.render("index.ejs",
 		{title: title, content: msg});
@@ -45,6 +47,8 @@ app.post("/", (req, res)=>{
 	let name = escapeStr(req.body["name"]);
 	let birth = escapeStr(req.body["birth"]);
 	msg += "[" + name + ", " + birth + "]";
+
+	console.log("POST:" + msg);
 
 	res.render("index.ejs",
 		{title: title, content: msg});
