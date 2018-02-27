@@ -1,0 +1,21 @@
+{
+  "name": "weatherapp",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "cheerio-httpcli": "^0.7.2",
+    "ejs": "^2.5.7",
+    "express": "^4.16.2",
+    "express-jquery": "^1.8.3",
+    "sqlite3": "^3.1.13",
+    "validator": "^9.1.1"
+  },
+  "devDependencies": {},
+  "description": ""
+}

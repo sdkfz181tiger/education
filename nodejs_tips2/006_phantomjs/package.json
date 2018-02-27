@@ -1,0 +1,17 @@
+{
+  "name": "006_phantom",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "phantom": "^4.0.12",
+    "phantomjs": "^2.1.7",
+    "webpage": "^0.3.0"
+  },
+  "devDependencies": {},
+  "description": ""
+}
