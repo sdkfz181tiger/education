@@ -19,7 +19,7 @@ let files = [
 
 let imgObj = new Object();
 
-let pigs, cheff;
+let boids, pigs;
 
 let sUtterance = null;
 
@@ -62,6 +62,14 @@ function SceneTitle(){
 	this.enter = function(){
 		removeAllSprites();
 
+		// Cheff
+		let cheff = createSprite(240, 160, 50, 50);
+		cheff.addAnimation("run", 
+			"assets/c_cheff_run_0.png", "assets/c_cheff_run_1.png",
+			"assets/c_cheff_run_2.png", "assets/c_cheff_run_3.png",
+			"assets/c_cheff_run_4.png", "assets/c_cheff_run_5.png");
+		cheff.changeAnimation("run");
+
 		// Boids
 		boids = [];
 		for(let i=0; i<30; i++){
@@ -73,8 +81,9 @@ function SceneTitle(){
 			boids.push(dot);
 		}
 
+		// Pigs
 		pigs = [];
-		for(let i=0; i<boids.length; i++){
+		for(let i=pigs.length; i<boids.length; i++){
 			let pig = createSprite(300, 160, 50, 50);
 			pig.addAnimation("run", 
 				"assets/c_pig_run_0.png", "assets/c_pig_run_1.png",
@@ -83,16 +92,9 @@ function SceneTitle(){
 			pig.changeAnimation("run");
 			pig.position.x = boids[i].x;
 			pig.position.y = boids[i].y;
-			pig.scale = 0.8;
+			pig.scale = 0.7 + 0.3 * Math.random();
 			pigs.push(pig);
 		}
-
-		cheff = createSprite(240, 160, 50, 50);
-		cheff.addAnimation("run", 
-			"assets/c_cheff_run_0.png", "assets/c_cheff_run_1.png",
-			"assets/c_cheff_run_2.png", "assets/c_cheff_run_3.png",
-			"assets/c_cheff_run_4.png", "assets/c_cheff_run_5.png");
-		cheff.changeAnimation("run");
 	}
 
 	this.draw = function(){
@@ -100,28 +102,16 @@ function SceneTitle(){
 		drawSprites();
 
 		for(let i=0; i<boids.length; i++){
+			// Boids
 			calcPositions(i);
 			calcPaddings(i);
 			calcVectors(i);
-
-			if(boids[i].x < 0){
-				boids[i].x = 5;
-				boids[i].vX *= -0.2;
-			}
-			if(width < boids[i].x){
-				boids[i].x = width-5;
-				boids[i].vX *= -0.2;
-			}
-			if(boids[i].y < 0){
-				boids[i].y = 5;
-				boids[i].vY *= -0.2;
-			}
-			if(height < boids[i].y){
-				boids[i].y = height-5;
-				boids[i].vY *= -0.2;
-			}
+			bounceWalls(i);
+			
+			// Draw
 			boids[i].draw();
 
+			// Pigs
 			pigs[i].position.x = boids[i].x;
 			pigs[i].position.y = boids[i].y;
 			if(boids[i].vX < 0){
@@ -129,7 +119,12 @@ function SceneTitle(){
 			}else{
 				pigs[i].mirrorX(+1);
 			}
+		}
+	}
 
+	this.mousePressed = function(){
+		for(let i=0; i<boids.length; i++){
+			boids[i].toggle();
 		}
 	}
 }

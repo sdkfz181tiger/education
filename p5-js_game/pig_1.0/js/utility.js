@@ -87,8 +87,6 @@ function stopSpeech(){
 //==========
 // Utility(Boids)
 
-let boids;
-
 function calcPositions(index){
 	let p = {x: 0, y: 0};
 	for(let i=0; i<boids.length; i++){
@@ -125,13 +123,33 @@ function calcVectors(index){
 	}
 	v.x /= boids.length - 1;
 	v.y /= boids.length - 1;
-	boids[index].vX += (v.x - boids[index].vX) / 5;
-	boids[index].vY += (v.y - boids[index].vY) / 5;
+	boids[index].vX += (v.x - boids[index].vX) / 10;
+	boids[index].vY += (v.y - boids[index].vY) / 10;
 }
 
 function getDistance(dotA, dotB){
 	let num = Math.pow(dotA.x - dotB.x, 2) + Math.pow(dotA.y - dotB.y, 2);
 	return Math.sqrt(num);
+}
+
+function bounceWalls(index){
+	let padding = 30;
+	if(boids[index].x < -padding){
+		boids[index].x = 5;
+		boids[index].vX *= -0.2;
+	}
+	if(width+padding < boids[index].x){
+		boids[index].x = width-5;
+		boids[index].vX *= -0.2;
+	}
+	if(boids[index].y < -padding){
+		boids[index].y = 5;
+		boids[index].vY *= -0.2;
+	}
+	if(height+padding < boids[index].y){
+		boids[index].y = height-5;
+		boids[index].vY *= -0.2;
+	}
 }
 
 //==========
@@ -140,10 +158,11 @@ function getDistance(dotA, dotB){
 class Dot{
 
 	constructor(x, y){
-		this.x = x;
-		this.y = y;
+		this.x  = x;
+		this.y  = y;
 		this.vX = 0;
 		this.vY = 0;
+		this.moveFlg = false;
 
 		this._r = Math.floor(Math.random() * 200) + 255 - 200;
 		this._g = Math.floor(Math.random() * 200) + 255 - 200;
@@ -170,7 +189,7 @@ class Dot{
 	}
 
 	draw(){
-		fill(this._r, this._g, this._b);
+		if(this.moveFlg == false) return;
 
 		let max = 3;
 		if(this.vX < -max) this.vX = -max;
@@ -183,6 +202,7 @@ class Dot{
 
 		/*
 		// Body
+		fill(this._r, this._g, this._b);
 		for(let i=0; i<this._str.length; i++){
 			if(this._str[i] === "1"){
 				let odd = i % 4;
@@ -195,5 +215,21 @@ class Dot{
 			}
 		}
 		*/
+	}
+
+	start(){
+		this.moveFlg = true;
+	}
+
+	stop(){
+		this.moveFlg = false;
+	}
+
+	toggle(){
+		if(this.moveFlg == true){
+			this.moveFlg = false;
+		}else{
+			this.moveFlg = true;
+		}
 	}
 }
