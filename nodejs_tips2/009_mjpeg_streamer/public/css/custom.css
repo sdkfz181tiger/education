@@ -1,0 +1,9 @@
+/* Stylesheet */
+body{
+	margin: 0px; padding: 0px;
+	background-color: pink;
+}
+
+#webcam{
+	width: auto; height: auto;
+}

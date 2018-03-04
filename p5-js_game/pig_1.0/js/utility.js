@@ -97,8 +97,12 @@ function calcPositions(index){
 	}
 	p.x /= boids.length - 1;
 	p.y /= boids.length - 1;
-	boids[index].vX += (p.x - boids[index].x) / 100;
-	boids[index].vY += (p.y - boids[index].y) / 100;
+	boids[index].vX += (p.x - boids[index].x) / 300;
+	boids[index].vY += (p.y - boids[index].y) / 300;
+
+
+	boids[index].vX += (cheff.position.x - boids[index].x) / 10;
+	boids[index].vY += (cheff.position.y - boids[index].y) / 10;
 }
 
 function calcPaddings(index){
@@ -162,7 +166,7 @@ class Dot{
 		this.y  = y;
 		this.vX = 0;
 		this.vY = 0;
-		this.moveFlg = false;
+		this.moveFlg = true;
 
 		this._r = Math.floor(Math.random() * 200) + 255 - 200;
 		this._g = Math.floor(Math.random() * 200) + 255 - 200;
@@ -191,7 +195,7 @@ class Dot{
 	draw(){
 		if(this.moveFlg == false) return;
 
-		let max = 3;
+		let max = 1;
 		if(this.vX < -max) this.vX = -max;
 		if(max < this.vX) this.vX = max;
 		if(this.vY < -max) this.vY = -max;

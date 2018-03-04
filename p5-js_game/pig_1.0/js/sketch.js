@@ -1,10 +1,6 @@
 console.log("Hello p5.js!!");
 
 //==========
-// Firebase
-const TABLE_NAME = "controls";
-
-//==========
 // p5.js
 
 let sManager;
@@ -19,6 +15,7 @@ let files = [
 
 let imgObj = new Object();
 
+let cheff;
 let boids, pigs;
 
 let sUtterance = null;
@@ -63,7 +60,7 @@ function SceneTitle(){
 		removeAllSprites();
 
 		// Cheff
-		let cheff = createSprite(240, 160, 50, 50);
+		cheff = createSprite(240, 160, 50, 50);
 		cheff.addAnimation("run", 
 			"assets/c_cheff_run_0.png", "assets/c_cheff_run_1.png",
 			"assets/c_cheff_run_2.png", "assets/c_cheff_run_3.png",
@@ -123,8 +120,10 @@ function SceneTitle(){
 	}
 
 	this.mousePressed = function(){
-		for(let i=0; i<boids.length; i++){
-			boids[i].toggle();
-		}
+		cheff.position.x = mouseX;
+		cheff.position.y = mouseY;
+		// for(let i=0; i<boids.length; i++){
+		// 	boids[i].toggle();
+		// }
 	}
 }
