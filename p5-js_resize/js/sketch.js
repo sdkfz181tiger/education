@@ -22,36 +22,42 @@ let max;
 let counter;
 
 let files = [
-	"b_aqua_1.png",  "b_bits_1.png",   "b_blue_1.png",
-	"b_brown_1.png", "b_forest_1.png", "b_gray_1.png",
-	"b_green_1.png", "b_lime_1.png",   "b_orange_1.png",
-	"b_pink_1.png",  "b_purple_1.png", "b_red_1.png",
-	"b_rock_1.png",  "b_white_1.png",  "b_yellow_1.png",
-	"i_break_1.png", "i_break_2.png", "i_break_3.png",
-	"i_break_4.png", "i_break_5.png", "i_break_6.png",
-	"i_break_7.png", "i_break_8.png", "i_break_9.png",
-	"i_catch_1.png", "i_catch_2.png", "i_catch_3.png",
-	"i_catch_4.png", "i_catch_5.png", "i_catch_6.png",
-	"i_catch_7.png", "i_catch_8.png", "i_catch_9.png",
-	"i_disruption_1.png", "i_disruption_2.png", "i_disruption_3.png",
-	"i_disruption_4.png", "i_disruption_5.png", "i_disruption_6.png",
-	"i_disruption_7.png", "i_disruption_8.png", "i_disruption_9.png",
-	"i_expand_1.png", "i_expand_2.png", "i_expand_3.png",
-	"i_expand_4.png", "i_expand_5.png", "i_expand_6.png",
-	"i_expand_7.png", "i_expand_8.png", "i_expand_9.png",
-	"i_lazer_1.png", "i_lazer_2.png", "i_lazer_3.png",
-	"i_lazer_4.png", "i_lazer_5.png", "i_lazer_6.png",
-	"i_lazer_7.png", "i_lazer_8.png", "i_lazer_9.png",
-	"i_player_1.png", "i_player_2.png", "i_player_3.png",
-	"i_player_4.png", "i_player_5.png", "i_player_6.png",
-	"i_player_7.png", "i_player_8.png", "i_player_9.png",
-	"i_speeddown_1.png", "i_speeddown_2.png", "i_speeddown_3.png",
-	"i_speeddown_4.png", "i_speeddown_5.png", "i_speeddown_6.png",
-	"i_speeddown_7.png", "i_speeddown_8.png", "i_speeddown_9.png",
-	"b_vanish_1.png", "b_vanish_2.png", "b_vanish_3.png", "b_vanish_4.png", 
-	"b_vanish_5.png", "b_vanish_6.png", "b_vanish_7.png", "b_vanish_8.png", 
-	"b_vanish_9.png", "b_vanish_10.png",
-	"w_left.png", "w_right.png", "w_top_left.png", "w_top_right.png"
+	"title_logo_1.png",
+	"u_die_1.png", "u_die_2.png", "u_die_3.png",
+	"u_die_4.png", "u_die_5.png",
+	"u_roll_1.png", "u_roll_2.png", "u_roll_3.png",
+	"u_roll_4.png", "u_roll_5.png"
+
+	// "b_aqua_1.png",  "b_bits_1.png",   "b_blue_1.png",
+	// "b_brown_1.png", "b_forest_1.png", "b_gray_1.png",
+	// "b_green_1.png", "b_lime_1.png",   "b_orange_1.png",
+	// "b_pink_1.png",  "b_purple_1.png", "b_red_1.png",
+	// "b_rock_1.png",  "b_white_1.png",  "b_yellow_1.png",
+	// "i_break_1.png", "i_break_2.png", "i_break_3.png",
+	// "i_break_4.png", "i_break_5.png", "i_break_6.png",
+	// "i_break_7.png", "i_break_8.png", "i_break_9.png",
+	// "i_catch_1.png", "i_catch_2.png", "i_catch_3.png",
+	// "i_catch_4.png", "i_catch_5.png", "i_catch_6.png",
+	// "i_catch_7.png", "i_catch_8.png", "i_catch_9.png",
+	// "i_disruption_1.png", "i_disruption_2.png", "i_disruption_3.png",
+	// "i_disruption_4.png", "i_disruption_5.png", "i_disruption_6.png",
+	// "i_disruption_7.png", "i_disruption_8.png", "i_disruption_9.png",
+	// "i_expand_1.png", "i_expand_2.png", "i_expand_3.png",
+	// "i_expand_4.png", "i_expand_5.png", "i_expand_6.png",
+	// "i_expand_7.png", "i_expand_8.png", "i_expand_9.png",
+	// "i_lazer_1.png", "i_lazer_2.png", "i_lazer_3.png",
+	// "i_lazer_4.png", "i_lazer_5.png", "i_lazer_6.png",
+	// "i_lazer_7.png", "i_lazer_8.png", "i_lazer_9.png",
+	// "i_player_1.png", "i_player_2.png", "i_player_3.png",
+	// "i_player_4.png", "i_player_5.png", "i_player_6.png",
+	// "i_player_7.png", "i_player_8.png", "i_player_9.png",
+	// "i_speeddown_1.png", "i_speeddown_2.png", "i_speeddown_3.png",
+	// "i_speeddown_4.png", "i_speeddown_5.png", "i_speeddown_6.png",
+	// "i_speeddown_7.png", "i_speeddown_8.png", "i_speeddown_9.png",
+	// "b_vanish_1.png", "b_vanish_2.png", "b_vanish_3.png", "b_vanish_4.png",
+	// "b_vanish_5.png", "b_vanish_6.png", "b_vanish_7.png", "b_vanish_8.png",
+	// "b_vanish_9.png", "b_vanish_10.png",
+	// "w_left.png", "w_right.png", "w_top_left.png", "w_top_right.png"
 ];
 
 let imgObj = new Object();
@@ -117,6 +123,7 @@ function createPng(index = 0){
 	console.log("createPng:" + index);
 	setTimeout(()=>{
 		if(index < files.length){
+			savePng(files[index], 2);// FirefoxのZoomを50%にする事
 			savePng(files[index], 3);// FirefoxのZoomを50%にする事
 			index++;
 			createPng(index);

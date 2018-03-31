@@ -99,7 +99,7 @@ window.onbeforeunload = function(){
 	// Uncomment if you want to save the data even if you reload the page.
 	webgazer.end();
 	// Comment out if you want to save data across different sessions
-	window.localStorage.clear(); 
+	window.localStorage.clear();
 }
 
 // Setup
@@ -123,7 +123,7 @@ function startWebGazer(){
 	webgazer.params.imgWidth  = VIDEO_WIDTH;
 	webgazer.params.imgHeight = VIDEO_HEIGHT;
 
-	// Set up the main canvas. 
+	// Set up the main canvas.
 	// The main canvas is used to calibrate the webgazer.
 	let overlay = document.createElement("canvas");
 	overlay.id  = "overlay";
@@ -137,15 +137,15 @@ function startWebGazer(){
 	document.body.appendChild(overlay);
 
 	// CLM
-	//let clm = webgazer.getTracker().clm;
+	let clm = webgazer.getTracker().clm;
 
 	// This function draw the face of the user frame.
-	// function drawLoop(){
-	// 	requestAnimFrame(drawLoop);
-	// 	overlay.getContext("2d").clearRect(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
-	// 	if(clm.getCurrentPosition()) clm.draw(overlay);
-	// }
-	// drawLoop();
+	function drawLoop(){
+		requestAnimFrame(drawLoop);
+		overlay.getContext("2d").clearRect(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
+		if(clm.getCurrentPosition()) clm.draw(overlay);
+	}
+	drawLoop();
 }
 
 // Ready
