@@ -22,11 +22,20 @@ let max;
 let counter;
 
 let files = [
-	"title_logo_1.png",
-	"u_die_1.png", "u_die_2.png", "u_die_3.png",
-	"u_die_4.png", "u_die_5.png",
-	"u_roll_1.png", "u_roll_2.png", "u_roll_3.png",
-	"u_roll_4.png", "u_roll_5.png"
+	// "exp_large_1.png", "exp_large_2.png", "exp_large_3.png",
+	// "exp_large_4.png", "exp_large_5.png", "exp_large_6.png",
+	"exp_mid_1.png", "exp_mid_2.png", "exp_mid_3.png",
+	"exp_small_1.png", "exp_small_2.png", "exp_small_3.png",
+	"exp_small_4.png", "exp_small_5.png", "exp_small_6.png",
+	"exp_small_7.png", "exp_small_8.png", "exp_small_9.png",
+	"exp_small_10.png", "exp_small_11.png", "exp_small_12.png",
+	"exp_small_13.png", "exp_small_14.png", "exp_small_15.png"
+
+	// "title_logo_1.png"
+	// "u_die_1.png", "u_die_2.png", "u_die_3.png",
+	// "u_die_4.png", "u_die_5.png",
+	// "u_roll_1.png", "u_roll_2.png", "u_roll_3.png",
+	// "u_roll_4.png", "u_roll_5.png"
 
 	// "b_aqua_1.png",  "b_bits_1.png",   "b_blue_1.png",
 	// "b_brown_1.png", "b_forest_1.png", "b_gray_1.png",
@@ -123,8 +132,8 @@ function createPng(index = 0){
 	console.log("createPng:" + index);
 	setTimeout(()=>{
 		if(index < files.length){
-			savePng(files[index], 2);// FirefoxのZoomを50%にする事
-			savePng(files[index], 3);// FirefoxのZoomを50%にする事
+			savePng(files[index], 4);// FirefoxのZoomを50%にする事
+			savePng(files[index], 5);// FirefoxのZoomを50%にする事
 			index++;
 			createPng(index);
 		}
