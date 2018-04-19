@@ -104,12 +104,11 @@ function draw(){
 	ball.bounce(wTop);
 	ball.bounce(wBottom);
 
-
 	if(ball.bounce(wLeft)){
 		scoreRight++;
 		playSound(sScore);
 	}
-	
+
 	if(ball.bounce(wRight)){
 		scoreLeft++;
 		playSound(sScore);
