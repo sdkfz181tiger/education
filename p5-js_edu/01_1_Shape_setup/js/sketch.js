@@ -14,6 +14,10 @@
 // Examples(使用例)
 // -> http://p5play.molleindustria.org/examples/index.html
 
+// = 課題 =
+// 1, 色の三原色を教える
+// 2, ドラえもん or アンパンマン etc...
+
 console.log("Hello p5.js!!");
 
 function setup(){
