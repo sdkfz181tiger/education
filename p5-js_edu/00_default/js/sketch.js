@@ -15,5 +15,5 @@
 // -> http://p5play.molleindustria.org/examples/index.html
 
 //==========
-// Google Docs(Test)
-// https://docs.google.com/document/d/18o_VJ2GREfNitWnZ1oAoILaNI4OnJuJCEhrxqnE_cJA/edit?usp=sharing
+// Scratch -> JavaScript
+// -> http://ozateck.sakura.ne.jp/wordpress/category/js-x-scratch/

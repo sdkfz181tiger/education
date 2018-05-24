@@ -39,8 +39,8 @@ function setup(){
 	background(0);
 
 	// Sprites
-	let x      = random(0, width);
-	let y      = random(0, height);
+	let x  = random(0, width);
+	let y  = random(0, height);
 	sprite = createSprite(x, y, 5, 5);
 
 	let r = random(0, 255);
