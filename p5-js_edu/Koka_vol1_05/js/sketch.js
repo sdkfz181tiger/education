@@ -23,6 +23,8 @@ let sprTanu;
 let sprWalls = [];
 let sprGoal;
 
+let strLabel = "";
+
 function setup(){
 	console.log("setup");
 	createCanvas(DISP_W, DISP_H);
@@ -80,6 +82,12 @@ function draw(){
 	if(sprTanu.collide(sprGoal)){
 		gameClear();
 	}
+
+	// テキスト
+	fill(255, 255, 255);
+	textSize(32);
+	textAlign(CENTER);
+	text(strLabel, 240, 160);
 }
 
 function createWall(x, y, w, h){
@@ -91,11 +99,7 @@ function createWall(x, y, w, h){
 function gameOver(){
 	
 	// テキスト
-	fill(255, 255, 255);
-	textSize(32);
-	textAlign(CENTER);
-	text("GAME OVER!!", 240, 160);
-	console.log("GAME OVER!!");
+	strLabel = "GAME OVER!!";
 
 	// 停止
 	noLoop();
@@ -104,11 +108,7 @@ function gameOver(){
 function gameClear(){
 
 	// テキスト
-	fill(255, 255, 255);
-	textSize(32);
-	textAlign(CENTER);
-	text("GAME CLEAR!!", 240, 160);
-	console.log("GAME CLEAR!!");
+	strLabel = "GAME CLEAR!!";
 
 	// 停止
 	noLoop();
