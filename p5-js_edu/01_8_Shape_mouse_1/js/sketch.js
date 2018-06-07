@@ -16,110 +16,50 @@
 
 console.log("Hello p5.js!!");
 
-// Global
-let x = 240;
-let y = 140;
-
-let dX = 0;
-let dY = 0;
-
 function setup(){
-
-	// Canvas
+	console.log("setup");
 	createCanvas(480, 320);
-	background(200, 200, 200);
 	frameRate(32);
+	background(0, 0, 0);
+	fill(255, 255, 255);
 }
 
 function draw(){
-
-	background(200, 200, 200);
-
-	drawFace(x, y);
-
-	x += dX;
-	y += dY;
-
-	if(480 < x){
-		x = 480;
-		dX *= -1;
-	}
-
-	if(x < 0){
-		x = 0;
-		dX *= -1;
-	}
-
-	if(320 < y){
-		y = 320;
-		dY *= -1;
-	}
-
-	if(y < 0){
-		y = 0;
-		dY *= -1;
-	}
-}
-
-function keyPressed(){
-	console.log("keyPressed:" + key);
-
-	if(key === "Z"){
-		dX = 0;
-		dY = 1;
-	}
-
-	if(key === "W"){
-		dX = 0;
-		dY = -1;
-	}
-
-	if(key === "A"){
-		dX = -1;
-		dY = 0;
-	}
-
-	if(key === "S"){
-		dX = 1;
-		dY = 0;
-	}
+	//console.log("draw");
 }
 
 function mousePressed(){
 	//console.log("mousePressed");
-	x = mouseX;
-	y = mouseY;
+
+	// Ellipse
+	noStroke();
+	fill(255, 33, 33);
+	ellipse(mouseX, mouseY, 20, 20);
 }
 
 function mouseMoved(){
 	//console.log("mouseMoved");
+
+	// Ellipse
+	noStroke();
+	fill(33, 255, 33);
+	ellipse(mouseX, mouseY, 20, 20);
+}
+
+function mouseDragged(){
+	//console.log("mouseDragged");
+
+	// Ellipse
+	noStroke();
+	fill(33, 33, 255);
+	ellipse(mouseX, mouseY, 20, 20);
 }
 
 function mouseReleased(){
 	//console.log("mouseRelased");
-}
 
-function drawFace(x, y){
-
-	// Face
-	stroke(33, 33, 33);
-	strokeWeight(4);
-	fill(255, 255, 255);
-	ellipse(x, y, 140, 140);
-
-	// Eye
+	// Ellipse
 	noStroke();
-	fill(33, 33, 33);
-	ellipse(x-20, y-20, 20, 40);
-
-	noStroke();
-	fill(33, 33, 33);
-	ellipse(x+20, y-20, 20, 40);
-
-	// Mouse
-	angleMode(DEGREES);
-	stroke(33, 33, 33);
-	strokeWeight(4);
-	noFill();
-	arc(x, y+20, 80, 40, 10, 170);
+	fill(33, 255, 255);
+	ellipse(mouseX, mouseY, 20, 20);
 }

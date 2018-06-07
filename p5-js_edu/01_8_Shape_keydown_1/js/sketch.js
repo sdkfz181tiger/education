@@ -85,6 +85,10 @@ function keyPressed(){
 	}
 }
 
+function keyReleased(){
+	// 停止
+}
+
 function drawFace(x, y){
 
 	// Face
