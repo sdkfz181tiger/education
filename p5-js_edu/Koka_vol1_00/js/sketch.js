@@ -30,8 +30,7 @@ function setup(){
 
 	// Sprite
 	sprTanu = createSprite(240, 160, 32, 32);
-	let imgTanu = loadImage("assets/tanuki.png");
-	sprTanu.addImage(imgTanu);
+	//sprTanu.setSpeed(10, 0);
 }
 
 function draw(){
