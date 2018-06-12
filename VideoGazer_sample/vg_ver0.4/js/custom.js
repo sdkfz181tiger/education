@@ -91,12 +91,11 @@ function startLoader(){
 	let val = $("#my_select").val();
 	console.log("val:" + val);
 
-	// // Load
-	// jsonObj = loadLocalStorage();
-	// if(jsonObj == null) return;
+	// Load
+	jsonObj = loadLocalStorage(val);
 
-	// // Update
-	// startUpdate();
+	// Update
+	startUpdate();
 }
 
 function stopLoader(){
