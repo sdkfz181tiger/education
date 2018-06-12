@@ -1,10 +1,12 @@
 console.log("custom.js");
 
+const DATA_KEY = "my_data";
+
 //==========
 // WebGazer
 
 let player;
-let context;
+let canvas;
 let jsonObj;
 
 // Ready
@@ -30,9 +32,11 @@ $(document).ready(function(){
 	});
 
 	// Canvas
-	let canvas = document.getElementById("my_canvas");
-	context = canvas.getContext("2d");
+	canvas = document.getElementById("my_canvas");
 });
+
+//==========
+// Logger
 
 function startLogger(){
 	console.log("startLogger");
@@ -49,11 +53,13 @@ function startLogger(){
 		obj.pX = Math.floor(e.clientX / player.width_ * 100.0);
 		obj.pY = Math.floor(e.clientY / player.height_ * 100.0);
 		obj.cT = player.currentTime();
+		obj.pW = player.width_ / 100.0;
+		obj.pH = player.width_ / 100.0;
 		jsonObj.data.push(obj);
-		// Draw
-		let size = player.width_ / 100.0;
-		context.fillRect(e.clientX-size*0.5, e.clientY-size*0.5, size, size);
 	});
+
+	// Update
+	startUpdate();
 }
 
 function stopLogger(){
@@ -62,8 +68,74 @@ function stopLogger(){
 	// Click(Disable)
 	$("video").off("click");
 
-	let jsonStr = JSON.stringify(jsonObj);
-	console.log(jsonStr);
+	// Save
+	saveLocalStorage();
+}
 
-	// TODO: LogはSharedPreferencesに保存する
+//==========
+// Loader
+
+function startLoader(){
+	console.log("startLoader");
+
+	// Load
+	// TODO: SharedPreferencesから読み込み
+
+	// Update
+	startUpdate();
+}
+
+//==========
+// Canvas and Draw
+function startUpdate(){
+	setTimeout(()=>{
+		drawSprites();
+		if(player.ended() == false) startUpdate();
+	}, 200);
+}
+
+function drawSprites(){
+	//console.log("drawSprites");
+	let context = canvas.getContext("2d");
+	context.clearRect(0, 0, canvas.width, canvas.height);
+
+	for(let i=jsonObj.data.length-1; 0<=i; i--){
+		let obj   = jsonObj.data[i];
+		let objX  = canvas.width  * obj.pX / 100.0 - obj.pW * 0.5;
+		let objY  = canvas.height * obj.pY / 100.0 - obj.pH * 0.5;
+		let delay = player.currentTime() - obj.cT;
+		if(3.0 < delay) break;
+		context.fillRect(objX, objY, obj.pW, obj.pH);
+		if(0 < i){
+			let prev  = jsonObj.data[i-1];
+			let prevX = canvas.width * prev.pX / 100.0;
+			let prevY = canvas.height * prev.pY / 100.0;
+			context.beginPath();
+			context.moveTo(prevX, prevY);
+			context.lineTo(objX+obj.pW*0.5, objY+obj.pH*0.5);
+			context.stroke();
+		}
+	}
+}
+
+//==========
+// Utility
+
+function saveLocalStorage(){
+
+	// Time
+	let date = new Date();
+	let dFormat = new DateFormat("yyyy_MM_dd HH:mm:ss");
+	jsonObj.date = dFormat.format(date);
+
+	// LocalStorage
+	let item = localStorage.getItem(DATA_KEY);
+	let storage = {};
+	storage.all = [];
+	if(item != null){
+		storage = JSON.parse(item);
+	}
+	storage.all.push(jsonObj);
+	let jsonStr = JSON.stringify(storage);
+	localStorage.setItem(DATA_KEY, jsonStr);
 }
