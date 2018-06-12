@@ -2,9 +2,6 @@ console.log("custom.js");
 
 const DATA_KEY = "my_data";
 
-//==========
-// WebGazer
-
 let player;
 let canvas;
 let jsonObj;
@@ -15,6 +12,12 @@ $(document).ready(function(){
 
 	// Video.js
 	player = videojs("my_video");
+
+	player.on("ready", ()=>{
+		console.log("player:ready[]");
+
+		console.log(player);
+	});
 
 	player.on("play", ()=>{
 		console.log("player:play[" + checkLoaderMode() + "]");
@@ -43,7 +46,6 @@ $(document).ready(function(){
 
 //==========
 // Logger
-
 function startLogger(){
 	console.log("startLogger");
 
@@ -56,11 +58,11 @@ function startLogger(){
 		console.log("click");
 		// Data
 		let obj = {};
-		obj.pX = Math.floor(e.clientX / player.width_ * 100.0);
-		obj.pY = Math.floor(e.clientY / player.height_ * 100.0);
+		obj.pX = Math.floor(e.clientX / player.width() * 100.0);
+		obj.pY = Math.floor(e.clientY / player.height() * 100.0);
 		obj.cT = player.currentTime();
-		obj.pW = player.width_ / 100.0;
-		obj.pH = player.width_ / 100.0;
+		obj.pW = player.width() / 100.0;
+		obj.pH = player.height() / 100.0;
 		jsonObj.data.push(obj);
 	});
 
@@ -83,16 +85,16 @@ function stopLogger(){
 
 //==========
 // Loader
-
 function startLoader(){
 	console.log("startLoader");
 
-	// TODO:今選ばれているやつのデータを読む
+	// SelectBox
 	let val = $("#my_select").val();
-	console.log("val:" + val);
 
 	// Load
 	jsonObj = loadLocalStorage(val);
+	console.log("date:" + jsonObj.date);
+	console.log("src:" + jsonObj.src);
 
 	// Update
 	startUpdate();
@@ -143,6 +145,8 @@ function saveLocalStorage(obj){
 	let date = new Date();
 	let dFormat = new DateFormat("yyyy_MM_dd HH:mm:ss");
 	obj.date = dFormat.format(date);
+	// Src
+	obj.src = player.src();
 	// LocalStorage
 	let item = localStorage.getItem(DATA_KEY);
 	let storage = {};
