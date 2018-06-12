@@ -1,0 +1,12 @@
+/* Stylesheet */
+body{
+	margin: 0px; padding: 0px;
+	background-color: #333333;
+}
+
+#my_canvas{
+	margin: 0px; padding: 0px;
+	top: 0px; left: 0px;
+	position: absolute;
+	pointer-events: none;
+}

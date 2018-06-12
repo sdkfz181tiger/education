@@ -1,0 +1,29 @@
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>VideoGazer</title>
+	<!-- CSS -->
+	<link rel="stylesheet" href="./css/custom.css">
+	<!-- jQuery -->
+	<script async type="text/javascript" src="./libs/jquery/jquery.min.js"></script>
+	<!-- Video.js -->
+    <link rel="stylesheet" href="./libs/video-js-7.0.5/video-js.css">
+    <script async type="text/javascript" src="./libs/video-js-7.0.5/video.js"></script>
+</head>
+<body>
+
+	<!-- Video.js -->
+	<video id="my_video" class="video-js vjs-default-skin" controls preload="none" width="960" height="540" poster="./assets/poster_960x560.png" data-setup="{}">
+		<source src="./videos/cm002.mp4" type="video/mp4">
+		<track kind="captions" src="../shared/example-captions.vtt" srclang="en" label="English">
+		<track kind="subtitles" src="../shared/example-captions.vtt" srclang="en" label="English">
+		<p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
+	</video>
+
+	<canvas id="my_canvas" width="960" height="540"></canvas>
+
+	<!-- custom.js -->
+	<script src="./js/custom.js"></script>
+
+</body>
+</html>
