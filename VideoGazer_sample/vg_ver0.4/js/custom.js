@@ -13,30 +13,29 @@ let jsonObj;
 $(document).ready(function(){
 	console.log("ready");
 
-	//==========
 	// Video.js
 	player = videojs("my_video");
 
-	player.on("ready", ()=>{
-		console.log("player:ready");
-	});
-
 	player.on("play", ()=>{
-		console.log("player:play");
-		startLogger();
-		//startLoader();
+		console.log("player:play[" + checkLoaderMode() + "]");
+		if(checkLoaderMode() == false){
+			startLogger();
+		}else{
+			startLoader();
+		}
 	});
 
 	player.on("ended", ()=>{
-		console.log("player:ended");
-		stopLogger();
-		//stopLoader();
+		console.log("player:ended[" + checkLoaderMode() + "]");
+		if(checkLoaderMode() == false){
+			stopLogger();
+		}else{
+			stopLoader();
+		}
 	});
 
 	// Canvas
 	canvas = document.getElementById("my_canvas");
-
-	console.log(player);
 
 	// SelectBox
 	prepareSelectBox();
@@ -62,7 +61,6 @@ function startLogger(){
 		obj.cT = player.currentTime();
 		obj.pW = player.width_ / 100.0;
 		obj.pH = player.width_ / 100.0;
-
 		jsonObj.data.push(obj);
 	});
 
@@ -93,12 +91,12 @@ function startLoader(){
 	let val = $("#my_select").val();
 	console.log("val:" + val);
 
-	// Load
-	jsonObj = loadLocalStorage();
-	if(jsonObj == null) return;
+	// // Load
+	// jsonObj = loadLocalStorage();
+	// if(jsonObj == null) return;
 
-	// Update
-	startUpdate();
+	// // Update
+	// startUpdate();
 }
 
 function stopLoader(){
@@ -182,7 +180,7 @@ function prepareSelectBox(){
 	if(item != null){
 		storage = JSON.parse(item);
 	}
-	// jQuery UI
+	// jQuery UI(SelectBox)
 	$("#my_select").selectmenu({
 		change: function(event, data){
 			// TODO:
@@ -190,12 +188,16 @@ function prepareSelectBox(){
 		}
 	});
 	$("#my_select").empty();
-	let selected = $("<option>").val("-").text("-");
-	$("#my_select").append(selected);
 	for(let i=storage.all.length-1; 0<=i; i--){
 		let option = $("<option>").val(i).text(storage.all[i].date);
 		if(i == storage.all.length-1) option.prop("selected", true);
 		$("#my_select").append(option);
 	}
 	$("#my_select").selectmenu("refresh");
+	// jQuery UI(Checkbox)
+	$("#my_checkbox").checkboxradio();
+}
+
+function checkLoaderMode(){
+	return $("#my_checkbox").prop("checked");
 }
