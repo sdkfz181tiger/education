@@ -89,7 +89,7 @@ function draw(){
 		gameClear();
 	}
 
-	// テキスト
+	// Text
 	fill(255, 255, 255);
 	textSize(32);
 	textAlign(CENTER);
@@ -107,7 +107,7 @@ function createWall(x, y, w, h){
 
 function gameOver(){
 	
-	// テキスト
+	// Text
 	strLabel = "GAME OVER!!";
 
 	// タイマー停止
@@ -119,7 +119,7 @@ function gameOver(){
 
 function gameClear(){
 
-	// テキスト
+	// Text
 	strLabel = "GAME CLEAR!!";
 
 	// タイマー停止

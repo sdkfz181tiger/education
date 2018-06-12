@@ -20,7 +20,8 @@ const DISP_W = 480;
 const DISP_H = 320;
 
 let sprTanu;
-let sprWall;
+let sprWallA;
+let sprWallB;
 
 function setup(){
 	console.log("setup");
@@ -43,8 +44,12 @@ function setup(){
 	}
 
 	// Wall
-	sprWall = createSprite(240, 80, 200, 30);
-	sprWall.shapeColor = color(255, 33, 33);
+	sprWallA = createSprite(240, 80, 200, 30);
+	sprWallA.shapeColor = color(255, 33, 33);
+
+	// B
+	sprWallB = createSprite(240, 260, 200, 30);
+	sprWallB.shapeColor = color(33, 255, 33);
 }
 
 function draw(){
@@ -56,13 +61,12 @@ function draw(){
 		sprTanu.position.y = mouseY;
 	}
 
-	if(sprTanu.bounce(sprWall)){
+	if(sprTanu.collide(sprWallA)){
 		noLoop();
-		fill(255, 255, 255);
-		textSize(32);
-		textAlign(CENTER);
-		text("GAME OVER!!", 240, 40);
-		console.log("GAME OVER!!");
+	}
+
+	if(sprTanu.collide(sprWallB)){
+		noLoop();
 	}
 
 	drawSprites();

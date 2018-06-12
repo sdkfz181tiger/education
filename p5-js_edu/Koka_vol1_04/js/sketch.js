@@ -45,11 +45,17 @@ function setup(){
 	}
 
 	// Walls
-	let padding = width / 5;
-	sprWalls.push(createWall(padding*1, 100, 20, 200));
-	sprWalls.push(createWall(padding*2, height-100, 20, 200));
-	sprWalls.push(createWall(padding*3, 100, 20, 200));
-	sprWalls.push(createWall(padding*4, height-100, 20, 200));
+	let sprWallA = createSprite(96, 100, 20, 200);
+	sprWalls.push(sprWallA);
+
+	let sprWallB = createSprite(192, 220, 20, 200);
+	sprWalls.push(sprWallB);
+
+	let sprWallC = createSprite(288, 100, 20, 200);
+	sprWalls.push(sprWallC);
+
+	let sprWallD = createSprite(384, 220, 20, 200);
+	sprWalls.push(sprWallD);
 }
 
 function draw(){
@@ -67,13 +73,12 @@ function draw(){
 
 	// Tanuki x Walls
 	for(let i=0; i<sprWalls.length; i++){
-		let sprWall = sprWalls[i];
-		if(sprTanu.bounce(sprWall)){
+		if(sprTanu.collide(sprWalls[i])){
 			gameOver();
 		}
 	}
 	
-	// テキスト
+	// Text
 	fill(255, 255, 255);
 	textSize(32);
 	textAlign(CENTER);
@@ -88,7 +93,7 @@ function createWall(x, y, w, h){
 
 function gameOver(){
 	
-	// テキスト
+	// Text
 	strLabel = "GAME OVER!!";
 
 	// 停止
