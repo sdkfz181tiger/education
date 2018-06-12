@@ -23,12 +23,14 @@ $(document).ready(function(){
 
 	player.on("play", ()=>{
 		console.log("play");
-		startLogger();
+		//startLogger();
+		startLoader();
 	});
 
 	player.on("ended", ()=>{
 		console.log("ended");
-		stopLogger();
+		//stopLogger();
+		stopLoader();
 	});
 
 	// Canvas
@@ -69,7 +71,7 @@ function stopLogger(){
 	$("video").off("click");
 
 	// Save
-	saveLocalStorage();
+	saveLocalStorage(jsonObj);
 }
 
 //==========
@@ -79,10 +81,15 @@ function startLoader(){
 	console.log("startLoader");
 
 	// Load
-	// TODO: SharedPreferencesから読み込み
+	jsonObj = loadLocalStorage();
+	console.log(jsonObj);
 
 	// Update
 	startUpdate();
+}
+
+function stopLoader(){
+	console.log("stopLoader");
 }
 
 //==========
@@ -105,6 +112,7 @@ function drawSprites(){
 		let objY  = canvas.height * obj.pY / 100.0 - obj.pH * 0.5;
 		let delay = player.currentTime() - obj.cT;
 		if(3.0 < delay) break;
+		if(delay < 0) continue;
 		context.fillRect(objX, objY, obj.pW, obj.pH);
 		if(0 < i){
 			let prev  = jsonObj.data[i-1];
@@ -121,12 +129,12 @@ function drawSprites(){
 //==========
 // Utility
 
-function saveLocalStorage(){
+function saveLocalStorage(obj){
 
 	// Time
 	let date = new Date();
 	let dFormat = new DateFormat("yyyy_MM_dd HH:mm:ss");
-	jsonObj.date = dFormat.format(date);
+	obj.date = dFormat.format(date);
 
 	// LocalStorage
 	let item = localStorage.getItem(DATA_KEY);
@@ -135,7 +143,19 @@ function saveLocalStorage(){
 	if(item != null){
 		storage = JSON.parse(item);
 	}
-	storage.all.push(jsonObj);
-	let jsonStr = JSON.stringify(storage);
-	localStorage.setItem(DATA_KEY, jsonStr);
+	storage.all.push(obj);
+	let str = JSON.stringify(storage);
+	localStorage.setItem(DATA_KEY, str);
+}
+
+function loadLocalStorage(index){
+
+	let item = localStorage.getItem(DATA_KEY);
+	let storage = {};
+	storage.all = [];
+	if(item != null){
+		storage = JSON.parse(item);
+	}
+	if(index == null) return storage.all[storage.all.length - 1];
+	return storage.all[index];
 }
