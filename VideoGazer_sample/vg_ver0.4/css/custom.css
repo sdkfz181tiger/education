@@ -13,7 +13,7 @@ body{
 
 fieldset{
 	margin: 10px; padding: 0px;
-	top: 0px; right: 0px;
+	top: 0px; left: 0px;
 	position: absolute;
 	border: none;
 }
