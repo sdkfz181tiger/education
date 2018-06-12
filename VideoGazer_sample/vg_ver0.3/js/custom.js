@@ -130,7 +130,6 @@ function drawSprites(){
 // Utility
 
 function saveLocalStorage(obj){
-
 	// Time
 	let date = new Date();
 	let dFormat = new DateFormat("yyyy_MM_dd HH:mm:ss");
@@ -149,7 +148,7 @@ function saveLocalStorage(obj){
 }
 
 function loadLocalStorage(index){
-
+	// LocalStorage
 	let item = localStorage.getItem(DATA_KEY);
 	let storage = {};
 	storage.all = [];
