@@ -6,17 +6,22 @@ let player;
 let canvas;
 let jsonObj;
 
+const width  = 160;
+const height = 120;
+const margin = "0px";
+const posX   = "0px";
+const posY   = "0px";
+
 // Onload
-window.onload = function(){
-	console.log("onload");
+$(document).ready(function(){
+	console.log("ready");
 
 	// Video.js
 	player = videojs("my_video");
 
 	player.on("ready", ()=>{
 		console.log("player:ready[]");
-
-		console.log(player);
+		startWebGazer();
 	});
 
 	player.on("play", ()=>{
@@ -42,7 +47,77 @@ window.onload = function(){
 
 	// SelectBox
 	prepareSelectBox();
-};
+});
+
+//==========
+// WebGazer
+function startWebGazer(){
+	console.log("startWebGazer");
+
+	// WebGazer
+	webgazer.setRegression("ridge").setTracker("clmtrackr")
+			.setGazeListener(function(data, elapsedTime){
+				if(data == null) return;
+				console.log("x, y:" + data.x + ", " + data.y + "[" + elapsedTime + "]");
+			}).showPredictionPoints(true).begin();
+
+	prepareWebGazer();
+}
+
+// Prepare
+function prepareWebGazer(){
+	if(webgazer.isReady()){
+		resumeWebGazer();
+	}else{
+		setTimeout(prepareWebGazer, 100);
+	}
+}
+
+// Resume
+function resumeWebGazer(){
+	console.log("resumeWebGazer");
+
+	// Set up video variable to store the camera feedback
+	let video = document.getElementById("webgazerVideoFeed");
+
+	// Position the camera feedback to the top left corner.
+	video.style.display  = "block";
+	video.style.position = "fixed";
+
+	// Set up the video feedback box size
+	video.width        = width;
+	video.height       = height;
+	video.style.margin = margin;
+	video.style.top    = posX;
+	video.style.left   = posY;
+
+	webgazer.params.imgWidth  = width;
+	webgazer.params.imgHeight = height;
+
+	// Set up the main canvas. 
+	// The main canvas is used to calibrate the webgazer.
+	let overlay = document.createElement("canvas");
+	overlay.id  = "overlay";
+
+	overlay.style.position = "absolute";
+	overlay.width          = width;
+	overlay.height         = height;
+	overlay.style.margin   = margin;
+	overlay.style.top      = posX;
+	overlay.style.left     = posY;
+	document.body.appendChild(overlay);
+
+	// CLM
+	let clm = webgazer.getTracker().clm;
+
+	// This function draw the face of the user frame.
+	function drawLoop(){
+		requestAnimFrame(drawLoop);
+		overlay.getContext("2d").clearRect(0, 0, width, height);
+		if(clm.getCurrentPosition()) clm.draw(overlay);
+	}
+	drawLoop();
+}
 
 //==========
 // Logger
