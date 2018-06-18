@@ -25,8 +25,15 @@ let sprGoal;
 
 let strLabel = "";
 
-let timeLimit = 20;
-let stopFlg   = false;
+let soundGameOver;
+let soundGameClear;
+
+function preload(){
+	console.log("preload");
+
+	soundGameOver  = loadSound("assets/gameover.mp3");
+	soundGameClear = loadSound("assets/gameclear.mp3");
+}
 
 function setup(){
 	console.log("setup");
@@ -58,9 +65,6 @@ function setup(){
 	// Goal
 	sprGoal = createSprite(440, 280, 40, 40);
 	sprGoal.shapeColor = color(33, 200, 200);
-
-	// Timeout
-	startTimeout(timeLimit);
 }
 
 function draw(){
@@ -94,9 +98,6 @@ function draw(){
 	textSize(32);
 	textAlign(CENTER);
 	text(strLabel, 240, 160);
-
-	// タイムリミット
-	text(timeLimit, 240, 80);
 }
 
 function createWall(x, y, w, h){
@@ -110,8 +111,8 @@ function gameOver(){
 	// Text
 	strLabel = "GAME OVER!!";
 
-	// タイマー停止
-	stopFlg = true;
+	// Sound
+	soundGameOver.play();
 
 	// 停止
 	noLoop();
@@ -122,21 +123,9 @@ function gameClear(){
 	// Text
 	strLabel = "GAME CLEAR!!";
 
-	// タイマー停止
-	stopFlg = true;
+	// Sound
+	soundGameClear.play();
 
 	// 停止
 	noLoop();
-}
-
-function startTimeout(){
-	console.log("startTimeout:" + timeLimit);
-	setTimeout(()=>{
-		if(0 < timeLimit && stopFlg == false){
-			timeLimit--;
-			startTimeout(timeLimit);
-		}else{
-			gameOver();
-		}
-	}, 1000);
 }

@@ -92,6 +92,7 @@ function createWall(x, y, w, h){
 }
 
 function gameOver(){
+	console.log("gameOver!!");
 	
 	// Text
 	strLabel = "GAME OVER!!";
