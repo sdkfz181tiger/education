@@ -21,7 +21,7 @@ $(document).ready(function(){
 
 	player.on("ready", ()=>{
 		console.log("player:ready[]");
-		startWebGazer();
+		readyWebGazer();
 	});
 
 	player.on("play", ()=>{
@@ -49,10 +49,15 @@ $(document).ready(function(){
 	prepareSelectBox();
 });
 
+$(window).on("beforeunload", function(){
+	console.log("beforeunload");
+	webgazer.end();
+});
+
 //==========
 // WebGazer
-function startWebGazer(){
-	console.log("startWebGazer");
+function readyWebGazer(){
+	console.log("readyWebGazer");
 
 	// WebGazer
 	webgazer.setRegression("ridge").setTracker("clmtrackr")
@@ -61,21 +66,21 @@ function startWebGazer(){
 				console.log("x, y:" + data.x + ", " + data.y + "[" + elapsedTime + "]");
 			}).showPredictionPoints(true).begin();
 
-	prepareWebGazer();
-}
-
-// Prepare
-function prepareWebGazer(){
-	if(webgazer.isReady()){
-		resumeWebGazer();
-	}else{
-		setTimeout(prepareWebGazer, 100);
+	readyCheck();
+	function readyCheck(){
+		setTimeout(()=>{
+			if(webgazer.isReady()){
+				startWebGazer();
+			}else{
+				readyCheck();
+			}
+		}, 200);
 	}
 }
 
-// Resume
-function resumeWebGazer(){
-	console.log("resumeWebGazer");
+// Start
+function startWebGazer(){
+	console.log("startWebGazer");
 
 	// Set up video variable to store the camera feedback
 	let video = document.getElementById("webgazerVideoFeed");
