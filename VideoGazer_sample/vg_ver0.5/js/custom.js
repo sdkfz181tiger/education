@@ -13,6 +13,13 @@ const posX   = "0px";
 const posY   = "0px";
 
 // Onload
+window.onload = function(){
+	console.log("onload");
+
+	readyWebGazer();
+}
+
+// Ready
 $(document).ready(function(){
 	console.log("ready");
 
@@ -21,7 +28,6 @@ $(document).ready(function(){
 
 	player.on("ready", ()=>{
 		console.log("player:ready[]");
-		readyWebGazer();
 	});
 
 	player.on("play", ()=>{
@@ -47,6 +53,7 @@ $(document).ready(function(){
 
 	// SelectBox
 	prepareSelectBox();
+	
 });
 
 $(window).on("beforeunload", function(){
