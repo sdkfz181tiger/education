@@ -29,7 +29,7 @@ function setup(){
 	fill(255, 255, 255);
 
 	// Sprite
-	sprTanu = createSprite(240, 280, 32, 32);
+	sprTanu = createSprite(240, 160, 32, 32);
 	let imgTanu = loadImage("assets/tanuki.png");
 	sprTanu.addImage(imgTanu);
 }
@@ -62,5 +62,6 @@ function keyPressed(){
 }
 
 function keyReleased(){
+	console.log("keyReleased");
 	sprTanu.setSpeed(0, 0);
 }

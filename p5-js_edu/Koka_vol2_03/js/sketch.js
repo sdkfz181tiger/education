@@ -20,13 +20,14 @@ const DISP_W = 480;
 const DISP_H = 320;
 
 let sprTanu;
+let sprEnemies = [];
 
 let msg;
 
 function setup(){
 	console.log("setup");
 	createCanvas(DISP_W, DISP_H);
-	frameRate(64);
+	frameRate(16);
 	background(0, 0, 0);
 	fill(255, 255, 255);
 
@@ -38,11 +39,33 @@ function setup(){
 
 	// Message
 	msg = "GAME START!!";
+
+	// Interval(Enemies)
+	setInterval(function(){
+		console.log("Hello Enemy!!");
+		let sprEnemy = createEnemy();
+		sprEnemies.push(sprEnemy);
+	}, 500);
 }
 
 function draw(){
 	//console.log("draw");
 	background(0, 0, 0);
+
+	// Enemies
+	for(let i=sprEnemies.length-1; 0<=i; i--){
+		let sprEnemy = sprEnemies[i];
+		if(sprTanu.collide(sprEnemy)){
+			sprEnemy.remove();
+			sprEnemies.splice(i, 1);
+			//msg = "GAME OVER!!"
+			//noLoop();
+		}
+		if(width < sprTanu.position.x){
+			sprEnemy.remove();
+			sprEnemies.splice(i, 1);
+		}
+	}
 
 	// Message
 	fill(255, 255, 255);
@@ -74,5 +97,15 @@ function keyPressed(){
 }
 
 function keyReleased(){
+	console.log("keyReleased");
 	sprTanu.setSpeed(0, 0);
+}
+
+function createEnemy(){
+	let x = 0;
+	let y = random(0, height);
+	let enemy = createSprite(x, y, 16, 16);
+	let speed = random(1, 5);
+	enemy.setSpeed(speed, 0);
+	return enemy;
 }

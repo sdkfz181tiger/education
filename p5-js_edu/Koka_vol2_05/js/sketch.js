@@ -20,8 +20,10 @@ const DISP_W = 480;
 const DISP_H = 320;
 
 let sprTanu;
+let sprEnemies = [];
 
 let msg;
+let time;
 
 function setup(){
 	console.log("setup");
@@ -38,17 +40,53 @@ function setup(){
 
 	// Message
 	msg = "GAME START!!";
+
+	// Interval(Enemies)
+	setInterval(function(){
+		let sprEnemy = createEnemy();
+		sprEnemies.push(sprEnemy);
+	}, 500);
+
+	// Interval(Time)
+	time = 10;
+	setInterval(function(){
+		time--;
+		if(time <= 0){
+			noLoop();
+		}
+	}, 1000);
 }
 
 function draw(){
 	//console.log("draw");
 	background(0, 0, 0);
 
+	// Enemies
+	for(let i=sprEnemies.length-1; 0<=i; i--){
+		let sprEnemy = sprEnemies[i];
+		if(sprTanu.collide(sprEnemy)){
+			sprEnemy.remove();
+			sprEnemies.splice(i, 1);
+			msg = "GAME OVER!!"
+			noLoop();
+		}
+		if(sprEnemy.position.x < 0 || width < sprEnemy.position.x){
+			sprEnemy.remove();
+			sprEnemies.splice(i, 1);
+		}
+	}
+
 	// Message
 	fill(255, 255, 255);
 	textSize(32);
 	textAlign(CENTER);
 	text(msg, 240, 40);
+
+	// Time
+	fill(255, 255, 255);
+	textSize(32);
+	textAlign(CENTER);
+	text(time, 240, 300);
 
 	drawSprites();
 }
@@ -75,4 +113,15 @@ function keyPressed(){
 
 function keyReleased(){
 	sprTanu.setSpeed(0, 0);
+}
+
+function createEnemy(){
+	let rdm = round(random(0, 1));
+	let x = width * rdm;
+	let y = random(0, height);
+	let enemy = createSprite(x, y, 16, 16);
+	let speed = random(1, 5);
+	let deg = 180 * rdm;
+	enemy.setSpeed(speed, deg);
+	return enemy;
 }
