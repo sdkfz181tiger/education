@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta http-equiv="content-type" content="text/html" charset="utf-8">
+	<title><%=title %></title>
+	<link type="text/css" rel="stylesheet" href="./css/custom.css">
+	<!-- JQuery -->
+	<script src="./js/jquery/jquery.min.js"></script>
+	<!-- Custom -->
+	<script src="./js/custom_root.js"></script>
+</head>
+<body>
+	<p><%=title %></p>
+	<p><%=content %></p>
+
+	<%-include("table_items", data) %>
+
+	<ul>
+		<li><a href="/">Root</a></li>
+		<li><a href="/chat">Chat</a></li>
+	</ul>
+</body>
+</html>
