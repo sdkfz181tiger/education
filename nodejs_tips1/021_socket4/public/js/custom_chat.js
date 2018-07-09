@@ -56,14 +56,14 @@ function addPlayers(jsonObj){
 	let index = isExists(id);
 	if(index != -1){
 		// Other player already exists
-		let jsonObj = players[index];
-		jsonObj.sprite.position.x = x;
-		jsonObj.sprite.position.y = y;
+		players[index].x = x;
+		players[index].y = y;
+		players[index].sprite.position.x = x;
+		players[index].sprite.position.y = y;
 	}else{
 		// New commer
 		jsonObj.sprite = createSprite(x, y, 32, 32);
-		let image = loadImage("./assets/client_0.png");
-		jsonObj.sprite.addImage(image);
+		jsonObj.sprite.addImage(loadImage("./assets/client_0.png"));
 		players.push(jsonObj);
 	}
 }
@@ -122,10 +122,20 @@ function draw(){
 	background(33, 33, 33);
 	fill(255, 255, 255);
 
+	// Total
 	let total = players.length;
 	textSize(32);
 	textAlign(CENTER);
 	text(total, 240, 40);
+
+	// ID
+	for(let i=0; i<players.length; i++){
+		let player = players[i];
+		textSize(10);
+		text(player.id, parseInt(player.x), 
+			parseInt(player.y) - player.sprite.originalHeight*0.5);
+	}
+
 
 	drawSprites();
 }
