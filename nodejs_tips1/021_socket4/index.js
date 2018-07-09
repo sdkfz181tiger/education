@@ -1,9 +1,15 @@
 console.log("Hello Node JS!!");
 
-const express = require("express");
-const ejs     = require("ejs");
-const bParser = require("body-parser");
-const ws = require("websocket.io");
+const bParser   = require("body-parser");
+const dateUtils = require("date-utils");
+const express   = require("express");
+const ejs       = require("ejs");
+const sqlite3   = require("sqlite3");
+const ws        = require("websocket.io");
+
+let db = new sqlite3.Database("db.sqlite");
+let tableName = "clients";
+cleanData(); // SQLite
 
 //==========
 // App
@@ -32,6 +38,11 @@ app.get("/chat", (req, res)=>{
 		{title: "This is Get!!", content: msg, data: json});
 });
 
+// Chat
+app.get("/clients", (req, res)=>{
+	selectData(req, res);
+});
+
 //==========
 // Server
 const PORT_SOCKET = 4040;
@@ -44,10 +55,13 @@ let server = ws.listen(PORT_SOCKET, ()=>{
 // Connection
 server.on("connection", (client)=>{
 	console.log("connection");
-	client.id    = PREFIX_CLIENT + counter++;
-	client.psw   = getClientPsw();
-	client.birth = getClientDate();
-	console.log(client.id + ":" + client.psw + " [" + client.birth + "]");
+	client.id         = PREFIX_CLIENT + counter++;
+	client.created_at = getClientDate();
+	client.x          = 0;
+	client.y          = 0;
+	console.log(client.id + "[" + client.created_at + "]");
+
+	insertData(client);// SQLite
 
 	// Client
 	client.on("message", (e)=>{
@@ -60,6 +74,7 @@ server.on("connection", (client)=>{
 	});
 	client.on("close", ()=>{
 		console.log("close");
+		deleteData(client);// SQLite
 	});
 });
 
@@ -67,10 +82,6 @@ function sendAll(msg){
 	server.clients.forEach((client)=>{
 		if(client !== null) client.send(msg);
 	});
-}
-
-function getClientPsw(){
-	return "xyz";
 }
 
 function getClientDate(){
@@ -87,4 +98,100 @@ function getClientDate(){
 	if(min  < 10) min  = "0" + min;
 	if(sec  < 10) sec  = "0" + sec;
 	return year + "/" + mon + "/" + day + " " + hour + ":" + min + ":" + sec;
+}
+
+//==========
+// Sqlite3
+function cleanData(){
+	let sql = "DELETE FROM " + tableName;
+	// Database
+	db.serialize(()=>{
+		db.run(sql, (err)=>{
+			if(err != false){
+				console.log("Cleaned!!");
+			}else{
+				console.log("Error!!");
+				console.log(err);
+			}
+		});
+	});
+}
+
+function selectData(req, res){
+	let sql = "SELECT * FROM " + tableName;
+	// Database
+	db.serialize(()=>{
+		db.all(sql, (err, rows)=>{
+			console.log("Connected!!");
+			if(err != false){
+				console.log("Success!!");
+				res.render("index_clients.ejs",
+					{json: JSON.stringify(rows)});
+			}else{
+				console.log("Error!!");
+				console.log(err);
+			}
+		});
+	});
+}
+
+function insertData(client){
+	console.log("instertData");
+
+	let obj = {
+		"id": client.id,
+		"created_at": client.created_at,
+		"x": client.x,
+		"y": client.y
+	};
+
+	let keys = [];
+	let binders = [];
+	let values = [];
+	for(key in obj){
+		keys.push(key);
+		values.push(escapeStr(obj[key]));
+		binders.push("?");
+	}
+
+	let sql = "INSERT INTO " + tableName + "(" + keys.join(",") + ") VALUES(" + binders.join(",") + ")";
+
+	// Database
+	db.serialize(()=>{
+		db.run(sql, values, (err)=>{
+			if(!err){
+				console.log("Inserted:" + client.id);
+			}else{
+				console.log("Error!!");
+				console.log(err);
+			}
+		});
+	});
+}
+
+function deleteData(client){
+
+	let id = client.id;
+	let sql = "DELETE FROM " + tableName + " WHERE id = ?";
+
+	// Database
+	db.serialize(()=>{
+		db.run(sql, id, (err)=>{
+			if(err != false){
+				console.log("Deleted:" + client.id);
+			}else{
+				console.log("Error!!");
+				console.log(err);
+			}
+		});
+	});
+}
+
+//==========
+// Utility
+function escapeStr(str){
+	if(str == "" || str == null || !isNaN(str)) return str;
+	return str.replace(/\&/g, '&amp;').
+	replace(/</g, '&lt;').replace(/>/g, '&gt;').
+	replace(/"/g, '').replace(/'/g, '');
 }
