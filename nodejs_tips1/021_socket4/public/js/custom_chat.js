@@ -45,22 +45,23 @@ function escapeStr(str){
 
 //==========
 // Sprites
-let players;
+let players = [];
 
 function addPlayers(jsonObj){
+
 	// Append
 	let id = jsonObj.id;
-	let x = parseInt(jsonObj.msg.x);
-	let y = parseInt(jsonObj.msg.y);
+	let x = parseInt(jsonObj.x);
+	let y = parseInt(jsonObj.y);
 
 	let index = isExists(id);
 	if(index != -1){
-		// Use existing data
+		// Other player already exists
 		let jsonObj = players[index];
 		jsonObj.sprite.position.x = x;
 		jsonObj.sprite.position.y = y;
 	}else{
-		// Create new object
+		// New commer
 		jsonObj.sprite = createSprite(x, y, 32, 32);
 		let image = loadImage("./assets/client_0.png");
 		jsonObj.sprite.addImage(image);
@@ -84,6 +85,14 @@ function preload(){
 	// Font
 	var font = loadFont("assets/misaki_gothic.ttf");
 	textFont(font);
+	
+	// Load JSON file
+	loadJSON("http://localhost:3030/json", (data)=>{
+		for(let i=0; i<data.rows.length; i++){
+			console.log("i[" + i + "]:" + data.rows[i].id);
+			addPlayers(data.rows[i]);
+		}
+	});
 }
 
 function setup(){
@@ -95,9 +104,6 @@ function setup(){
 	fill(255, 255, 255);
 	noStroke();
 	rectMode(CENTER);
-
-	// Players
-	players = [];
 }
 
 function draw(){
@@ -115,6 +121,6 @@ function draw(){
 
 function mousePressed(){
 	console.log("mousePressed");
-	let msg  = '{"x": "' + mouseX + '", "y": "' + mouseY + '"}';
-	if(ws !== null) ws.send(msg);
+	let message = {"x": mouseX, "y": mouseY};
+	if(ws !== null) ws.send(JSON.stringify(message));
 }

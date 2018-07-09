@@ -39,7 +39,7 @@ app.get("/chat", (req, res)=>{
 });
 
 // Chat
-app.get("/clients", (req, res)=>{
+app.get("/json", (req, res)=>{
 	selectData(req, res);
 });
 
@@ -55,24 +55,24 @@ let server = ws.listen(PORT_SOCKET, ()=>{
 // Connection
 server.on("connection", (client)=>{
 	console.log("connection");
-	client.id         = PREFIX_CLIENT + counter++;
-	client.created_at = getClientDate();
-	client.x          = 240;
-	client.y          = 160;
-	console.log(client.id + "[" + client.created_at + "]");
+	// Welcome
+	client.id = PREFIX_CLIENT + counter++;
+	client.created_at = getClientDate();// First time
+	console.log("Welcome:" + client.id + "[" + client.created_at + "]");
 
-	insertData(client);// SQLite
+	let message = {"x": "240", "y": "160"};
+	setTimeout(()=>{sendAll(client, message)}, 500);
+	insertData(client, message);// SQLite
 
 	// Client
 	client.on("message", (e)=>{
-		let message = '{"id": "' + client.id + '", "msg": ' + e + '}';
-		sendAll(message);
-		updateData(client, e);// SQLite
+		let message = JSON.parse(e);// You can go anywhere
+		setTimeout(()=>{sendAll(client, message)}, 100);
+		updateData(client, message);// SQLite
 	});
 	client.on("error", (e)=>{
 		console.log("error");
 		console.log(e);
-		deleteData(client);// SQLite
 	});
 	client.on("close", ()=>{
 		console.log("close");
@@ -80,9 +80,16 @@ server.on("connection", (client)=>{
 	});
 });
 
-function sendAll(msg){
+function sendAll(client, message){
+
+	let obj = {
+		"id": client.id,
+		"created_at": client.created_at,
+		"x": message.x,
+		"y": message.y
+	};
 	server.clients.forEach((client)=>{
-		if(client !== null) client.send(msg);
+		if(client !== null) client.send(JSON.stringify(obj));
 	});
 }
 
@@ -127,8 +134,9 @@ function selectData(req, res){
 			console.log("Connected!!");
 			if(err != false){
 				console.log("Success!!");
-				res.render("index_clients.ejs",
-					{json: JSON.stringify(rows)});
+				let jsonObj = {"rows" : rows};
+				res.contentType("application/json");
+				res.json(jsonObj);
 			}else{
 				console.log("Error!!");
 				console.log(err);
@@ -137,13 +145,13 @@ function selectData(req, res){
 	});
 }
 
-function insertData(client){
+function insertData(client, message){
 
 	let obj = {
 		"id": client.id,
 		"created_at": client.created_at,
-		"x": client.x,
-		"y": client.y
+		"x": message.x,
+		"y": message.y
 	};
 
 	let keys = [];
@@ -169,9 +177,12 @@ function insertData(client){
 	});
 }
 
-function updateData(client, e){
+function updateData(client, message){
 
-	let obj = JSON.parse(e);
+	let obj = {
+		"x": message.x,
+		"y": message.y
+	};
 
 	let id = client.id;
 	let keys = [];
@@ -180,7 +191,7 @@ function updateData(client, e){
 	for(key in obj){
 		keys.push(key);
 		binders.push("$" + key);
-		set.push(key + "=" + escapeStr(obj[key]));
+		set.push(key + "='" + escapeStr(obj[key]) + "'");
 	}
 	let sql = "UPDATE " + tableName + " SET " + set.join(",") + " WHERE id = ?";
 
