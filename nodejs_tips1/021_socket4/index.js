@@ -1,5 +1,9 @@
 console.log("Hello Node JS!!");
 
+const TBL_INSERT = "insert";
+const TBL_UPDATE = "update";
+const TBL_DELETE = "delete";
+
 const bParser   = require("body-parser");
 const dateUtils = require("date-utils");
 const express   = require("express");
@@ -61,14 +65,14 @@ server.on("connection", (client)=>{
 	console.log("Welcome:" + client.id + ":[" + client.created_at + "]");
 
 	let message = {"x": "240", "y": "160"};
-	setTimeout(()=>{sendAll(client, message)}, 500);
+	setTimeout(()=>{sendAll(client, message, TBL_INSERT)}, 500);
 	insertData(client, message);// SQLite
 
 	// Client
 	client.on("message", (e)=>{
 		console.log("Message!!");
 		let message = JSON.parse(e);// You can go anywhere
-		setTimeout(()=>{sendAll(client, message)}, 100);
+		setTimeout(()=>{sendAll(client, message, TBL_UPDATE)}, 100);
 		updateData(client, message);// SQLite
 	});
 	client.on("error", (e)=>{
@@ -77,17 +81,19 @@ server.on("connection", (client)=>{
 	});
 	client.on("close", ()=>{
 		console.log("Close!!");
+		setTimeout(()=>{sendAll(client, message, TBL_DELETE)}, 100);
 		deleteData(client);// SQLite
 	});
 });
 
-function sendAll(client, message){
+function sendAll(client, message, tbl){
 
 	let obj = {
 		"id": client.id,
 		"created_at": client.created_at,
 		"x": message.x,
-		"y": message.y
+		"y": message.y,
+		"tbl": tbl
 	};
 	server.clients.forEach((client)=>{
 		if(client !== null) client.send(JSON.stringify(obj));

@@ -1,5 +1,12 @@
 console.log("Hello Node JS!!");
 
+const SERVER_SOCKET = "ws://localhost:4040";
+const SERVER_JSON   = "http://localhost:3030/json";
+
+const TBL_INSERT = "insert";
+const TBL_UPDATE = "update";
+const TBL_DELETE = "delete";
+
 //==========
 // WebSocket
 let ws;
@@ -9,13 +16,18 @@ $(window).on("load", ()=>{
 	console.log("Load!!");
 
 	// Initialize
-	ws = new WebSocket("ws://localhost:4040");
+	ws = new WebSocket(SERVER_SOCKET);
 	ws.onopen = (e)=>{
 		console.log("onOpen");
 	}
 	ws.onmessage = (e)=>{
 		console.log("onMessage:" + e.data);
-		addPlayers(JSON.parse(e.data));
+		let jsonObj = JSON.parse(e.data);
+		if(jsonObj.tbl === TBL_INSERT || jsonObj.tbl === TBL_UPDATE){
+			addPlayer(jsonObj);
+		}else if(jsonObj.tbl === TBL_DELETE){
+			removePlayer(jsonObj);
+		}
 	}
 	ws.onclose = (e)=>{
 		console.log("onClose");
@@ -46,7 +58,8 @@ function escapeStr(str){
 // Sprites
 let players = [];
 
-function addPlayers(jsonObj){
+function addPlayer(jsonObj){
+	console.log("addPlayer");
 
 	// Append
 	let id = jsonObj.id;
@@ -68,7 +81,24 @@ function addPlayers(jsonObj){
 	}
 }
 
+function removePlayer(jsonObj){
+	console.log("removePlayer");
+
+	// Append
+	let id = jsonObj.id;
+	let x = parseInt(jsonObj.x);
+	let y = parseInt(jsonObj.y);
+
+	let index = isExists(id);
+	if(index != -1){
+		// Remove
+		players[index].sprite.remove();
+		players.splice(index, 1);
+	}
+}
+
 function loadPlayers(){
+	console.log("loadPlayers");
 
 	// Clean
 	for(let i=players.length-1; 0<=i; i--){
@@ -77,11 +107,10 @@ function loadPlayers(){
 	}
 
 	// Load JSON file
-	loadJSON("http://localhost:3030/json", (data)=>{
+	loadJSON(SERVER_JSON, (data)=>{
 		for(let i=0; i<data.rows.length; i++){
-			addPlayers(data.rows[i]);
+			addPlayer(data.rows[i]);
 		}
-		setTimeout(()=>{loadPlayers();}, 1000*30);
 	});
 }
 
@@ -135,7 +164,6 @@ function draw(){
 		text(player.id, parseInt(player.x), 
 			parseInt(player.y) - player.sprite.originalHeight*0.5);
 	}
-
 
 	drawSprites();
 }
