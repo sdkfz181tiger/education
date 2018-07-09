@@ -57,8 +57,8 @@ server.on("connection", (client)=>{
 	console.log("connection");
 	client.id         = PREFIX_CLIENT + counter++;
 	client.created_at = getClientDate();
-	client.x          = 0;
-	client.y          = 0;
+	client.x          = 240;
+	client.y          = 160;
 	console.log(client.id + "[" + client.created_at + "]");
 
 	insertData(client);// SQLite
@@ -67,10 +67,12 @@ server.on("connection", (client)=>{
 	client.on("message", (e)=>{
 		let message = '{"id": "' + client.id + '", "msg": ' + e + '}';
 		sendAll(message);
+		updateData(client, e);// SQLite
 	});
 	client.on("error", (e)=>{
 		console.log("error");
 		console.log(e);
+		deleteData(client);// SQLite
 	});
 	client.on("close", ()=>{
 		console.log("close");
@@ -136,7 +138,6 @@ function selectData(req, res){
 }
 
 function insertData(client){
-	console.log("instertData");
 
 	let obj = {
 		"id": client.id,
@@ -153,7 +154,6 @@ function insertData(client){
 		values.push(escapeStr(obj[key]));
 		binders.push("?");
 	}
-
 	let sql = "INSERT INTO " + tableName + "(" + keys.join(",") + ") VALUES(" + binders.join(",") + ")";
 
 	// Database
@@ -161,6 +161,34 @@ function insertData(client){
 		db.run(sql, values, (err)=>{
 			if(!err){
 				console.log("Inserted:" + client.id);
+			}else{
+				console.log("Error!!");
+				console.log(err);
+			}
+		});
+	});
+}
+
+function updateData(client, e){
+
+	let obj = JSON.parse(e);
+
+	let id = client.id;
+	let keys = [];
+	let binders = [];
+	let set = [];
+	for(key in obj){
+		keys.push(key);
+		binders.push("$" + key);
+		set.push(key + "=" + escapeStr(obj[key]));
+	}
+	let sql = "UPDATE " + tableName + " SET " + set.join(",") + " WHERE id = ?";
+
+	// Database
+	db.serialize(()=>{
+		db.run(sql, id, (err)=>{
+			if(err != false){
+				console.log("Updated:" + client.id);
 			}else{
 				console.log("Error!!");
 				console.log(err);
