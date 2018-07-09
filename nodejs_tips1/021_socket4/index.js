@@ -9,7 +9,7 @@ const ws        = require("websocket.io");
 
 let db = new sqlite3.Database("db.sqlite");
 let tableName = "clients";
-cleanData(); // SQLite
+cleanData();// SQLite
 
 //==========
 // App
@@ -54,11 +54,11 @@ let server = ws.listen(PORT_SOCKET, ()=>{
 
 // Connection
 server.on("connection", (client)=>{
-	console.log("connection");
+	console.log("Connection");
 	// Welcome
 	client.id = PREFIX_CLIENT + counter++;
 	client.created_at = getClientDate();// First time
-	console.log("Welcome:" + client.id + "[" + client.created_at + "]");
+	console.log("Welcome:" + client.id + ":[" + client.created_at + "]");
 
 	let message = {"x": "240", "y": "160"};
 	setTimeout(()=>{sendAll(client, message)}, 500);
@@ -66,16 +66,17 @@ server.on("connection", (client)=>{
 
 	// Client
 	client.on("message", (e)=>{
+		console.log("Message!!");
 		let message = JSON.parse(e);// You can go anywhere
 		setTimeout(()=>{sendAll(client, message)}, 100);
 		updateData(client, message);// SQLite
 	});
 	client.on("error", (e)=>{
-		console.log("error");
+		console.log("Error!!");
 		console.log(e);
 	});
 	client.on("close", ()=>{
-		console.log("close");
+		console.log("Close!!");
 		deleteData(client);// SQLite
 	});
 });
@@ -131,12 +132,10 @@ function selectData(req, res){
 	// Database
 	db.serialize(()=>{
 		db.all(sql, (err, rows)=>{
-			console.log("Connected!!");
 			if(err != false){
-				console.log("Success!!");
-				let jsonObj = {"rows" : rows};
+				//console.log("Selected!!");
 				res.contentType("application/json");
-				res.json(jsonObj);
+				res.json({"rows" : rows});
 			}else{
 				console.log("Error!!");
 				console.log(err);

@@ -15,8 +15,7 @@ $(window).on("load", ()=>{
 	}
 	ws.onmessage = (e)=>{
 		console.log("onMessage:" + e.data);
-		let jsonObj = JSON.parse(e.data);
-		addPlayers(jsonObj);
+		addPlayers(JSON.parse(e.data));
 	}
 	ws.onclose = (e)=>{
 		console.log("onClose");
@@ -69,6 +68,23 @@ function addPlayers(jsonObj){
 	}
 }
 
+function loadPlayers(){
+
+	// Clean
+	for(let i=players.length-1; 0<=i; i--){
+		players[i].sprite.remove();
+		players.splice(i, 1);
+	}
+
+	// Load JSON file
+	loadJSON("http://localhost:3030/json", (data)=>{
+		for(let i=0; i<data.rows.length; i++){
+			addPlayers(data.rows[i]);
+		}
+		setTimeout(()=>{loadPlayers();}, 1000*30);
+	});
+}
+
 function isExists(id){
 	for(let i=0; i<players.length; i++){
 		if(players[i].id === id) return i;
@@ -85,14 +101,6 @@ function preload(){
 	// Font
 	var font = loadFont("assets/misaki_gothic.ttf");
 	textFont(font);
-	
-	// Load JSON file
-	loadJSON("http://localhost:3030/json", (data)=>{
-		for(let i=0; i<data.rows.length; i++){
-			console.log("i[" + i + "]:" + data.rows[i].id);
-			addPlayers(data.rows[i]);
-		}
-	});
 }
 
 function setup(){
@@ -104,6 +112,9 @@ function setup(){
 	fill(255, 255, 255);
 	noStroke();
 	rectMode(CENTER);
+
+	// Load
+	loadPlayers();
 }
 
 function draw(){
