@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html>
+<html lang="ja">
 <head>
 	<meta charset="utf-8">
 	<title>Video.js</title>
@@ -18,21 +19,23 @@
 </head>
 <body>
 
-	<!-- Video.js -->
-	<video id="my_video" class="video-js vjs-default-skin" controls preload="none" width="960" height="540" poster="./assets/poster_960x560.png" data-setup="{}">
-		<source src="./videos/cm002.mp4" type="video/mp4">
-		<track kind="captions" src="../shared/example-captions.vtt" srclang="en" label="English">
-		<track kind="subtitles" src="../shared/example-captions.vtt" srclang="en" label="English">
-		<p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
-	</video>
+	<div id="my_area">
+		<!-- Video.js -->
+		<video id="my_video" class="video-js vjs-default-skin" controls preload="none" width="960" height="540" poster="./assets/poster_960x560.png" data-setup="{}">
+			<source src="./videos/cm002.mp4" type="video/mp4">
+			<track kind="captions" src="../shared/example-captions.vtt" srclang="en" label="English">
+			<track kind="subtitles" src="../shared/example-captions.vtt" srclang="en" label="English">
+			<p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
+		</video>
 
-	<canvas id="my_canvas" width="960" height="540"></canvas>
+		<canvas id="my_canvas" width="960" height="540"></canvas>
 
-	<fieldset>
-		<select name="my_select" id="my_select"></select>
-		<label for="my_checkbox"> Load</label>
-		<input type="checkbox" name="my_checkbox" id="my_checkbox">
-	</fieldset>
+		<fieldset>
+			<select name="my_select" id="my_select"></select>
+			<label for="my_checkbox"> Load</label>
+			<input type="checkbox" name="my_checkbox" id="my_checkbox">
+		</fieldset>
+	</div>
 	
 	<!-- Video.js -->
 	<link rel="stylesheet" href="./libs/video-js-7.0.5/video-js.css">

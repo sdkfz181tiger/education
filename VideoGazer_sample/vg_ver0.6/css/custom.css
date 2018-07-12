@@ -4,6 +4,12 @@ body{
 	background-color: #333333;
 }
 
+#my_area{
+	width: 960px; height: 540px;
+	background-color: navy;
+	position: relative;
+}
+
 #my_canvas{
 	margin: 0px; padding: 0px;
 	top: 0px; left: 0px;
@@ -13,7 +19,7 @@ body{
 
 fieldset{
 	margin: 10px; padding: 0px;
-	top: 0px; left: 0px;
+	top: 0px; right: 0px;
 	position: absolute;
 	border: none;
 }

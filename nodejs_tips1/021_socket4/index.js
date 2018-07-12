@@ -63,8 +63,9 @@ server.on("connection", (client)=>{
 	client.id = PREFIX_CLIENT + counter++;
 	client.created_at = getClientDate();// First time
 	console.log("Welcome:" + client.id + ":[" + client.created_at + "]");
+	sendPersonal(client);// Your character
 
-	let message = {"x": "240", "y": "160"};
+	let message = {"x": "240", "y": "160", "speed": "0", "direction": "0"};
 	setTimeout(()=>{sendAll(client, message, TBL_INSERT)}, 500);
 	insertData(client, message);// SQLite
 
@@ -86,6 +87,13 @@ server.on("connection", (client)=>{
 	});
 });
 
+function sendPersonal(client){
+	let obj = {
+		"id": client.id
+	};
+	client.send(JSON.stringify(obj))
+}
+
 function sendAll(client, message, tbl){
 
 	let obj = {
@@ -93,6 +101,8 @@ function sendAll(client, message, tbl){
 		"created_at": client.created_at,
 		"x": message.x,
 		"y": message.y,
+		"speed": message.speed,
+		"direction": message.direction,
 		"tbl": tbl
 	};
 	server.clients.forEach((client)=>{
@@ -156,7 +166,9 @@ function insertData(client, message){
 		"id": client.id,
 		"created_at": client.created_at,
 		"x": message.x,
-		"y": message.y
+		"y": message.y,
+		"speed": message.speed,
+		"direction": message.direction
 	};
 
 	let keys = [];
@@ -186,7 +198,9 @@ function updateData(client, message){
 
 	let obj = {
 		"x": message.x,
-		"y": message.y
+		"y": message.y,
+		"speed": message.speed,
+		"direction": message.direction
 	};
 
 	let id = client.id;
