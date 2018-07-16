@@ -120,6 +120,8 @@ class b2Manager{
 		// Shape
 		this._fixDef.shape = new b2PolygonShape;
 		this._fixDef.shape.SetAsBox(w / PTM_RATIO / 2, h / PTM_RATIO / 2);
+		this._fixDef.density = 3.0;
+		this._fixDef.friction = 3.0;
 		this._fixDef.filter.maskBits = 0xffff;// Collision true
 		let body = this._world.CreateBody(this._bodyDef);
 		body.CreateFixture(this._fixDef);

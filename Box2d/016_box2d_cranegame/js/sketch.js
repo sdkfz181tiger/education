@@ -2,13 +2,18 @@ console.log("Hello Box2dWeb!!");
 
 const TAG_REMOVER = "remover";
 
+const CRANE_CLOSE = 30  * DEG_TO_RAD;
+const CRANE_OPEN  = 1 * DEG_TO_RAD;
+
 // Global
-let world = null;
+let world   = null;
 let manager = null;
 
-let craneC = null;
-let craneH = null;
-let craneV = null;
+let craneC  = null;
+let lFlap1,  lFlap2  = null;
+let lJoint1, lJoint2 = null;
+let rFlap1,  rFlap2  = null;
+let rJoint1, rJoint2 = null;
 
 // Main
 window.onload = function(){
@@ -24,6 +29,9 @@ window.onload = function(){
 
 	// Crane
 	createCrane(240, 160, 4, 50);
+
+	// Bomb
+	fallBomb();
 
 	// Functions
 
@@ -58,14 +66,35 @@ window.onload = function(){
 
 	function createCrane(cX, cY, offsetH, offsetV){
 
-		// Test
+		// Body
 		craneC = manager.createBox(b2Body.b2_staticBody, cX, cY, 10, 10);
 
-		craneH = manager.createBox(b2Body.b2_dynamicBody, cX, cY+15, 10, 10);
-		let pjPris1 = manager.createPrismaticJoint(craneC, craneH, cX, cY, 1, 0, -offsetH, offsetH);
+		// Arm
+		let type = b2Body.b2_dynamicBody;
+		//let type = b2Body.b2_staticBody;
+		let buffer = 30 * DEG_TO_RAD;
 
-		craneV = manager.createBox(b2Body.b2_dynamicBody, cX, cY+30, 10, 10);
-		let pjPris2 = manager.createPrismaticJoint(craneH, craneV, cX, cY, 0, 1, -offsetV, offsetV);
+		// Left
+		lFlap1  = manager.createBox(type, cX-20, cY+10, 45, 8);
+		lFlap1.SetAngle(-30 * DEG_TO_RAD);
+		lJoint1 = manager.createRevoluteJoint(craneC, lFlap1, cX, cY, -buffer, buffer);
+		lFlap2  = manager.createBox(type, cX-40, cY+40, 40, 8);
+		lFlap2.SetAngle(-90 * DEG_TO_RAD);
+		lJoint2 = manager.createRevoluteJoint(lFlap1, lFlap2, cX-40, cY+20, -buffer, buffer);
+		lFlap3  = manager.createBox(type, cX-25, cY+60, 25, 4);
+		lFlap3.SetAngle(0 * DEG_TO_RAD);
+		let lJoint3 = manager.createWeldJoint(lFlap2, lFlap3, cX-40, cY+60);
+
+		// Right
+		rFlap1 = manager.createBox(type, cX+20, cY+10, 45, 8);
+		rFlap1.SetAngle(+30 * DEG_TO_RAD);
+		rJoint1 = manager.createRevoluteJoint(craneC, rFlap1, cX, cY, -buffer, buffer);
+		rFlap2  = manager.createBox(type, cX+40, cY+40, 40, 8);
+		rFlap2.SetAngle(+90 * DEG_TO_RAD);
+		rJoint2 = manager.createRevoluteJoint(rFlap1, rFlap2, cX+40, cY+20, -buffer, buffer);
+		rFlap3  = manager.createBox(type, cX+25, cY+60, 25, 4);
+		rFlap3.SetAngle(0 * DEG_TO_RAD);
+		let rJoint3 = manager.createWeldJoint(rFlap2, rFlap3, cX+40, cY+60);
 	}
 
 	// Contact
@@ -93,14 +122,14 @@ window.onload = function(){
 
 	// Keyboard
 	window.document.onkeydown = (e)=>{
-		console.log(e.key);
+		//console.log(e.key);
 
 		const def  = craneC.GetPosition();
 		const disX = 5;
 		const disY = 5;
 
-		craneH.SetAwake(true);
-		craneV.SetAwake(true);
+		// Awake
+		awakeCrane();
 
 		if(e.key === "ArrowUp"){
 			let position = new b2Vec2(def.x, def.y - disY / PTM_RATIO);
@@ -118,29 +147,59 @@ window.onload = function(){
 			let position = new b2Vec2(def.x + disX / PTM_RATIO, def.y);
 			craneC.SetPosition(position);
 		}
+
+		if(e.key === "z"){
+			lJoint1.m_lowerAngle = -CRANE_CLOSE;
+			lJoint1.m_upperAngle = CRANE_CLOSE;
+			lJoint2.m_lowerAngle = -CRANE_CLOSE;
+			lJoint2.m_upperAngle = CRANE_CLOSE;
+			rJoint1.m_lowerAngle = -CRANE_CLOSE;
+			rJoint1.m_upperAngle = CRANE_CLOSE;
+			rJoint2.m_lowerAngle = -CRANE_CLOSE;
+			rJoint2.m_upperAngle = CRANE_CLOSE;
+		}
+		if(e.key === "x"){
+			lJoint1.m_lowerAngle = -CRANE_OPEN;
+			lJoint1.m_upperAngle = CRANE_OPEN;
+			lJoint2.m_lowerAngle = -CRANE_OPEN;
+			lJoint2.m_upperAngle = CRANE_OPEN;
+			rJoint1.m_lowerAngle = -CRANE_OPEN;
+			rJoint1.m_upperAngle = CRANE_OPEN;
+			rJoint2.m_lowerAngle = -CRANE_OPEN;
+			rJoint2.m_upperAngle = CRANE_OPEN;
+		}
 	}
 
 	// Update
 	window.setInterval(update, 1000 / 30);
 	function update(){
-		/*
-		// Following camera
-		let posTank = tBody.GetPosition();
-		let posCam  = cBody.GetPosition();
-		let targetY = C_HEIGHT / PTM_RATIO;
-		for(let body = world.GetBodyList(); body; body = body.GetNext()){
-			if(body.GetType() == b2Body.b2_dynamicBody){
-				let posBody = body.GetPosition();
-				if(posBody.y < targetY){
-					targetY = posBody.y;
-				}
-			}
-		}
-		cBody.SetPosition(new b2Vec2(posTank.x, targetY));
-		*/
 		// Box2dManager
 		manager.update();
 	};
+
+	let tEvent = null;
+	function awakeCrane(){
+
+		if(tEvent != null) clearTimeout(tEvent);
+
+		lFlap1.SetAwake(true);
+		lFlap2.SetAwake(true);
+		lFlap3.SetAwake(true);
+		rFlap1.SetAwake(true);
+		rFlap2.SetAwake(true);
+		rFlap3.SetAwake(true);
+
+		tEvent = setTimeout(()=>{
+			lFlap1.SetAwake(false);
+			lFlap2.SetAwake(false);
+			lFlap3.SetAwake(false);
+			rFlap1.SetAwake(false);
+			rFlap2.SetAwake(false);
+			rFlap3.SetAwake(false);
+		}, 1000 * 5);
+	}
+
+
 
 	// Random
 	//fallBomb();
@@ -148,8 +207,9 @@ window.onload = function(){
 		window.setTimeout(()=>{
 			// Create
 			let type = b2Body.b2_dynamicBody;
-			let x    = tBody.GetPosition().x * PTM_RATIO;
-			let body = manager.createBox(type, x, 10, 8, 8);
+			let x    = 240;
+			let y    = 10;
+			let body = manager.createBox(type, x, y, 8, 8);
 			fallBomb();
 		}, 1000 * 3);
 	}
