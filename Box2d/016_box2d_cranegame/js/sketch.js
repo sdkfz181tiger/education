@@ -6,6 +6,7 @@ const TAG_REMOVER = "remover";
 let world = null;
 let manager = null;
 
+let craneC = null;
 let craneH = null;
 let craneV = null;
 
@@ -21,18 +22,8 @@ window.onload = function(){
 	// Stage
 	createStage(240, 310);
 
-	createPiston(240, 160, 30, 30);
-
 	// Crane
-	let type = b2Body.b2_dynamicBody;
-
-	let cX    = 240;
-	let cY    = 240;
-	let tBody = manager.createBox(type, cX, cY, 60, 20);
-	let lTire = manager.createCircle(type, cX-25, cY+10, 16);
-	let rTire = manager.createCircle(type, cX+25, cY+10, 16);
-	let lJoint = manager.createRotateJoint(tBody, lTire, cX-25, cY+10);
-	let rJoint = manager.createRotateJoint(tBody, rTire, cX+25, cY+10);
+	createCrane(240, 160, 4, 50);
 
 	// Functions
 
@@ -65,10 +56,12 @@ window.onload = function(){
 		let rjRot = manager.createRevoluteJoint(cBody, rBody, cX, cY, lowerAngle, upperAngle);
 	}
 
-	function createPiston(cX, cY, offsetH, offsetV){
+	function createCrane(cX, cY, offsetH, offsetV){
 
-		let craneC = manager.createBox(b2Body.b2_staticBody, cX, cY, 5, 5);
-		craneH = manager.createBox(b2Body.b2_dynamicBody, cX, cY, 10, 10);
+		// Test
+		craneC = manager.createBox(b2Body.b2_staticBody, cX, cY, 10, 10);
+
+		craneH = manager.createBox(b2Body.b2_dynamicBody, cX, cY+15, 10, 10);
 		let pjPris1 = manager.createPrismaticJoint(craneC, craneH, cX, cY, 1, 0, -offsetH, offsetH);
 
 		craneV = manager.createBox(b2Body.b2_dynamicBody, cX, cY+30, 10, 10);
@@ -102,59 +95,29 @@ window.onload = function(){
 	window.document.onkeydown = (e)=>{
 		console.log(e.key);
 
-		if(e.key === "ArrowLeft"){
-			craneH.SetAwake(true);
-			let vec = new b2Vec2(-3.0, 0.0);
-			craneH.ApplyImpulse(vec, craneH.GetPosition());
-		}
-		if(e.key === "ArrowRight"){
-			craneH.SetAwake(true);
-			let vec = new b2Vec2(+3.0, 0.0);
-			craneH.ApplyImpulse(vec, craneH.GetPosition());
-		}
+		const def  = craneC.GetPosition();
+		const disX = 5;
+		const disY = 5;
 
-		/*
+		craneH.SetAwake(true);
+		craneV.SetAwake(true);
+
 		if(e.key === "ArrowUp"){
-			let type = b2Body.b2_dynamicBody;
-			let x = pBody.GetPosition().x * PTM_RATIO;
-			let y = pBody.GetPosition().y * PTM_RATIO - 10;
-			let bullet = manager.createBox(type, x, y, 8, 8);
-			bullet.ApplyImpulse(
-				new b2Vec2(0.0, -0.8), bullet.GetPosition());
+			let position = new b2Vec2(def.x, def.y - disY / PTM_RATIO);
+			craneC.SetPosition(position);
 		}
 		if(e.key === "ArrowDown"){
-
+			let position = new b2Vec2(def.x, def.y + disY / PTM_RATIO);
+			craneC.SetPosition(position);
 		}
 		if(e.key === "ArrowLeft"){
-			tBody.SetAwake(true);
-			lTire.SetAngularVelocity(-30);
-			rTire.SetAngularVelocity(-30);
+			let position = new b2Vec2(def.x - disX / PTM_RATIO, def.y);
+			craneC.SetPosition(position);
 		}
 		if(e.key === "ArrowRight"){
-			tBody.SetAwake(true);
-			lTire.SetAngularVelocity(+30);
-			rTire.SetAngularVelocity(+30);
+			let position = new b2Vec2(def.x + disX / PTM_RATIO, def.y);
+			craneC.SetPosition(position);
 		}
-		if(e.key === "z" || e.key === "x"){
-			let type = b2Body.b2_dynamicBody;
-			let x = pBody.GetPosition().x * PTM_RATIO;
-			let y = pBody.GetPosition().y * PTM_RATIO - 10;
-			let bullet = manager.createBox(type, x, y, 8, 8);
-
-			if(e.key === "z"){
-				bullet.ApplyImpulse(
-					new b2Vec2(-0.6, -0.3), bullet.GetPosition());
-				pBody.ApplyImpulse(
-					new b2Vec2(+0.6, 0), cBody.GetPosition());
-			}
-			if(e.key === "x"){
-				bullet.ApplyImpulse(
-					new b2Vec2(+0.6, -0.3), bullet.GetPosition());
-				pBody.ApplyImpulse(
-					new b2Vec2(-0.6, 0), cBody.GetPosition());
-			}
-		}
-		*/
 	}
 
 	// Update
