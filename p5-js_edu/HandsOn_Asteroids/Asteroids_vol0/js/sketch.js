@@ -3,26 +3,33 @@
 
 console.log("Hello p5.js!!");
 
-const DISP_W = 480;
-const DISP_H = 320;
+const DEBUG              = true;
 
-const PLAYER_SPEED      = 2;
-const PLAYER_FRICTION   = 0.98;
-const BULLET_SPEED      = 4;
-const BULLET_FRICTION   = 1.0;
-const ASTEROID_LIMIT    = 10;
-const ASTEROID_INTERVAL = 1000 * 1;
-const TIME_LIMIT        = 60;
-const TIME_INTERVAL     = 1000 * 1;
+const PLAYER_SPEED       = 4;
+const PLAYER_FRICTION    = 0.95;
+const BULLET_SPEED       = 8;
+const BULLET_FRICTION    = 1.0;
+const BULLET_LIMIT       = 3;
+const ASTEROID_SPEED_MIN = 2;
+const ASTEROID_SPEED_MAX = 6;
+const ASTEROID_LIMIT     = 10;
+const ASTEROID_INTERVAL  = 1000 * 1;
+const TIME_LIMIT         = 60;
+const TIME_INTERVAL      = 1000 * 1;
+const POWER_MAX          = 30;
 
-const POWER_MAX         = 30;
-
-const DEBUG = true;
+let assets    = {};
+let player    = null;
+let asteroids = [];
+let bullets   = [];
+let numTimer  = TIME_LIMIT;
+let numPower  = POWER_MAX;
+let msg       = "";
 
 const images = [
+	"images/tanuki.png",// Player
 	"images/earth.png",
 	"images/moon.png",
-	"images/tanuki.png",
 	"images/ume.png",
 ];
 
@@ -35,43 +42,12 @@ const sounds = [
 	"sounds/shot.mp3",
 ];
 
-let assets = {};
-
-let player    = null;
-let asteroids = [];
-let bullets   = [];
-
-let numTimer  = TIME_LIMIT;
-let numPower  = POWER_MAX;
-
-let msg       = "";
-
-function preload(){
-	console.log("preload");
-
-	// Font
-	let font = loadFont("assets/misaki_gothic.ttf");
-	textFont(font);
-
-	// Images
-	for(let i=0; i<images.length; i++){
-		assets[images[i]] = loadImage(images[i]);
-	}
-	// Sounds
-	for(let i=0; i<sounds.length; i++){
-		assets[sounds[i]] = loadSound(sounds[i]);
-	}
-}
-
 function setup(){
-	console.log("setup");
-	createCanvas(DISP_W, DISP_H);
-	frameRate(64);
-	background(0, 0, 0);
-	fill(255, 255, 255);
+	createCanvas(480, 320);
+	frameRate(32);
 
 	// Player
-	player = createPlayer(240, 160, "images/tanuki.png");
+	player = createPlayer(width/2, height/2, "images/tanuki.png");
 
 	// Asteroids, CountDown
 	startAsteroids();
@@ -88,7 +64,7 @@ function draw(){
 	if(height < player.position.y) player.position.y = 0;
 
 	// Collide
-	for(let a=asteroids.length-1; 0<=a; a--){
+	for(let a=0; a<asteroids.length; a++){
 		// Asteroid x Player
 		if(asteroids[a].bounce(player)){
 			numPower--;
@@ -98,7 +74,7 @@ function draw(){
 			playSound("sounds/damage.mp3");
 		}
 		// Asteroid x Bullet
-		for(let b=bullets.length-1; 0<=b; b--){
+		for(let b=0; b<bullets.length; b++){
 			if(bullets[b].bounce(asteroids[a])){
 				bullets[b].position.x = -100;
 				bullets[b].position.y = -100;
@@ -114,6 +90,7 @@ function draw(){
 	// Status
 	drawStatuses();
 
+	// Sprites
 	drawSprites();
 }
 
@@ -132,7 +109,7 @@ function keyPressed(){
 		player.rotationSpeed = +5;
 	}
 	// Shot(Z)
-	if(keyCode == 90){
+	if(keyCode == 90 && bullets.length < BULLET_LIMIT){
 		let x = player.position.x;
 		let y = player.position.y;
 		let rotation = player.rotation-90;
@@ -149,6 +126,9 @@ function keyReleased(){
 	}
 }
 
+//==========
+// Utility
+
 function startAsteroids(){
 	//console.log("startAsteroids");
 	if(isFinished()) return;// Finished?
@@ -156,14 +136,9 @@ function startAsteroids(){
 	// Asteroids
 	if(asteroids.length < ASTEROID_LIMIT){
 
-		let paths = [
-			"images/ume.png",
-			"images/earth.png",
-			"images/moon.png",
-		];
-		let rdm = floor(random(0, paths.length-1));
-
-		let asteroid = createAsteroid(1, 3, paths[rdm]);
+		let rdm = floor(random(1, images.length-1));
+		let asteroid = createAsteroid(
+				ASTEROID_SPEED_MIN, ASTEROID_SPEED_MAX, images[rdm]);
 		asteroids.push(asteroid);
 	}
 	// Timeout
@@ -183,20 +158,22 @@ function startCountDown(){
 	setTimeout(startCountDown, TIME_INTERVAL);
 }
 
-function gameClear(){
-	msg = "GAME CLEAR!!";
-	playSound("sounds/gameclear.mp3");
-	noLoop();
-}
+function preload(){
+	console.log("preload");
 
-function gameOver(){
-	msg = "GAME OVER!!";
-	playSound("sounds/gameover.mp3");
-	noLoop();
-}
+	// Font
+	let font = loadFont("fonts/misaki_gothic.ttf");
+	textFont(font);
 
-//==========
-// Utility
+	// Images
+	for(let i=0; i<images.length; i++){
+		assets[images[i]] = loadImage(images[i]);
+	}
+	// Sounds
+	for(let i=0; i<sounds.length; i++){
+		assets[sounds[i]] = loadSound(sounds[i]);
+	}
+}
 
 function createPlayer(x, y, path){
 	let spr = createSprite(x, y, 16, 16);
@@ -277,7 +254,7 @@ function drawStatuses(){
 	textAlign(LEFT);
 	text(msgTimer , 10, 20);
 	textAlign(RIGHT);
-	text(msgPower , 470, 20);
+	text(msgPower , width-10, 20);
 	textSize(32);
 	textAlign(CENTER);
 	text(msg, width*0.5, height*0.5);
@@ -286,4 +263,16 @@ function drawStatuses(){
 function isFinished(){
 	if(numTimer <= 0 || numPower <=0) return true;
 	return false;
+}
+
+function gameClear(){
+	msg = "GAME CLEAR!!";
+	playSound("sounds/gameclear.mp3");
+	noLoop();
+}
+
+function gameOver(){
+	msg = "GAME OVER!!";
+	playSound("sounds/gameover.mp3");
+	noLoop();
 }
