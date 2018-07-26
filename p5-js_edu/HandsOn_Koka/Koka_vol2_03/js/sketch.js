@@ -27,7 +27,7 @@ let msg;
 function setup(){
 	console.log("setup");
 	createCanvas(DISP_W, DISP_H);
-	frameRate(16);
+	frameRate(32);
 	background(0, 0, 0);
 	fill(255, 255, 255);
 
@@ -102,10 +102,21 @@ function keyReleased(){
 }
 
 function createEnemy(){
+
 	let x = 0;
 	let y = random(0, height);
 	let enemy = createSprite(x, y, 16, 16);
 	let speed = random(1, 5);
-	enemy.setSpeed(speed, 0);
+
+	let rdm = random(0, 10);
+	console.log(rdm);
+
+	if(rdm < 5){
+		enemy.position.x = 0;
+		enemy.setSpeed(speed, 0);
+	}else{
+		enemy.position.x = 480;
+		enemy.setSpeed(speed, 180);
+	}
 	return enemy;
 }

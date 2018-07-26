@@ -6,24 +6,33 @@ console.log("Hello p5.js!!");
 const DISP_W = 480;
 const DISP_H = 320;
 
-const PLAYER_SPEED    = 2;
-const PLAYER_FRICTION = 0.98;
-const BULLET_SPEED    = 2;
-const BULLET_FRICTION = 1.0;
+const PLAYER_SPEED      = 2;
+const PLAYER_FRICTION   = 0.98;
+const BULLET_SPEED      = 4;
+const BULLET_FRICTION   = 1.0;
+const ASTEROID_LIMIT    = 10;
+const ASTEROID_INTERVAL = 1000 * 1;
+const TIME_LIMIT        = 60;
+const TIME_INTERVAL     = 1000 * 1;
 
-const GENERATE_INTERVAL = 1000 * 2;
+const POWER_MAX         = 30;
 
 const DEBUG = true;
 
 const images = [
+	"images/earth.png",
+	"images/moon.png",
 	"images/tanuki.png",
 	"images/ume.png",
 ];
 
 const sounds = [
+	"sounds/damage.mp3",
 	"sounds/gameclear.mp3",
 	"sounds/gameover.mp3",
-	"sounds/s_pong.mp3",
+	"sounds/hit.mp3",
+	"sounds/pong.mp3",
+	"sounds/shot.mp3",
 ];
 
 let assets = {};
@@ -31,6 +40,11 @@ let assets = {};
 let player    = null;
 let asteroids = [];
 let bullets   = [];
+
+let numTimer  = TIME_LIMIT;
+let numPower  = POWER_MAX;
+
+let msg       = "";
 
 function preload(){
 	console.log("preload");
@@ -56,14 +70,12 @@ function setup(){
 	background(0, 0, 0);
 	fill(255, 255, 255);
 
-	// Test
-	assets["sounds/gameclear.mp3"].play();
-
 	// Player
 	player = createPlayer(240, 160, "images/tanuki.png");
 
-	// Attack
-	generateAsteroid();
+	// Asteroids, CountDown
+	startAsteroids();
+	startCountDown();
 }
 
 function draw(){
@@ -78,12 +90,19 @@ function draw(){
 	// Collide
 	for(let a=asteroids.length-1; 0<=a; a--){
 		// Asteroid x Player
-		asteroids[a].bounce(player);
+		if(asteroids[a].bounce(player)){
+			numPower--;
+			if(numPower <= 0){
+				gameOver();
+			}
+			playSound("sounds/damage.mp3");
+		}
 		// Asteroid x Bullet
 		for(let b=bullets.length-1; 0<=b; b--){
-			if(asteroids[a].bounce(bullets[b])){
+			if(bullets[b].bounce(asteroids[a])){
 				bullets[b].position.x = -100;
 				bullets[b].position.y = -100;
+				playSound("sounds/hit.mp3");
 			}
 		}
 	}
@@ -91,6 +110,9 @@ function draw(){
 	// Asteroids
 	cleanOutside(asteroids);
 	cleanOutside(bullets);
+
+	// Status
+	drawStatuses();
 
 	drawSprites();
 }
@@ -117,6 +139,7 @@ function keyPressed(){
 		let bullet = createBullet(x, y);
 		bullet.setSpeed(BULLET_SPEED, rotation);
 		bullets.push(bullet);
+		playSound("sounds/shot.mp3");
 	}
 }
 
@@ -126,14 +149,50 @@ function keyReleased(){
 	}
 }
 
-function generateAsteroid(){
-	console.log("generateAsteroid!!");
+function startAsteroids(){
+	//console.log("startAsteroids");
+	if(isFinished()) return;// Finished?
 
-	let asteroid = createAsteroid(1, 5, null);
-	asteroids.push(asteroid);
+	// Asteroids
+	if(asteroids.length < ASTEROID_LIMIT){
 
+		let paths = [
+			"images/ume.png",
+			"images/earth.png",
+			"images/moon.png",
+		];
+		let rdm = floor(random(0, paths.length-1));
+
+		let asteroid = createAsteroid(1, 3, paths[rdm]);
+		asteroids.push(asteroid);
+	}
 	// Timeout
-	setTimeout(generateAsteroid, GENERATE_INTERVAL);
+	setTimeout(startAsteroids, ASTEROID_INTERVAL);
+}
+
+function startCountDown(){
+	//console.log("startCountDown");
+	if(isFinished()) return;// Finished?
+
+	// CountDown
+	numTimer--;
+	if(numTimer <= 0 && 0 < numPower){
+		gameClear();
+	}
+	// Timeout
+	setTimeout(startCountDown, TIME_INTERVAL);
+}
+
+function gameClear(){
+	msg = "GAME CLEAR!!";
+	playSound("sounds/gameclear.mp3");
+	noLoop();
+}
+
+function gameOver(){
+	msg = "GAME OVER!!";
+	playSound("sounds/gameover.mp3");
+	noLoop();
 }
 
 //==========
@@ -201,5 +260,30 @@ function isOutside(sprite){
 	if(width < sprite.position.x) return true;
 	if(sprite.position.y < 0) return true;
 	if(width < sprite.position.y) return true;
+	return false;
+}
+
+function playSound(path){
+	if(assets[path].isPlaying()){
+		assets[path].stop();
+	}
+	assets[path].play();
+}
+
+function drawStatuses(){
+	textSize(16);
+	let msgTimer = "TIME:" + numTimer;
+	let msgPower = "POWER:" + numPower;
+	textAlign(LEFT);
+	text(msgTimer , 10, 20);
+	textAlign(RIGHT);
+	text(msgPower , 470, 20);
+	textSize(32);
+	textAlign(CENTER);
+	text(msg, width*0.5, height*0.5);
+}
+
+function isFinished(){
+	if(numTimer <= 0 || numPower <=0) return true;
 	return false;
 }
