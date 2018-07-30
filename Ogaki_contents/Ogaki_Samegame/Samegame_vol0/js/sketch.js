@@ -15,6 +15,8 @@ const B_SIZE  = 32;
 const START_X = DISP_W * 0.5 - (C_MAX-1) * B_SIZE * 0.5;
 const START_Y = DISP_H - R_MAX * B_SIZE;
 
+const CHAINS = 3;
+
 let assets = {};
 
 let numTimer  = 30;
@@ -86,18 +88,30 @@ function getIndex(arr){
 	return floor(random(0, arr.length));
 }
 
-//==========
-// Sprite
-const SPRITE_CLS = p5.prototype.Sprite.prototype;
-
-SPRITE_CLS.vanish = function(){
-	this.scale = 0.8;
-	setTimeout(()=>{
-		this.remove();
-	}, 100);
+function createBall(x, y, r, c, index){
+	let ball = createSprite(x, y, 32, 32);
+	ball.addImage(assets[images[index]]);
+	ball.r = r; ball.c = c;
+	ball.index = index; ball.debug = DEBUG;
+	ball.onMouseReleased = (e)=>{
+		if(activeFlg == false) return;
+		activeFlg = false;
+		setTimeout(()=>{activeFlg = true}, 800);
+		matrix = checkMatrix(matrix, ball);
+	}
+	return ball;
 }
 
-SPRITE_CLS.moveTo = function(x, y){
+//==========
+// Sprite
+const SPRITE_CLS = p5.prototype.Sprite;
+
+SPRITE_CLS.prototype.vanish = function(){
+	this.scale = 0.8;
+	setTimeout(()=>{this.remove();}, 100);
+}
+
+SPRITE_CLS.prototype.moveTo = function(x, y){
 	let time = 1000 * 0.2;
 	let distance = Math.sqrt(
 		Math.pow(x-this.position.x,2) + 
@@ -114,6 +128,9 @@ SPRITE_CLS.moveTo = function(x, y){
 	}, time * 1.05);// Delayed...
 }
 
+//==========
+// Matrix
+
 function createMatrix(){
 	let matrix = [];
 	for(let r=0; r<R_MAX; r++){
@@ -125,35 +142,10 @@ function createMatrix(){
 	return matrix;
 }
 
-function createBall(x, y, r, c, index){
-	let ball = createSprite(x, y, 32, 32);
-	ball.addImage(assets[images[index]]);
-	ball.r = r; ball.c = c;
-	ball.index = index; ball.debug = DEBUG;
-	ball.onMouseReleased = (e)=>{
-		if(activeFlg == false) return;
-		activeFlg = false;
-		setTimeout(()=>{activeFlg = true}, 800);
-		matrix = checkMatrix(matrix, ball);
-	}
-	return ball;
-}
-
 function checkMatrix(mtxBef, ball){
-	//console.log("checkMatrix:" + ball.r + ", " + ball.c);
 
 	let checked = searchMatrix(mtxBef, ball);
- 	//if(checked.length < 3) return mtxBef;
-
-	// Sort
-	function compare(a, b){
-		if(a.r < b.r) return -1;
-		if(b.r < a.r) return 1;
-		if(a.c < b.c) return -1;
-		if(b.c < a.c) return 1;
-		return 0;
-	}
-	checked.sort(compare);
+ 	if(checked.length < CHAINS) return mtxBef;
 
 	// Remove
 	for(let i=checked.length-1; 0<=i; i--){
@@ -208,7 +200,6 @@ function checkMatrix(mtxBef, ball){
 }
 
 function searchMatrix(mtxBef, ball){
-	//console.log("searchMatrix:" + ball.r + ", " + ball.c);
 
 	let checked = [];
 	checkHV(ball);// Target
@@ -240,5 +231,13 @@ function searchMatrix(mtxBef, ball){
 		return false;
 	}
 
-	return checked;
+	function compare(a, b){
+		if(a.r < b.r) return -1;
+		if(b.r < a.r) return 1;
+		if(a.c < b.c) return -1;
+		if(b.c < a.c) return 1;
+		return 0;
+	}
+
+	return checked.sort(compare);
 }
