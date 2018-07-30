@@ -3,9 +3,10 @@
 
 console.log("Hello p5.js!!");
 
-const DISP_W  = 480;
-const DISP_H  = 320;
-const DEBUG   = false;
+const DISP_W = 480;
+const DISP_H = 320;
+const F_RATE = 32;
+const DEBUG  = false;
 
 const R_MAX   = 9;
 const C_MAX   = 14;
@@ -36,8 +37,8 @@ const sounds = [
 ];
 
 function setup(){
-	createCanvas(480, 320);
-	frameRate(32);
+	createCanvas(DISP_W, DISP_H);
+	frameRate(F_RATE);
 
 	let matrix = createMatrix();
 	for(let r=0; r<R_MAX; r++){
@@ -77,6 +78,35 @@ function preload(){
 	for(let i=0; i<sounds.length; i++){
 		assets[sounds[i]] = loadSound(sounds[i]);
 	}
+}
+
+//==========
+// Sprite
+const SPRITE_CLS = p5.prototype.Sprite.prototype;
+
+SPRITE_CLS.vanish = function(){
+	this.scale = 0.8;
+	setTimeout(()=>{
+		this.remove();
+	}, 100);
+}
+
+SPRITE_CLS.moveTo = function(x, y){
+	let time = 1000 * 0.3;
+	let distance = Math.sqrt(
+		Math.pow(x-this.position.x,2) + 
+		Math.pow(y-this.position.y,2));
+	let speed = distance / time * F_RATE;
+
+	let rad = Math.atan2(y-this.position.y, x-this.position.x);
+	let deg = rad * 180 / Math.PI;
+	this.setSpeed(speed, deg);
+
+	setTimeout(()=>{
+		this.position.x = x;
+		this.position.y = y;
+		this.setSpeed(0, 0);
+	}, time*1.1);// Delayed...
 }
 
 function createMatrix(){
@@ -147,7 +177,8 @@ function checkMatrix(mtxBef, ball){
 	for(let i=checked.length-1; 0<=i; i--){
 		let r = checked[i].r;
 		let c = checked[i].c;
-		mtxBef[r][c].remove();
+		//mtxBef[r][c].remove();
+		mtxBef[r][c].vanish();
 		mtxBef[r][c] = null;
 	}
 
@@ -176,8 +207,7 @@ function checkMatrix(mtxBef, ball){
 			if(mtxAft[r][c] == null) continue;
 			let x = START_X + c * B_SIZE;
 			let y = START_Y + r * B_SIZE;
-			mtxAft[r][c].position.x = x;
-			mtxAft[r][c].position.y = y;
+			mtxAft[r][c].moveTo(x, y);
 		}
 	}
 
