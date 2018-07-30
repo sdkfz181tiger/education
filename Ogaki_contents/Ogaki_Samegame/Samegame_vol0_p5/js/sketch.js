@@ -20,6 +20,9 @@ let assets = {};
 let numTimer  = 30;
 let msg       = "";
 
+let activeFlg = false;
+let matrix    = null;
+
 const images = [
 	"images/bomb.png",
 	"images/daruma.png",
@@ -40,14 +43,14 @@ function setup(){
 	createCanvas(DISP_W, DISP_H);
 	frameRate(F_RATE);
 
-	let matrix = createMatrix();
+	activeFlg = true;
+	matrix = createMatrix();
 	for(let r=0; r<R_MAX; r++){
 		for(let c=0; c<C_MAX; c++){
-			let index = floor(random(0, images.length));
-			let ball = createBall(r, c, index);
-			ball.onMouseReleased = (e)=>{
-				matrix = checkMatrix(matrix, ball);
-			}
+			let x = START_X + c * B_SIZE;
+			let y = START_Y + r * B_SIZE;
+			let index = getIndex(images);
+			let ball = createBall(x, y, r, c, index);
 			matrix[r][c] = ball;
 		}
 	}
@@ -62,7 +65,6 @@ function draw(){
 
 //==========
 // Utility
-
 function preload(){
 	console.log("preload");
 
@@ -80,6 +82,10 @@ function preload(){
 	}
 }
 
+function getIndex(arr){
+	return floor(random(0, arr.length));
+}
+
 //==========
 // Sprite
 const SPRITE_CLS = p5.prototype.Sprite.prototype;
@@ -92,7 +98,7 @@ SPRITE_CLS.vanish = function(){
 }
 
 SPRITE_CLS.moveTo = function(x, y){
-	let time = 1000 * 0.3;
+	let time = 1000 * 0.2;
 	let distance = Math.sqrt(
 		Math.pow(x-this.position.x,2) + 
 		Math.pow(y-this.position.y,2));
@@ -105,7 +111,7 @@ SPRITE_CLS.moveTo = function(x, y){
 		this.position.x = x;
 		this.position.y = y;
 		this.setSpeed(0, 0);
-	}, time * 1.1);// Delayed...
+	}, time * 1.05);// Delayed...
 }
 
 function createMatrix(){
@@ -119,51 +125,25 @@ function createMatrix(){
 	return matrix;
 }
 
-function createBall(r, c, index){
-	let x = START_X + c * B_SIZE;
-	let y = START_Y + r * B_SIZE;
+function createBall(x, y, r, c, index){
 	let ball = createSprite(x, y, 32, 32);
 	ball.addImage(assets[images[index]]);
 	ball.r = r; ball.c = c;
 	ball.index = index; ball.debug = DEBUG;
+	ball.onMouseReleased = (e)=>{
+		if(activeFlg == false) return;
+		activeFlg = false;
+		setTimeout(()=>{activeFlg = true}, 800);
+		matrix = checkMatrix(matrix, ball);
+	}
 	return ball;
 }
 
 function checkMatrix(mtxBef, ball){
 	//console.log("checkMatrix:" + ball.r + ", " + ball.c);
 
-	let checked = [];
-	checkHV(ball);// Target
-
-	function checkHV(target){
-		checked.push({"r": target.r, "c": target.c, "index": target.index});
-		if(0 < target.c)       checkCell(target, 0, -1);// Left
-		if(target.c < C_MAX-1) checkCell(target, 0, 1); // Right
-		if(0 < target.r)       checkCell(target, -1, 0);// Top
-		if(target.r < R_MAX-1) checkCell(target, 1, 0); // Bottom
-	}
-
-	function checkCell(target, offsetR, offsetC){
-		let r = target.r + offsetR;
-		let c = target.c + offsetC;
-		if(isChecked(mtxBef[r][c]) == true) return;
-		if(mtxBef[r][c].index == target.index){
-			checkHV(mtxBef[r][c]);// Recursive
-		}
-	}
-
-	function isChecked(target){
-		for(let i=0; i<checked.length; i++){
-			if(target == null) return true;
-			if(target.r == checked[i].r && target.c == checked[i].c){
-				return true;
-			}
-		}
-		return false;
-	}
- 
- 	console.log("checked:" + checked.length);
- 	if(checked.length < 3) return mtxBef;
+	let checked = searchMatrix(mtxBef, ball);
+ 	//if(checked.length < 3) return mtxBef;
 
 	// Sort
 	function compare(a, b){
@@ -202,15 +182,63 @@ function checkMatrix(mtxBef, ball){
 		}
 	}
 
-	// Reposition
+	// Fill or Reposition
 	for(let r=0; r<R_MAX; r++){
 		for(let c=0; c<C_MAX; c++){
-			if(mtxAft[r][c] == null) continue;
 			let x = START_X + c * B_SIZE;
 			let y = START_Y + r * B_SIZE;
-			mtxAft[r][c].moveTo(x, y);
+			if(mtxAft[r][c] == null){
+				let x = START_X + c * B_SIZE;
+				let y = START_Y + r * B_SIZE;
+				let index = getIndex(images);
+				let ball = createBall(x, y-B_SIZE, r, c, index);
+				ball.visible = false;
+				setTimeout(()=>{
+					ball.visible = true;
+					ball.moveTo(x, y);
+				}, 500);
+				mtxAft[r][c] = ball;
+			}else{
+				mtxAft[r][c].moveTo(x, y);
+			}
 		}
 	}
 
 	return mtxAft;
+}
+
+function searchMatrix(mtxBef, ball){
+	//console.log("searchMatrix:" + ball.r + ", " + ball.c);
+
+	let checked = [];
+	checkHV(ball);// Target
+
+	function checkHV(target){
+		checked.push({"r": target.r, "c": target.c, "index": target.index});
+		if(0 < target.c)       checkCell(target, 0, -1);// Left
+		if(target.c < C_MAX-1) checkCell(target, 0, 1); // Right
+		if(0 < target.r)       checkCell(target, -1, 0);// Top
+		if(target.r < R_MAX-1) checkCell(target, 1, 0); // Bottom
+	}
+
+	function checkCell(target, offsetR, offsetC){
+		let r = target.r + offsetR;
+		let c = target.c + offsetC;
+		if(isChecked(mtxBef[r][c]) == true) return;
+		if(mtxBef[r][c].index == target.index){
+			checkHV(mtxBef[r][c]);// Recursive
+		}
+	}
+
+	function isChecked(target){
+		for(let i=0; i<checked.length; i++){
+			if(target == null) return true;
+			if(target.r == checked[i].r && target.c == checked[i].c){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	return checked;
 }
