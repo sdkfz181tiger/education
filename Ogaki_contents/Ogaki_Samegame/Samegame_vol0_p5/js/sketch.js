@@ -97,7 +97,6 @@ SPRITE_CLS.moveTo = function(x, y){
 		Math.pow(x-this.position.x,2) + 
 		Math.pow(y-this.position.y,2));
 	let speed = distance / time * F_RATE;
-
 	let rad = Math.atan2(y-this.position.y, x-this.position.x);
 	let deg = rad * 180 / Math.PI;
 	this.setSpeed(speed, deg);
@@ -106,7 +105,7 @@ SPRITE_CLS.moveTo = function(x, y){
 		this.position.x = x;
 		this.position.y = y;
 		this.setSpeed(0, 0);
-	}, time*1.1);// Delayed...
+	}, time * 1.1);// Delayed...
 }
 
 function createMatrix(){
@@ -131,7 +130,7 @@ function createBall(r, c, index){
 }
 
 function checkMatrix(mtxBef, ball){
-	console.log("checkMatrix:" + ball.r + ", " + ball.c);
+	//console.log("checkMatrix:" + ball.r + ", " + ball.c);
 
 	let checked = [];
 	checkHV(ball);// Target
@@ -162,6 +161,9 @@ function checkMatrix(mtxBef, ball){
 		}
 		return false;
 	}
+ 
+ 	console.log("checked:" + checked.length);
+ 	if(checked.length < 3) return mtxBef;
 
 	// Sort
 	function compare(a, b){
@@ -177,7 +179,6 @@ function checkMatrix(mtxBef, ball){
 	for(let i=checked.length-1; 0<=i; i--){
 		let r = checked[i].r;
 		let c = checked[i].c;
-		//mtxBef[r][c].remove();
 		mtxBef[r][c].vanish();
 		mtxBef[r][c] = null;
 	}
