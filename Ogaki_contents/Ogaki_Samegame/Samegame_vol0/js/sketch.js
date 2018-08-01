@@ -8,7 +8,11 @@ const DISP_H = 320;
 const F_RATE = 32;
 const DEBUG  = false;
 
-const R_MAX   = 9;
+const TIME_LIMIT    = 60;
+const TIME_INTERVAL = 1000 * 1;
+const SCORE_MIN     = 0;
+
+const R_MAX   = 8;
 const C_MAX   = 14;
 const B_SIZE  = 32;
 
@@ -19,7 +23,8 @@ const CHAINS = 3;
 
 let assets = {};
 
-let numTimer  = 30;
+let numTimer  = TIME_LIMIT;
+let numScore  = SCORE_MIN;
 let msg       = "";
 
 let activeFlg = false;
@@ -41,32 +46,6 @@ const sounds = [
 	"sounds/shot.mp3",
 ];
 
-function setup(){
-	createCanvas(DISP_W, DISP_H);
-	frameRate(F_RATE);
-
-	activeFlg = true;
-	matrix = createMatrix();
-	for(let r=0; r<R_MAX; r++){
-		for(let c=0; c<C_MAX; c++){
-			let x = START_X + c * B_SIZE;
-			let y = START_Y + r * B_SIZE;
-			let index = getIndex(images);
-			let ball = createBall(x, y, r, c, index);
-			matrix[r][c] = ball;
-		}
-	}
-}
-
-function draw(){
-	background(0, 0, 0);
-	
-	// Sprites
-	drawSprites();
-}
-
-//==========
-// Utility
 function preload(){
 	console.log("preload");
 
@@ -83,6 +62,39 @@ function preload(){
 		assets[sounds[i]] = loadSound(sounds[i]);
 	}
 }
+
+function setup(){
+	createCanvas(DISP_W, DISP_H);
+	frameRate(F_RATE);
+
+	activeFlg = true;
+	matrix = createMatrix();
+	for(let r=0; r<R_MAX; r++){
+		for(let c=0; c<C_MAX; c++){
+			let x = START_X + c * B_SIZE;
+			let y = START_Y + r * B_SIZE;
+			let index = getIndex(images);
+			let ball = createBall(x, y, r, c, index);
+			matrix[r][c] = ball;
+		}
+	}
+
+	// CountDown
+	startCountDown();
+}
+
+function draw(){
+	background(0, 0, 0);
+
+	// Sprites
+	drawSprites();
+
+	// Status
+	drawStatuses();
+}
+
+//==========
+// Utility
 
 function getIndex(arr){
 	return floor(random(0, arr.length));
@@ -128,6 +140,50 @@ SPRITE_CLS.prototype.moveTo = function(x, y){
 	}, time * 1.05);// Delayed...
 }
 
+function startCountDown(){
+	//console.log("startCountDown");
+	if(isFinished()) return;// Finished?
+
+	// CountDown
+	numTimer--;
+	if(numTimer <= 0){
+		gameOver();
+	}
+	// Timeout
+	setTimeout(startCountDown, TIME_INTERVAL);
+}
+
+function playSound(path){
+	if(assets[path].isPlaying()){
+		assets[path].stop();
+	}
+	assets[path].play();
+}
+
+function drawStatuses(){
+	fill(255, 200, 200);
+	textSize(16);
+	let msgTimer = "TIME:" + numTimer;
+	let msgScore = "SCORE:" + numScore;
+	textAlign(LEFT);
+	text(msgTimer , 10, 20);
+	textAlign(RIGHT);
+	text(msgScore , width-10, 20);
+	textAlign(CENTER);
+	text(msg, width*0.5, 20);
+}
+
+function isFinished(){
+	if(numTimer <= 0) return true;
+	return false;
+}
+
+function gameOver(){
+	msg = "GAME OVER!!";
+	playSound("sounds/gameover.mp3");
+	noLoop();
+}
+
 //==========
 // Matrix
 
@@ -146,6 +202,9 @@ function checkMatrix(mtxBef, ball){
 
 	let checked = searchMatrix(mtxBef, ball);
  	if(checked.length < CHAINS) return mtxBef;
+
+ 	// Score
+ 	numScore += checked.length;
 
 	// Remove
 	for(let i=checked.length-1; 0<=i; i--){

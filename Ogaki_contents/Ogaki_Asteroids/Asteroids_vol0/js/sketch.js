@@ -42,6 +42,23 @@ const sounds = [
 	"sounds/shot.mp3",
 ];
 
+function preload(){
+	console.log("preload");
+
+	// Font
+	let font = loadFont("fonts/misaki_gothic.ttf");
+	textFont(font);
+
+	// Images
+	for(let i=0; i<images.length; i++){
+		assets[images[i]] = loadImage(images[i]);
+	}
+	// Sounds
+	for(let i=0; i<sounds.length; i++){
+		assets[sounds[i]] = loadSound(sounds[i]);
+	}
+}
+
 function setup(){
 	createCanvas(480, 320);
 	frameRate(32);
@@ -87,11 +104,11 @@ function draw(){
 	cleanOutside(asteroids);
 	cleanOutside(bullets);
 
-	// Status
-	drawStatuses();
-
 	// Sprites
 	drawSprites();
+
+	// Status
+	drawStatuses();
 }
 
 function keyPressed(){
@@ -128,52 +145,6 @@ function keyReleased(){
 
 //==========
 // Utility
-
-function startAsteroids(){
-	//console.log("startAsteroids");
-	if(isFinished()) return;// Finished?
-
-	// Asteroids
-	if(asteroids.length < ASTEROID_LIMIT){
-
-		let rdm = floor(random(1, images.length-1));
-		let asteroid = createAsteroid(
-				ASTEROID_SPEED_MIN, ASTEROID_SPEED_MAX, images[rdm]);
-		asteroids.push(asteroid);
-	}
-	// Timeout
-	setTimeout(startAsteroids, ASTEROID_INTERVAL);
-}
-
-function startCountDown(){
-	//console.log("startCountDown");
-	if(isFinished()) return;// Finished?
-
-	// CountDown
-	numTimer--;
-	if(numTimer <= 0 && 0 < numPower){
-		gameClear();
-	}
-	// Timeout
-	setTimeout(startCountDown, TIME_INTERVAL);
-}
-
-function preload(){
-	console.log("preload");
-
-	// Font
-	let font = loadFont("fonts/misaki_gothic.ttf");
-	textFont(font);
-
-	// Images
-	for(let i=0; i<images.length; i++){
-		assets[images[i]] = loadImage(images[i]);
-	}
-	// Sounds
-	for(let i=0; i<sounds.length; i++){
-		assets[sounds[i]] = loadSound(sounds[i]);
-	}
-}
 
 function createPlayer(x, y, path){
 	let spr = createSprite(x, y, 16, 16);
@@ -240,6 +211,35 @@ function isOutside(sprite){
 	return false;
 }
 
+function startAsteroids(){
+	//console.log("startAsteroids");
+	if(isFinished()) return;// Finished?
+
+	// Asteroids
+	if(asteroids.length < ASTEROID_LIMIT){
+
+		let rdm = floor(random(1, images.length-1));
+		let asteroid = createAsteroid(
+				ASTEROID_SPEED_MIN, ASTEROID_SPEED_MAX, images[rdm]);
+		asteroids.push(asteroid);
+	}
+	// Timeout
+	setTimeout(startAsteroids, ASTEROID_INTERVAL);
+}
+
+function startCountDown(){
+	//console.log("startCountDown");
+	if(isFinished()) return;// Finished?
+
+	// CountDown
+	numTimer--;
+	if(numTimer <= 0 && 0 < numPower){
+		gameClear();
+	}
+	// Timeout
+	setTimeout(startCountDown, TIME_INTERVAL);
+}
+
 function playSound(path){
 	if(assets[path].isPlaying()){
 		assets[path].stop();
@@ -248,6 +248,7 @@ function playSound(path){
 }
 
 function drawStatuses(){
+	fill(255, 200, 200);
 	textSize(16);
 	let msgTimer = "TIME:" + numTimer;
 	let msgPower = "POWER:" + numPower;
@@ -255,9 +256,8 @@ function drawStatuses(){
 	text(msgTimer , 10, 20);
 	textAlign(RIGHT);
 	text(msgPower , width-10, 20);
-	textSize(32);
 	textAlign(CENTER);
-	text(msg, width*0.5, height*0.5);
+	text(msg, width*0.5, 20);
 }
 
 function isFinished(){
