@@ -12,14 +12,15 @@ const TIME_LIMIT    = 60;
 const TIME_INTERVAL = 1000 * 1;
 const SCORE_MIN     = 0;
 
-const R_MAX   = 8;
-const C_MAX   = 14;
-const B_SIZE  = 32;
+const R_MAX  = 8;
+const C_MAX  = 13;
+const B_SIZE = 32;
+const B_PADD = 4;
 
-const START_X = DISP_W * 0.5 - (C_MAX-1) * B_SIZE * 0.5;
-const START_Y = DISP_H - R_MAX * B_SIZE;
+const START_X = DISP_W * 0.5 - (C_MAX-1) * (B_SIZE+B_PADD) * 0.5;
+const START_Y = DISP_H - R_MAX * (B_SIZE+B_PADD) + 16;
 
-const CHAINS = 3;
+const CHAINS = 1;
 
 let assets = {};
 
@@ -31,10 +32,17 @@ let activeFlg = false;
 let matrix    = null;
 
 const images = [
-	"images/bomb.png",
-	"images/daruma.png",
-	"images/tanuki.png",
-	"images/ume.png",
+	"images/apple.png",
+	"images/banana.png",
+	"images/berry.png",
+	"images/cherry.png",
+	"images/kiwi.png",
+	"images/orange.png",
+	"images/peach.png",
+	"images/pear.png",
+	"images/pine.png",
+	"images/strawberry.png",
+	"images/watermelon.png",
 ];
 
 const sounds = [
@@ -71,8 +79,8 @@ function setup(){
 	matrix = createMatrix();
 	for(let r=0; r<R_MAX; r++){
 		for(let c=0; c<C_MAX; c++){
-			let x = START_X + c * B_SIZE;
-			let y = START_Y + r * B_SIZE;
+			let x = START_X + c * (B_SIZE+B_PADD);
+			let y = START_Y + r * (B_SIZE+B_PADD);
 			let index = getIndex(images);
 			let ball = createBall(x, y, r, c, index);
 			matrix[r][c] = ball;
@@ -84,7 +92,7 @@ function setup(){
 }
 
 function draw(){
-	background(0, 0, 0);
+	background(33, 33, 33);
 
 	// Sprites
 	drawSprites();
@@ -161,16 +169,16 @@ function playSound(path){
 }
 
 function drawStatuses(){
-	fill(255, 200, 200);
-	textSize(16);
+	fill(255, 255, 255);
+	textSize(24);
 	let msgTimer = "TIME:" + numTimer;
 	let msgScore = "SCORE:" + numScore;
 	textAlign(LEFT);
-	text(msgTimer , 10, 20);
+	text(msgTimer , 10, 25);
 	textAlign(RIGHT);
-	text(msgScore , width-10, 20);
+	text(msgScore , width-10, 25);
 	textAlign(CENTER);
-	text(msg, width*0.5, 20);
+	text(msg, width*0.5, 25);
 }
 
 function isFinished(){
@@ -236,13 +244,13 @@ function checkMatrix(mtxBef, ball){
 	// Fill or Reposition
 	for(let r=0; r<R_MAX; r++){
 		for(let c=0; c<C_MAX; c++){
-			let x = START_X + c * B_SIZE;
-			let y = START_Y + r * B_SIZE;
+			let x = START_X + c * (B_SIZE+B_PADD);
+			let y = START_Y + r * (B_SIZE+B_PADD);
 			if(mtxAft[r][c] == null){
-				let x = START_X + c * B_SIZE;
-				let y = START_Y + r * B_SIZE;
+				let x = START_X + c * (B_SIZE+B_PADD);
+				let y = START_Y + r * (B_SIZE+B_PADD);
 				let index = getIndex(images);
-				let ball = createBall(x, y-B_SIZE, r, c, index);
+				let ball = createBall(x, y-(B_SIZE+B_PADD), r, c, index);
 				ball.visible = false;
 				setTimeout(()=>{
 					ball.visible = true;
