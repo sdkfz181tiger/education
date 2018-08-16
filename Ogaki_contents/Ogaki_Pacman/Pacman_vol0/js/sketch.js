@@ -3,18 +3,18 @@
 
 console.log("Hello p5.js!!");
 
-const DEBUG           = false;
-
-const PLAYER_SPEED    = 4;
-const PLAYER_FRICTION = 0.95;
+const DEBUG  = false;
+const F_RATE = 32;
+const DEG_TO_RAD = Math.PI / 180;
+const RAD_TO_DEG = 180 / Math.PI;
 
 let assets = {};
 let player = null;
 let tMap   = null;
-let tMapX, tMapY = 0.0;
+let tMapX, tMapY = null;
 
 const images = [
-	"images/soldier.png", "images/bkg.png",// Soldier, Background
+	"images/tanuki.png",
 	"images/earth.png",   "images/moon.png",   "images/ume.png", 
 	"images/inv1a.png",   "images/inv2a.png",  "images/inv3a.png",
 	"images/inv4a.png",   "images/inv5a.png",  "images/inv6a.png",
@@ -47,57 +47,49 @@ function preload(){
 	}
 	// Tilemap
 	tMap = loadTiledMap("desert", "tiledmaps");
+	tMap.setPositionMode("MAP");
+	tMapX = 0;
+	tMapY = 0;
 }
 
 function setup(){
 	createCanvas(480, 320);
-	frameRate(32);
+	frameRate(F_RATE);
 
-	// Player
-	player = createPlayer(width/2, height/2, "images/soldier.png");
-
-	// TiledMap
-	tMap.setPositionMode("MAP");
-	tMap.setDrawMode(CENTER);
-	let tSize = tMap.getMapSize();
-	tMapX = tSize.x * 0.5;
-	tMapY = tSize.y * 0.5;
+	// Player 
+	player = new Player(0, 0, "images/tanuki.png");
+	player.readyGrid(4, 2);
 }
 
 function draw(){
 	background(0, 0, 0);
 
-	// Player
-	if(player.position.x < 0) player.position.x = width;
-	if(width < player.position.x) player.position.x = 0;
-	if(player.position.y < 0) player.position.y = height;
-	if(height < player.position.y) player.position.y = 0;
-
 	// TiledMap
 	tMap.draw(tMapX, tMapY);
 
-	// Sprites
-	drawSprites();
+	if(keyIsPressed){
+		if(key == "a" || key == "A") tMapX -= 0.25;
+		if(key == "d" || key == "D") tMapX += 0.25;
+		if(key == "w" || key == "W") tMapY -= 0.25;
+		if(key == "s" || key == "S") tMapY += 0.25;
+	}
+
+	player.draw();
 }
 
 function keyPressed(){
+	if(keyCode == 38) player.startStep(0, -1);
+	if(keyCode == 40) player.startStep(0, 1);
+	if(keyCode == 37) player.startStep(-1, 0);
+	if(keyCode == 39) player.startStep(1, 0);
+}
 
-	// Up
-	if(keyCode == 38){
-		player.setSpeed(PLAYER_SPEED, 270);
-	}
-	// Down
-	if(keyCode == 40){
-		player.setSpeed(PLAYER_SPEED, 90);
-	}
-	// Left
-	if(keyCode == 37){
-		player.setSpeed(PLAYER_SPEED, 180);
-	}
-	// Right
-	if(keyCode == 39){
-		player.setSpeed(PLAYER_SPEED, 0);
-	}
+function keyReleased(){
+	//player.stopStep();
+}
+
+function mousePressed(){
+	//player.startMove(mouseX, mouseY);
 }
 
 //==========
@@ -106,7 +98,6 @@ function keyPressed(){
 function createPlayer(x, y, path){
 	let spr = createSprite(x, y, 16, 16);
 	spr.addImage(assets[path]);
-	spr.friction = PLAYER_FRICTION;
 	spr.debug = DEBUG;
 	return spr;
 }
@@ -151,4 +142,78 @@ function gameOver(){
 	msg = "GAME OVER!!";
 	playSound("sounds/gameover.mp3");
 	noLoop();
+}
+
+class Player{
+
+	constructor(x, y, path){
+		this._x  = x; this._y  = y;
+		this._vX = 0; this._vY = 0;
+		this._gX = 0; this._gY = 0;
+		this._dX = x; this._dY = y;
+		this._speed  = 128; this._deg = 0;
+		this._image  = assets[path];
+		this._width  = this._image.width;
+		this._height = this._image.height;
+	}
+
+	readyGrid(gX, gY){
+		setTimeout(()=>{
+			this._gX += gX; this._gY += gY;
+			let mSize = tMap.getMapSize();
+			let tSize = tMap.getTileSize();
+			let mX = tMap.getPosition().x * tSize.x;
+			let mY = tMap.getPosition().y * tSize.y;
+			this._dX = mX + this._gX * tSize.x;
+			this._dY = mY + this._gY * tSize.y;
+		}, 300);
+	}
+
+	startStep(gX, gY){
+		this._gX += gX; this._gY += gY;
+		let mSize = tMap.getMapSize();
+		let tSize = tMap.getTileSize();
+		let mX = tMap.getPosition().x * tSize.x;
+		let mY = tMap.getPosition().y * tSize.y;
+		let dX = mX + this._gX * tSize.x;
+		let dY = mY + this._gY * tSize.y;
+		this.startMove(dX, dY);
+	}
+
+	stopStep(){
+		this.stopMove();
+	}
+
+	startMove(dX, dY){
+		this._dX  = dX; this._dY = dY;
+		let disX  = this._dX - this._x;
+		let disY  = this._dY - this._y;
+		let rad   = Math.atan2(disY, disX);
+		this._vX  = this._speed * Math.cos(rad);
+		this._vY  = this._speed * Math.sin(rad);
+		this._deg = rad * RAD_TO_DEG;
+	}
+
+	stopMove(){
+		this._vX = 0; this._vY = 0;
+	}
+
+	draw(){
+		let disX = this._dX - this._x;
+		let disY = this._dY - this._y;
+		let rad  = Math.atan2(disY, disX);
+		this._vX = this._speed * Math.cos(rad);
+		this._vY = this._speed * Math.sin(rad);
+		this._x += this._vX / F_RATE;
+		this._y += this._vY / F_RATE;
+		let distance = disX*disX + disY*disY;
+		if(distance < 25) {
+			this._x = this._dX; this._y = this._dY;
+			this._vX = 0.0; this._vY = 0.0;
+			this.stopMove();
+		}
+		image(this._image, 
+			this._x - this._width * 0.5, 
+			this._y - this._height * 0.5);
+	}
 }
