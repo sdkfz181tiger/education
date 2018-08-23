@@ -13,8 +13,6 @@ let ground;
 let base;
 let smoke;
 
-let target;
-
 function preload(){
 	console.log("preload");
 
@@ -25,7 +23,7 @@ function preload(){
 
 function setup(){
 	createCanvas(480, 320);
-	frameRate(8);
+	frameRate(32);
 	noFill();
 	noStroke();
 
@@ -38,8 +36,6 @@ function setup(){
 	base = new Base(position.x, position.y, 40, 10);
 	// Smoke
 	smoke = new Smoke();
-	// Target
-	target = {x: 0, y: 0};
 }
 
 function draw(){
@@ -48,72 +44,16 @@ function draw(){
 	stroke(255);
 	fill(255);
 
-	// let c  = {x: width*0.5, y: height*0.5};
-	// let v1 = {x: 50,  y: 50};
-	// line(c.x, c.y, c.x+v1.x, c.y+v1.y);
-
-	// let vL = calcVerticalL(v1);
-	// line(c.x, c.y, c.x+vL.x, c.y+vL.y);
-
-	// let p1 = {x: target.x-c.x, y: target.y-c.y};
-	// ellipse(c.x+p1.x, c.y+p1.y, 3, 3);
-
-	// let dot = calcDot(vL, p1);
-	// let cos = dot / (calcLength(vL) * calcLength(p1));
-	
-	// if(0 < cos){
-	// 	console.log("前です:" + cos);
-	// }else{
-	// 	console.clear();
-	// }
-
-	if(isRside(width*0.5, height*0.5, 100, 100, target.x, target.y)){
-		console.log("右です");
-		ellipse(target.x, target.y, 3, 3);
-	}else{
-		console.clear();
-	}
-
-	function isRside(fromX, fromY, toX, toY, pX, pY){
-
-		line(fromX, fromY, toX, toY);
-
-		let c  = {x: fromX, y: fromY};
-		let v1 = {x: toX-fromX,  y: toY-fromY};
-		let vL = calcVerticalR(v1);
-		let p1 = {x: pX-fromX, y: pY-fromY};
-		let dot = calcDot(vL, p1);
-		let cos = dot / (calcLength(vL) * calcLength(p1));
-		if(0 < cos) return true;
-		return false;
-	}
-
-	function calcVerticalL(v1){
-		let l = {x: v1.y, y: v1.x*-1.0};
-		return l;
-	}
-
-	function calcVerticalR(v){
-		let r = {x: v.y*-1.0, y: v.x};
-		return r;
-	}
-
-	function calcDot(v1, v2){
-		let dot = v1.x * v2.x + v1.y * v2.y;
-		return dot;
-	}
-
-	function calcLength(v){
-		let length = Math.sqrt(v.x*v.x+v.y*v.y);
-		return length;
-	}
-
-	/*
 	// Draw
 	rocket.draw();
 	ground.draw();
 	base.draw();
 	smoke.draw();
+
+	// Rocket x Ground
+	if(ground.contains(rocket.getX(), rocket.getY())){
+		gameOver();
+	}
 
 	// Rocket x Base
 	if(base.contains(rocket.getX(), rocket.getY())){
@@ -126,7 +66,6 @@ function draw(){
 
 	// Statuses
 	drawStatuses();
-	*/
 }
 
 function keyPressed(){
@@ -137,12 +76,6 @@ function keyPressed(){
 	}
 	if(keyCode == 37) rocket.turn(-4);
 	if(keyCode == 39) rocket.turn(+4);
-}
-
-function mousePressed(){
-	target.x = mouseX;
-	target.y = mouseY;
-	return false;
 }
 
 //==========
@@ -208,29 +141,36 @@ class Rocket{
 		this._rad = DEG_TO_RAD * this._deg;
 		this._vX = 0; this._vY = 0;
 	}
+
 	getX(){
 		return this._x;
 	}
+
 	getY(){
 		return this._y;
 	}
+
 	thrust(s){
 		this._speed = s;
 		this._vX += this._speed * Math.cos(this._rad);
 		this._vY += this._speed * Math.sin(this._rad);
 	}
+
 	turn(d){
 		this._deg += d;
 		this._rad = DEG_TO_RAD * this._deg;
 	}
+
 	getSpeed(){
 		let speed = Math.sqrt(this._vX*this._vX + this._vY*this._vY);
 		this._speed = Math.floor(speed*100) / 100;
 		return this._speed;
 	}
+
 	getDeg(){
 		return this._deg;
 	}
+
 	draw(){
 		this._x += this._vX;
 		this._y += this._vY;
@@ -261,8 +201,9 @@ class Ground{
 		this._minY = minY;
 		this._maxY = maxY;
 		this._arr = [];
-		this.init(10);
+		this.init(15);
 	}
+
 	init(total){
 		let padX = width / total;
 		let padY = 30;
@@ -281,18 +222,35 @@ class Ground{
 		}
 		console.log(this._arr);
 	}
+
 	getBasePosition(){
 		let i = Math.floor(Math.random() * (this._arr.length - 2));
 		return this._arr[i+1];
 	}
+
+	contains(x, y){
+		for(let i=0; i<this._arr.length-1; i++){
+			let fromX = this._arr[i].x;
+			let fromY = this._arr[i].y;
+			let toX = this._arr[i+1].x;
+			let toY = this._arr[i+1].y;
+			if(x < fromX) continue;
+			if(toX < x)   continue;
+			if(isRight(fromX, fromY, toX, toY, x, y)){
+				return true;
+			}
+		}
+		return false;
+	}
+
 	draw(){
 		noFill();
 		stroke(255, 255, 255);
-		for(let i=1; i<this._arr.length; i++){
-			let fromX = this._arr[i-1].x;
-			let fromY = this._arr[i-1].y;
-			let toX = this._arr[i].x;
-			let toY = this._arr[i].y;
+		for(let i=0; i<this._arr.length-1; i++){
+			let fromX = this._arr[i].x;
+			let fromY = this._arr[i].y;
+			let toX = this._arr[i+1].x;
+			let toY = this._arr[i+1].y;
 			line(fromX, fromY, toX, toY);
 		}
 	}
@@ -305,12 +263,15 @@ class Base{
 		this._y = y - h;
 		this._w = w; this._h = h;
 	}
+
 	getX(){
 		return this._x;
 	}
+
 	getY(){
 		return this._y;
 	}
+
 	contains(x, y){
 		if(x < this._x) return false;
 		if(this._x + this._w < x) return false;
@@ -318,8 +279,9 @@ class Base{
 		if(this._y + this._h < y) return false;
 		return true;
 	}
+
 	draw(){
-		fill(255, 150, 150);
+		fill(150, 255, 150);
 		noStroke();
 		translate(this._x, this._y);
 		rect(0, 0, this._w, this._h)
@@ -332,10 +294,12 @@ class Smoke{
 	constructor(){
 		this._arr = [];
 	}
+
 	add(x, y, life){
 		this._arr.push(
 			{x: x, y: y, life: life});
 	}
+
 	draw(){
 		for(let i=this._arr.length-1; 0<=i; i--){
 			let obj = this._arr[i];
@@ -350,4 +314,38 @@ class Smoke{
 			if(obj.life <= 0) this._arr.splice(i, 1);
 		}
 	}
+}
+
+// Calculations
+
+function isRight(fromX, fromY, toX, toY, pX, pY){
+	line(fromX, fromY, toX, toY);
+	let c = {x:fromX, y:fromY};
+	let v = {x:toX-fromX, y:toY-fromY};
+	let u = calcVerticalR(v);
+	let p = {x:pX-fromX, y:pY-fromY};
+	let dot = calcDot(u, p);
+	let cos = dot / (calcLength(u) * calcLength(p));
+	if(0 < cos) return true;
+	return false;
+}
+
+function calcVerticalL(v1){
+	let l = {x:v1.y, y:v1.x*-1.0};
+	return l;
+}
+
+function calcVerticalR(v){
+	let r = {x:v.y*-1.0, y:v.x};
+	return r;
+}
+
+function calcDot(v1, v2){
+	let dot = v1.x * v2.x + v1.y * v2.y;
+	return dot;
+}
+
+function calcLength(v){
+	let length = Math.sqrt(v.x*v.x+v.y*v.y);
+	return length;
 }
