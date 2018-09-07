@@ -8,7 +8,6 @@ for(let i=0; i<10; i++){
 
 console.log(numbers);
 
-// フィッシャーイェーツのシャッフル
 for(let i=numbers.length-1; 0<i; i--){
 	let rdm = Math.floor(Math.random() * i);
 	let tmp = numbers[i];
