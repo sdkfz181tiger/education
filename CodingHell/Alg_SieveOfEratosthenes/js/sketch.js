@@ -18,8 +18,6 @@
 // Scratch -> JavaScript
 // -> http://ozateck.sakura.ne.jp/wordpress/category/js-x-scratch/
 
-// 九九表を作る
-
 console.log("Hello JavaScript!!");
 
 const NUM_MIN = 2;
@@ -51,7 +49,7 @@ console.log(results);
 // 配列(arr)から数値(num)の倍数に当たる数値を削除する
 function clean(num, arr){
 	for(let i=arr.length-1; 0<=i; i--){
-		if(i % num == 0) arr.splice(i, 1);
+		if(arr[i] % num == 0) arr.splice(i, 1);
 	}
 	return arr;
 }
