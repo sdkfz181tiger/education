@@ -9,7 +9,7 @@ const C_WIDTH  = 48;
 const C_HEIGHT = 58;
 
 let cards = [];
-let index = 0;
+let erat  = null;
 
 function preload(){
 
@@ -59,7 +59,8 @@ function setup(){
 		}
 	}
 
-	index = 0;
+	// Eratosthenes
+	erat = new Eratosthenes();
 }
 
 function draw(){
@@ -77,64 +78,11 @@ function mousePressed(){
 	// MousePressed
 	for(let i=0; i<cards.length; i++){
 		if(cards[i].isInside(mouseX, mouseY)){
-			if(judge(cards[i].getNumber())){
-				console.log("Hello");
+			console.log("Card:" + cards[i].getNumber());
+			if(erat.isExists(cards[i].getNumber())){
+				console.log("Prime number!!");
 				cards[i].setDisabled();
 			}
 		}
-	}
-}
-
-function judge(num){
-	if(index == num){
-		index++;
-		return true;
-	}
-	return false;
-}
-
-class Card{
-
-	constructor(x, y, w, h, num){
-		this._x    = x; this._y = y;
-		this._w    = w; this._h = h;
-		this._num  = num;
-		this._bCol = [255, 255, 255];
-		this._tCol = [33, 33, 33];
-		this._tFlg = false;
-	}
-
-	draw(){
-		fill(this._bCol[0], this._bCol[1], this._bCol[2]);
-		rect(this._x, this._y, this._w, this._h, 5);
-		textAlign(CENTER);
-		fill(this._tCol[0], this._tCol[1], this._tCol[2]);
-		text(this._num, 
-			this._x + this._w * 0.5, 
-			this._y + this._h * 0.87);
-	}
-
-	getNumber(){
-		return this._num;
-	}
-
-	setEnabled(){
-		this._tFlg = true;
-		this._bCol = [255, 255, 255];
-		this._tCol = [33, 33, 33];
-	}
-
-	setDisabled(){
-		this._tFlg = false;
-		this._bCol = [155, 100, 100];
-		this._tCol = [255, 255, 255];
-	}
-
-	isInside(x, y){
-		if(x < this._x) return false;
-		if(y < this._y) return false;
-		if(this._x + this._w < x) return false;
-		if(this._y + this._h < y) return false;
-		return true;
 	}
 }
