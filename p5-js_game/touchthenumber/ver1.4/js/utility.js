@@ -1,12 +1,19 @@
 console.log("Hello utility.js!!");
 
+const DEG_TO_RAD = Math.PI / 180;
+const RAD_TO_DEG = 180 / Math.PI;
+
 // Card
 
 class Card{
 
 	constructor(x, y, w, h, num){
-		this._x    = x; this._y = y;
-		this._w    = w; this._h = h;
+		this._x = x; this._y = y;
+		this._w = w; this._h = h;
+		this._speed = 0; 
+		this._deg = 0; this._rad = 0;
+		this._vX = 0; this._vY = 0;
+		this._tX = 0; this._tY = 0;
 		this._num  = num;
 		this._bCol = [255, 255, 255];
 		this._tCol = [33, 33, 33];
@@ -14,6 +21,9 @@ class Card{
 	}
 
 	draw(){
+		this._x += this._vX; this._y += this._vY;
+		if(this.aroundDestination()) this.stopMove();
+		// Draw
 		fill(this._bCol[0], this._bCol[1], this._bCol[2]);
 		rect(this._x, this._y, this._w, this._h, 5);
 		textAlign(CENTER);
@@ -55,6 +65,37 @@ class Card{
 		if(this._x + this._w < x) return false;
 		if(this._y + this._h < y) return false;
 		return true;
+	}
+
+	startMove(speed, tX, tY){
+		this._speed = speed;
+		this._tX = tX; this._tY = tY;
+		let dX = tX - (this._x + this._w * 0.5);
+		let dY = tY - (this._y + this._h * 0.5);
+		this._rad = Math.atan2(dY, dX);
+		this._deg = this._rad * RAD_TO_DEG;
+		this._vX = this._speed * Math.cos(this._rad);
+		this._vY = this._speed * Math.sin(this._rad);
+	}
+
+	stopMove(){
+		this._vX = 0; this._vY = 0;
+		this._speed = 0;
+	}
+
+	aroundDestination(){
+		let dX = this._tX - (this._x + this._w * 0.5);
+		let dY = this._tY - (this._y + this._h * 0.5);
+		if(0 < this._vX && dX < 0) this._vX *= -0.5;
+		if(this._vX < 0 && 0 < dX) this._vX *= -0.5;
+		if(0 < this._vY && dY < 0) this._vY *= -0.5;
+		if(this._vY < 0 && 0 < dY) this._vY *= -0.5;
+		if(Math.abs(dX) < 5 && Math.abs(dY) < 5){
+			this._x = this._tX - this._w * 0.5; 
+			this._y = this._tY - this._h * 0.5;
+			return true;
+		}
+		return false;
 	}
 }
 

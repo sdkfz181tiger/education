@@ -63,7 +63,10 @@ function setup(){
 	}
 
 	// Reset
-	resetCards(30, 250);
+	//resetCards(30, 250);
+
+	// Wander
+	wanderCards(99, 1000*3);
 }
 
 function draw(){
@@ -116,5 +119,23 @@ function resetCards(times=10, interval=1000){
 	// Timeout
 	setTimeout(()=>{
 		resetCards(times-1, interval);
+	}, interval);
+}
+
+function wanderCards(times=10, interval=1000){
+	if(times <= 0) return;
+	// Random
+	let rdm = Math.floor(Math.random() * cards.length);
+	let tX = width * Math.random();
+	let tY = height * Math.random();
+	cards[rdm].startMove(10, tX, tY);
+	let tmp = cards[rdm];
+	for(let i=rdm; i<cards.length-1; i++){
+		cards[i] = cards[i+1];
+	}
+	cards[cards.length-1] = tmp;
+	// Timeout
+	setTimeout(()=>{
+		wanderCards(times-1, interval);
 	}, interval);
 }
