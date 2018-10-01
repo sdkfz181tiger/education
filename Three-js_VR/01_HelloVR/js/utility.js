@@ -1,4 +1,1 @@
-//console.log("Hello utility.js!!");
-
-//==========
-// Utility(main)
+console.log("utility.js!!");

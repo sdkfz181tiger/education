@@ -1,10 +1,6 @@
 //==========
 // Three.js
 // -> https://threejs.org/
-// BoilerPlate
-// -> https://github.com/borismus/webvr-boilerplate
-// Polyfill
-// -> https://github.com/immersive-web/webvr-polyfill
 
 console.log("Hello Three.js!!");
 
@@ -16,6 +12,14 @@ window.onload = function(){
 
 	// Scene
 	let scene = new THREE.Scene();
+
+	// Stats
+	let stats = new Stats();
+	stats.setMode(0);
+	stats.domElement.style.position = "absolute";
+	stats.domElement.style.left = "0px";
+	stats.domElement.style.top  = "0px";
+	document.body.appendChild(stats.domElement);
 
 	// Axes
 	let axes = new THREE.AxisHelper(20);
@@ -45,7 +49,7 @@ window.onload = function(){
 	document.body.appendChild(WEBVR.createButton(renderer));
 
 	// Cube
-	let size = 50;
+	let size = 10;
 	let geometry = new THREE.BoxGeometry(size, size, size);
 	let material = new THREE.MeshNormalMaterial();
 	let cube = new THREE.Mesh(geometry, material);
@@ -55,6 +59,9 @@ window.onload = function(){
 	// Animate
 	function animate(){
 		//console.log("Animate");
+
+		// Stats
+		stats.update();
 
 		// Cube
 		cube.rotation.x += 0.01;
