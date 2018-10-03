@@ -37,7 +37,3 @@ function draw(){
 		invader.bounceWall();
 	}
 }
-
-function mousePressed(){
-	console.log("mousePressed");
-}
