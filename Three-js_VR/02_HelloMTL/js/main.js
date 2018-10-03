@@ -48,37 +48,39 @@ window.onload = function(){
 	// Button
 	document.body.appendChild(WEBVR.createButton(renderer));
 
-	// Cube
-	let size = 10;
-	let geometry = new THREE.BoxGeometry(size, size, size);
-	let material = new THREE.MeshNormalMaterial();
-	let cube = new THREE.Mesh(geometry, material);
-	cube.position.set(0, 100, -300);
-	scene.add(cube);
-
 	// Invaders
 	let invaders = [];
 
 	// Promise
 	let promises = [];
-	promises.push(asyncPromise("./models/", "invader.mtl", "invader.obj"));
+	promises.push(asyncPromise("./models/", "inv01.mtl", "inv01.obj"));
+	promises.push(asyncPromise("./models/", "inv02.mtl", "inv02.obj"));
+	promises.push(asyncPromise("./models/", "inv03.mtl", "inv03.obj"));
 	Promise.all(promises).then(
-		(results)=>{
-			console.log("results:" + results.length);
-			readyInvaders(results);
-		},
-		(error)=>{
-			console.log(error);
-		});
+		(results)=>{readyInvaders(results);},
+		(error)=>{console.log(error);});
 
 	// Ready
-	function readyInvaders(results){
-		for(invader of results){
-			invader.scale.set(3, 3, 3);
-			invader.rotation.set(0, Math.PI, 0);
-			invader.position.set(0, 0, -300);
-			invaders.push(invader);
-			scene.add(invader);// add
+	function readyInvaders(meshes){
+		console.log("Ready!!");
+
+		let rows = meshes.length;
+		let cols = 8;
+		let padding = 50;
+		let startX = -padding * (cols-1) * 0.5;
+		let startY = padding * rows * 0.0;
+		for(let r=0; r<rows; r++){
+			let invader = meshes[r];
+			for(let c=0; c<cols; c++){
+				let x = startX + padding * c;
+				let y = startY + padding * r;
+				let clone = invader.clone();
+				clone.scale.set(3, 3, 3);
+				clone.rotation.set(0, Math.PI, 0);
+				clone.position.set(x, y, -300);
+				invaders.push(clone);
+				scene.add(clone);
+			}
 		}
 	}
 
@@ -89,9 +91,12 @@ window.onload = function(){
 		// Stats
 		stats.update();
 
-		// Cube
-		cube.rotation.x += 0.01;
-		cube.rotation.y += 0.01;
+		// Invaders
+		for(invader of invaders){
+			invader.rotation.x += 0.001;
+			invader.rotation.y += 0.001;
+			invader.rotation.z += 0.001;
+		}
 
 		// Render
 		renderer.render(scene, camera);

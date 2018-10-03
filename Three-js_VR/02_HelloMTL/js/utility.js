@@ -7,7 +7,7 @@ function asyncPromise(path, mtl, obj){
 		let mtlLoader = new THREE.MTLLoader();
 		mtlLoader.setPath(path);
 		mtlLoader.load(mtl, (materials)=>{
-			console.log("onLoaded");
+			console.log("onLoaded:" + mtl);
 			materials.preload();
 			// OBJLoader
 			let objLoader = new THREE.OBJLoader();
@@ -24,7 +24,7 @@ function asyncPromise(path, mtl, obj){
 				resolve(meshes);// Resolve
 			});
 		}, (progress)=>{
-			console.log("onProgress:" + progress.loaded + "/" + progress.total);
+			console.log("onProgress");
 		}, (error)=>{
 			console.log("onError:" + error);
 			reject(error);// Reject
