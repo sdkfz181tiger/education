@@ -4,26 +4,26 @@
 
 console.log("Hello Three.js!!");
 
+// Data
+const assets = {data:[
+	{path:"./models/", mtl:"inv01.mtl", obj:"inv01.obj"},
+	{path:"./models/", mtl:"inv02.mtl", obj:"inv02.obj"},
+	{path:"./models/", mtl:"inv03.mtl", obj:"inv03.obj"},
+]};
+
 window.onload = function(){
 	console.log("OnLoad");
 
 	// ThreeManager
 	let tm = new ThreeManager();
 	tm._renderer.setAnimationLoop(animate);
-
-	// Invaders
-	let invaders = [];
-
-	// Data
-	let assets = {data:[
-		{path:"./models/", mtl:"inv01.mtl", obj:"inv01.obj"},
-		{path:"./models/", mtl:"inv02.mtl", obj:"inv02.obj"},
-		{path:"./models/", mtl:"inv03.mtl", obj:"inv03.obj"},
-	]};
 	tm.startPromise(assets, 
 		(results)=>{readyInvaders(results);},
 		(error)=>{console.log(error);});
 
+	// Invaders
+	let invaders = [];
+	
 	// Ready
 	function readyInvaders(meshes){
 		console.log("Ready!!");
@@ -51,9 +51,6 @@ window.onload = function(){
 	function animate(){
 		//console.log("Animate");
 
-		// Stats
-		tm._stats.update();
-
 		// Invaders
 		for(invader of invaders){
 			invader.rotation.x += 0.001;
@@ -61,8 +58,8 @@ window.onload = function(){
 			invader.rotation.z += 0.001;
 		}
 
-		// Render
-		tm._renderer.render(tm._scene, tm._camera);
+		// Manager
+		tm.animate();
 	};
 }
 

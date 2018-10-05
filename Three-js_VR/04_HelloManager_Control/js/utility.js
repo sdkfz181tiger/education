@@ -5,7 +5,8 @@ class ThreeManager{
 
 	constructor(){
 		console.log("ThreeManager");
-		// Polyfill
+
+		// Polyfill(for VR)
 		this._polyfill = new WebVRPolyfill();
 
 		// Scene
@@ -20,19 +21,22 @@ class ThreeManager{
 		document.body.appendChild(this._stats.domElement);
 
 		// Axes
-		this._axes = new THREE.AxisHelper(10);
+		this._axes = new THREE.AxisHelper(5);
 		this._scene.add(this._axes);
 
 		// Camera
 		this._camera = new THREE.PerspectiveCamera(
 			75, window.innerWidth/window.innerHeight, 0.1, 1000);
 
-		// Container
+		// Camera(for PC)
+		this._camera.position.set(0, 0, 10);// PCでポジションを移動させる場合
+
+		// Container(for VR)
 		this._cameraContainer = new THREE.Object3D();
 		this._cameraContainer.add(this._camera);
-		this._scene.add(this._cameraContainer);
-		this._cameraContainer.position.z = 10;
+		this._cameraContainer.position.set(0, 0, 0);// VRでポジションを移動させる場合
 		this._cameraContainer.rotation.x = Math.PI / 10;
+		this._scene.add(this._cameraContainer);
 
 		// Light
 		this._directionalLight = new THREE.DirectionalLight(0xffffff);
@@ -44,14 +48,30 @@ class ThreeManager{
 		this._renderer.setSize(window.innerWidth, window.innerHeight);
 		this._renderer.setClearColor(0x333333);
 		this._renderer.setPixelRatio(window.devicePixelRatio);
-		this._renderer.vr.enabled = true;// Important
+		//this._renderer.vr.enabled = true;// Important(for VR)
 		document.body.appendChild(this._renderer.domElement);
 
-		// Button
-		document.body.appendChild(WEBVR.createButton(this._renderer));
+		// Controls(for PC)
+		this._controls = new THREE.TrackballControls(this._camera);// Cameraのみ対応
+		this._controls.target.set(0, 0, 0);
+
+		// Button(for VR)
+		//document.body.appendChild(WEBVR.createButton(this._renderer));
 
 		// Promises
 		this._promises = [];
+	}
+
+	animate(){
+
+		// Stats
+		this._stats.update();
+
+		// Controls(for PC)
+		this._controls.update();
+
+		// Render
+		this._renderer.render(this._scene, this._camera);
 	}
 
 	//==========
