@@ -54,8 +54,6 @@ class ThreeManager{
 			// CameraContainer
 			this._cameraContainer.position.set(x, y, z);// VRでポジションを移動させる場合
 			this._cameraContainer.rotation.set(rX*DEG_TO_RAD, rY*DEG_TO_RAD, rZ*DEG_TO_RAD);
-			// Button
-			document.body.appendChild(WEBVR.createButton(this._renderer));
 		}
 
 		// Light
@@ -70,6 +68,9 @@ class ThreeManager{
 		this._renderer.setPixelRatio(window.devicePixelRatio);
 		this._renderer.vr.enabled = this._mode;// Important(for VR)
 		document.body.appendChild(this._renderer.domElement);
+
+		// Button
+		document.body.appendChild(WEBVR.createButton(this._renderer));
 
 		// Promises
 		this._promises = [];
@@ -104,7 +105,7 @@ class ThreeManager{
 		this._stats.update();
 
 		// Controls(for PC)
-		this._controls.update();
+		if(this._mode == false) this._controls.update();
 
 		// Render
 		this._renderer.render(this._scene, this._camera);
