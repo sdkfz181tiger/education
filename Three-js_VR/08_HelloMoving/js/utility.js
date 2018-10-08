@@ -178,3 +178,63 @@ class ThreeManager{
 		});
 	}
 }
+
+class Controller{
+
+	constructor(){
+		console.log("Controller");
+
+		// State
+		this._state = {
+			buttons: [false, false]// Touchpad, Trigger
+		};
+
+		// Listener
+		this._onTouchpadPressed  = null;
+		this._onTouchpadReleased = null;
+		this._onTriggerPressed   = null;
+		this._onTriggerReleased  = null;
+	}
+
+	setTouchpadListener(onPressed, onReleased){
+		if(onPressed != null)  this._onTouchpadPressed  = onPressed;
+		if(onReleased != null) this._onTouchpadReleased = onReleased;
+	}
+
+	setTriggerListener(onPressed, onReleased){
+		if(onPressed != null)  this._onTriggerPressed  = onPressed;
+		if(onReleased != null) this._onTriggerReleased = onReleased;
+	}
+
+	update(){
+		let gamePad = navigator.getGamepads()[0];
+		if(gamePad == null) return;
+		//console.log("GamePad:" + gamePad.id);
+
+		if(gamePad.axes == null || gamePad.buttons == null) return;
+		let axes    = gamePad.axes;
+		let buttons = gamePad.buttons;
+
+		if(this._state.buttons[0] != buttons[0].pressed){
+			this._state.buttons[0] = buttons[0].pressed;
+			if(buttons[0].pressed){
+				console.log("Touchpad has pressed!!");
+				if(this._onTouchpadPressed) this._onTouchpadPressed(axes);
+			}else{
+				console.log("Touchpad has released!!");
+				if(this._onTouchpadPressed) this._onTouchpadPressed(axes);
+			}
+		}
+
+		if(this._state.buttons[1] != buttons[1].pressed){
+			this._state.buttons[1] = buttons[1].pressed;
+			if(buttons[1].pressed){
+				console.log("Trigger has pressed!!");
+				if(this._onTriggerPressed) this._onTriggerPressed();
+			}else{
+				console.log("Trigger has released!!");
+				if(this._onTriggerReleased) this._onTriggerReleased();
+			}
+		}
+	}
+}

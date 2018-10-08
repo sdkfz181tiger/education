@@ -16,24 +16,26 @@ window.onload = function(){
 	console.log("OnLoad");
 
 	// ThreeManager
-	// VR mode: true/false
 	// Camera position: x, y, z
 	// Camera angle: rX, rY, rZ
-	let tm = new ThreeManager(true, 0, 10, 50, 0, 0, 0);
+	let tm = new ThreeManager(0, 10, 50, 0, 0, 0);
 	tm._renderer.setAnimationLoop(animate);
 	tm.startPromise(assets, 
 		(results)=>{onReady(results);},
 		(error)=>{onError(error);});
 
+	// Controller
+	let controller = new Controller();
+	controller.setTouchpadListener(
+		(axes)=>{console.log("onPressed:"  + axes[0] + ", " + axes[1]);}, 
+		(axes)=>{console.log("onReleased:" + axes[0] + ", " + axes[1]);});
+	controller.setTriggerListener(
+		()=>{console.log("onPressed!!");}, 
+		()=>{console.log("onReleased!!");});
+
 	// Invaders
 	let models   = [];
 	let invaders = [];
-
-	// Controller
-	let state = {
-		axes:    [0, 0],       // left/right, down/up (-1.0 -> +1.0)
-		buttons: [false, false]// Touchpad, Trigger
-	};
 
 	// Ready
 	function onReady(meshes){
@@ -80,6 +82,7 @@ window.onload = function(){
 			//invader.rotation.z += 0.005;
 		}
 
+		/*
 		let gamePad = navigator.getGamepads()[0];
 		if(gamePad && gamePad.id === "Oculus Go Controller"){
 			//console.log("This is Oculus Go!!");
@@ -93,27 +96,18 @@ window.onload = function(){
 			let linearVelocity      = pose.linearVelocity;
 			let orientation         = pose.orientation;
 
-			console.log(axes);
-
-			// Axes(調整中)
-			if(state.axes[0] != axes[0]){
-				state.axes[0] = axes[0];
-				if(0.5 < axes[0])  console.log("Swipe left!!");
-				if(axes[0] < -0.5) console.log("Swipe right!!");
-			}
-
-			if(state.axes[1] != axes[1]){
-				state.axes[1] = axes[1];
-				if(0.5 < axes[1])  console.log("Swipe down!!");
-				if(axes[1] < -0.5) console.log("Swipe up!!");
-			}
-
 			// Buttons
 			if(state.buttons[0] != buttons[0].pressed){
 				state.buttons[0] = buttons[0].pressed;
 				if(buttons[0].pressed){
 					console.log("Touchpad has pressed!!");
+
+					let theta = Math.atan2(state.axes[1], state.axes[0]);
+					console.log(theta);
+
 					helloInvader();
+				}else{
+					console.log("Touchpad has released!!");
 				}
 			}
 
@@ -122,12 +116,18 @@ window.onload = function(){
 				if(buttons[1].pressed){
 					console.log("Trigger has pressed!!");
 					helloInvader();
+				}else{
+					console.log("Trigger has released!!");
 				}
 			}
 		}
+		*/
 
 		// Manager
 		tm.animate();
+
+		// Controller
+		controller.update();
 	};
 }
 

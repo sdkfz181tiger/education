@@ -6,14 +6,14 @@ const RAD_TO_DEG = 180 / Math.PI;
 // Three.js
 class ThreeManager{
 
-	constructor(mode=false, 
-		x=0, y=0, z=0, rX=0, rY=0, rZ=0){
+	constructor(x=0, y=0, z=0, rX=0, rY=0, rZ=0){
 		console.log("ThreeManager");
 
 		// PC or VR
 		//   false: PC mode(default)
 		//   true:  VR mode
-		this._mode = mode;
+		this._modeVR = false;
+		if(navigator.getVRDisplays) this._modeVR = true;
 
 		// Polyfill(for VR)
 		this._polyfill = new WebVRPolyfill();
@@ -43,7 +43,7 @@ class ThreeManager{
 		this._scene.add(this._cameraContainer);
 
 		// PC or VR
-		if(this._mode == false){
+		if(this._modeVR == false){
 			// Camera
 			this._camera.position.set(x, y, z);// PCでポジションを移動させる場合
 			this._cameraContainer.rotation.set(rX*DEG_TO_RAD, rY*DEG_TO_RAD, rZ*DEG_TO_RAD);
@@ -66,7 +66,7 @@ class ThreeManager{
 		this._renderer.setSize(window.innerWidth, window.innerHeight);
 		this._renderer.setClearColor(0x333333);
 		this._renderer.setPixelRatio(window.devicePixelRatio);
-		this._renderer.vr.enabled = this._mode;// Important(for VR)
+		this._renderer.vr.enabled = this._modeVR;// Important(for VR)
 		document.body.appendChild(this._renderer.domElement);
 
 		// CSS2DRenderer
@@ -92,7 +92,7 @@ class ThreeManager{
 		this._stats.update();
 
 		// Controls(for PC)
-		if(this._mode == false) this._controls.update();
+		if(this._modeVR == false) this._controls.update();
 
 		// Render
 		this._renderer.render(this._scene, this._camera);
@@ -176,5 +176,65 @@ class ThreeManager{
 				reject(error);// Reject
 			});
 		});
+	}
+}
+
+class Controller{
+
+	constructor(){
+		console.log("Controller");
+
+		// State
+		this._state = {
+			buttons: [false, false]// Touchpad, Trigger
+		};
+
+		// Listener
+		this._onTouchpadPressed  = null;
+		this._onTouchpadReleased = null;
+		this._onTriggerPressed   = null;
+		this._onTriggerReleased  = null;
+	}
+
+	setTouchpadListener(onPressed, onReleased){
+		if(onPressed != null)  this._onTouchpadPressed  = onPressed;
+		if(onReleased != null) this._onTouchpadReleased = onReleased;
+	}
+
+	setTriggerListener(onPressed, onReleased){
+		if(onPressed != null)  this._onTriggerPressed  = onPressed;
+		if(onReleased != null) this._onTriggerReleased = onReleased;
+	}
+
+	update(){
+		let gamePad = navigator.getGamepads()[0];
+		if(gamePad == null) return;
+		//console.log("GamePad:" + gamePad.id);
+
+		if(gamePad.axes == null || gamePad.buttons == null) return;
+		let axes    = gamePad.axes;
+		let buttons = gamePad.buttons;
+
+		if(this._state.buttons[0] != buttons[0].pressed){
+			this._state.buttons[0] = buttons[0].pressed;
+			if(buttons[0].pressed){
+				console.log("Touchpad has pressed!!");
+				if(this._onTouchpadPressed) this._onTouchpadPressed(axes);
+			}else{
+				console.log("Touchpad has released!!");
+				if(this._onTouchpadPressed) this._onTouchpadPressed(axes);
+			}
+		}
+
+		if(this._state.buttons[1] != buttons[1].pressed){
+			this._state.buttons[1] = buttons[1].pressed;
+			if(buttons[1].pressed){
+				console.log("Trigger has pressed!!");
+				if(this._onTriggerPressed) this._onTriggerPressed();
+			}else{
+				console.log("Trigger has released!!");
+				if(this._onTriggerReleased) this._onTriggerReleased();
+			}
+		}
 	}
 }

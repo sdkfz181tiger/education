@@ -24,15 +24,18 @@ window.onload = function(){
 		(results)=>{onReady(results);},
 		(error)=>{onError(error);});
 
+	// Controller
+	let controller = new Controller();
+	controller.setTouchpadListener(
+		(axes)=>{console.log("onPressed:"  + axes[0] + ", " + axes[1]);}, 
+		(axes)=>{console.log("onReleased:" + axes[0] + ", " + axes[1]);});
+	controller.setTriggerListener(
+		()=>{console.log("onPressed!!");}, 
+		()=>{console.log("onReleased!!");});
+
 	// Invaders
 	let models   = [];
 	let invaders = [];
-
-	// Controller
-	let state = {
-		axes:    [0, 0],       // left/right, down/up (-1.0 -> +1.0)
-		buttons: [false, false]// Touchpad, Trigger
-	};
 
 	// Ready
 	function onReady(meshes){
@@ -79,6 +82,7 @@ window.onload = function(){
 			//invader.rotation.z += 0.005;
 		}
 
+		/*
 		let gamePad = navigator.getGamepads()[0];
 		if(gamePad && gamePad.id === "Oculus Go Controller"){
 			//console.log("This is Oculus Go!!");
@@ -117,9 +121,13 @@ window.onload = function(){
 				}
 			}
 		}
+		*/
 
 		// Manager
 		tm.animate();
+
+		// Controller
+		controller.update();
 	};
 }
 
