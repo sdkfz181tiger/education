@@ -25,11 +25,11 @@ window.onload = function(){
 		(error)=>{onError(error);});
 
 	// Controller
-	let controller = new Controller();
-	controller.setTouchpadListener(
+	let ctl = new Controller();
+	ctl.setTouchpadListener(
 		(axes)=>{console.log("onPressed:"  + axes[0] + ", " + axes[1]);}, 
 		(axes)=>{console.log("onReleased:" + axes[0] + ", " + axes[1]);});
-	controller.setTriggerListener(
+	ctl.setTriggerListener(
 		()=>{console.log("onPressed!!");}, 
 		()=>{console.log("onReleased!!");});
 
@@ -41,6 +41,12 @@ window.onload = function(){
 	function onReady(meshes){
 		console.log("You are ready to start the game!?");
 		models = meshes;// All meshes
+		// Test
+		helloInvader();
+		helloInvader();
+		helloInvader();
+		helloInvader();
+		helloInvader();
 	}
 
 	// Error
@@ -54,10 +60,10 @@ window.onload = function(){
 
 		if(models.length <= 0) return;
 
-		let area = 20;
-		let x = Math.floor(Math.random() * area) - area*0.5;
-		let y = Math.floor(Math.random() * area);
-		let z = Math.floor(Math.random() * area) - area*0.5;
+		let area  = 10;
+		let x     = Math.floor(Math.random() * area) - area*0.5;
+		let y     = Math.floor(Math.random() * area);
+		let z     = Math.floor(Math.random() * area) - area*0.5;
 		let index = Math.floor(Math.random() * models.length);
 		let clone = models[index].clone();
 		clone.scale.set(0.4, 0.4, 0.4);
@@ -82,52 +88,11 @@ window.onload = function(){
 			//invader.rotation.z += 0.005;
 		}
 
-		/*
-		let gamePad = navigator.getGamepads()[0];
-		if(gamePad && gamePad.id === "Oculus Go Controller"){
-			//console.log("This is Oculus Go!!");
-
-			let axes    = gamePad.axes;
-			let buttons = gamePad.buttons;
-			let pose    = gamePad.pose;
-			let angularAcceleration = pose.angularAcceleration;
-			let angularVelocity     = pose.angularVelocity;
-			let linearAcceleration  = pose.linearAcceleration;
-			let linearVelocity      = pose.linearVelocity;
-			let orientation         = pose.orientation;
-
-			// Buttons
-			if(state.buttons[0] != buttons[0].pressed){
-				state.buttons[0] = buttons[0].pressed;
-				if(buttons[0].pressed){
-					console.log("Touchpad has pressed!!");
-
-					let theta = Math.atan2(state.axes[1], state.axes[0]);
-					console.log(theta);
-
-					helloInvader();
-				}else{
-					console.log("Touchpad has released!!");
-				}
-			}
-
-			if(state.buttons[1] != buttons[1].pressed){
-				state.buttons[1] = buttons[1].pressed;
-				if(buttons[1].pressed){
-					console.log("Trigger has pressed!!");
-					helloInvader();
-				}else{
-					console.log("Trigger has released!!");
-				}
-			}
-		}
-		*/
-
 		// Manager
-		tm.animate();
+		tm.update();
 
 		// Controller
-		controller.update();
+		ctl.update();
 	};
 }
 

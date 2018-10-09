@@ -18,18 +18,19 @@ window.onload = function(){
 	// ThreeManager
 	// Camera position: x, y, z
 	// Camera angle: rX, rY, rZ
-	let tm = new ThreeManager(0, 10, 50, 0, 0, 0);
+	//let tm = new ThreeManager(0, 5, 10, 0, 0, 0);
+	let tm = new ThreeManager(0, 0, 0, 0, 0, 0);
 	tm._renderer.setAnimationLoop(animate);
 	tm.startPromise(assets, 
 		(results)=>{onReady(results);},
 		(error)=>{onError(error);});
 
 	// Controller
-	let controller = new Controller();
-	controller.setTouchpadListener(
+	let ctl = new Controller();
+	ctl.setTouchpadListener(
 		(axes)=>{console.log("onPressed:"  + axes[0] + ", " + axes[1]);}, 
 		(axes)=>{console.log("onReleased:" + axes[0] + ", " + axes[1]);});
-	controller.setTriggerListener(
+	ctl.setTriggerListener(
 		()=>{console.log("onPressed!!");}, 
 		()=>{console.log("onReleased!!");});
 
@@ -41,6 +42,15 @@ window.onload = function(){
 	function onReady(meshes){
 		console.log("You are ready to start the game!?");
 		models = meshes;// All meshes
+		// Invaders
+		for(let i=0; i<models.length; i++){
+			helloInvader(i);
+		}
+		// Cubes
+		let total = Math.floor(Math.random() * 3) + 1;
+		for(let i=0; i<total; i++){
+			helloCube();
+		}
 	}
 
 	// Error
@@ -49,26 +59,41 @@ window.onload = function(){
 		console.log(error);
 	}
 
-	function helloInvader(){
+	function helloInvader(index){
 		console.log("helloInvader!!");
 
 		if(models.length <= 0) return;
 
-		let area = 20;
-		let x = Math.floor(Math.random() * area) - area*0.5;
-		let y = Math.floor(Math.random() * area);
-		let z = Math.floor(Math.random() * area) - area*0.5;
-		let index = Math.floor(Math.random() * models.length);
+		let area  = 10;
+		let x     = Math.floor(Math.random() * area) - area*0.5;
+		let y     = Math.floor(Math.random() * area);
+		let z     = Math.floor(Math.random() * area) - area*0.5 - 30;
+
 		let clone = models[index].clone();
 		clone.scale.set(0.4, 0.4, 0.4);
 		clone.rotation.set(0, Math.PI, 0);
 		clone.position.set(x, y, z);
 		invaders.push(clone);
-		tm._scene.add(clone);
+		tm._group.add(clone);// Add to group!!
 
 		// Label
 		let str = "[" + x + ", " + y + ", " + z + "]";
 		clone.add(tm.createLabel(str));
+	}
+
+	function helloCube(){
+		console.log("helloCube!!");
+
+		// Cube
+		var geometry = new THREE.BoxGeometry(1, 1, 1);
+		var material = new THREE.MeshNormalMaterial();
+		var cube = new THREE.Mesh(geometry, material);
+		let area  = 10;
+		let x     = Math.floor(Math.random() * area) - area*0.5;
+		let y     = Math.floor(Math.random() * area);
+		let z     = Math.floor(Math.random() * area) - area*0.5 - 10;
+		cube.position.set(x, y, z);
+		tm._group.add(cube);
 	}
 
 	// Animate
@@ -77,57 +102,16 @@ window.onload = function(){
 
 		// Invaders
 		for(invader of invaders){
-			//invader.rotation.x += 0.005;
-			invader.rotation.y += 0.015;
+			invader.rotation.x += 0.005;
+			invader.rotation.y += 0.005;
 			//invader.rotation.z += 0.005;
 		}
 
-		/*
-		let gamePad = navigator.getGamepads()[0];
-		if(gamePad && gamePad.id === "Oculus Go Controller"){
-			//console.log("This is Oculus Go!!");
-
-			let axes    = gamePad.axes;
-			let buttons = gamePad.buttons;
-			let pose    = gamePad.pose;
-			let angularAcceleration = pose.angularAcceleration;
-			let angularVelocity     = pose.angularVelocity;
-			let linearAcceleration  = pose.linearAcceleration;
-			let linearVelocity      = pose.linearVelocity;
-			let orientation         = pose.orientation;
-
-			// Buttons
-			if(state.buttons[0] != buttons[0].pressed){
-				state.buttons[0] = buttons[0].pressed;
-				if(buttons[0].pressed){
-					console.log("Touchpad has pressed!!");
-
-					let theta = Math.atan2(state.axes[1], state.axes[0]);
-					console.log(theta);
-
-					helloInvader();
-				}else{
-					console.log("Touchpad has released!!");
-				}
-			}
-
-			if(state.buttons[1] != buttons[1].pressed){
-				state.buttons[1] = buttons[1].pressed;
-				if(buttons[1].pressed){
-					console.log("Trigger has pressed!!");
-					helloInvader();
-				}else{
-					console.log("Trigger has released!!");
-				}
-			}
-		}
-		*/
-
 		// Manager
-		tm.animate();
+		tm.update();
 
 		// Controller
-		controller.update();
+		ctl.update();
 	};
 }
 

@@ -86,7 +86,7 @@ class ThreeManager{
 		this._promises = [];
 	}
 
-	animate(){
+	update(){
 
 		// Stats
 		this._stats.update();
