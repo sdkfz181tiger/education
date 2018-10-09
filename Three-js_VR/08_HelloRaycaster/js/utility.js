@@ -96,18 +96,18 @@ class ThreeManager{
 		this._ctl1 = this._renderer.vr.getController(0);
 		this._ctl1.addEventListener("selectstart", onSelectStart);
 		this._ctl1.addEventListener("selectend",   onSelectEnd);
-		this._scene.add(this._ctl1);
+		this._cameraContainer.add(this._ctl1);
 		this._ctl2 = this._renderer.vr.getController(1);
 		this._ctl2.addEventListener("selectstart", onSelectStart);
 		this._ctl2.addEventListener("selectend",   onSelectEnd);
-		this._scene.add(this._ctl2);
+		this._cameraContainer.add(this._ctl2);
 
 		// Line
 		let geometry = new THREE.BufferGeometry().setFromPoints(
 			[new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, -1)]);
 		let line = new THREE.Line(geometry);
 		line.name = "line";
-		line.scale.z = 5;
+		line.scale.z = 20;
 		this._ctl1.add(line.clone());
 		this._ctl2.add(line.clone());
 
@@ -120,7 +120,7 @@ class ThreeManager{
 			let intersections = raycaster.intersectObjects(targets.children, true);
 			console.log(intersections);
 			if(0 < intersections.length){
-				console.log("I captured!!");
+				console.log("I captured:" + intersections.length);
 				console.log(intersections[0]);
 			}
 		}

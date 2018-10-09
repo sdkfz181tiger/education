@@ -18,8 +18,7 @@ window.onload = function(){
 	// ThreeManager
 	// Camera position: x, y, z
 	// Camera angle: rX, rY, rZ
-	//let tm = new ThreeManager(0, 5, 10, 0, 0, 0);
-	let tm = new ThreeManager(0, 0, 0, 0, 0, 0);
+	let tm = new ThreeManager(0, 5, 10, 0, 0, 0);
 	tm._renderer.setAnimationLoop(animate);
 	tm.startPromise(assets, 
 		(results)=>{onReady(results);},
