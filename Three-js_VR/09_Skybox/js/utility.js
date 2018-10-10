@@ -146,6 +146,37 @@ class ThreeManager{
 		this._cssRenderer.render(this._scene, this._camera);
 	}
 
+	add(mesh){
+		this._group.add(mesh);
+	}
+
+	//==========
+	// Texture
+	loadTextureAtlas(path, total){
+		console.log("loadTextureAtlas!!");
+		let textures = [];
+		for(let i=0; i<total; i++){
+			textures[i] = new THREE.Texture();
+		}
+		let img = new Image();
+		img.onload = ()=>{
+			let canvas, context;
+			let size = img.height;
+			for(let i=0; i < textures.length; i++){
+				canvas = document.createElement("canvas");
+				context = canvas.getContext("2d");
+				canvas.height = size;
+				canvas.width  = size;
+				context.drawImage(
+					img, size*i, 0, size, size, 0, 0, size, size);
+				textures[i].image = canvas
+				textures[i].needsUpdate = true;
+			}
+		};
+		img.src = path;
+		return textures;
+	}
+
 	//==========
 	// Label
 	createLabel(str="***", className="label"){
