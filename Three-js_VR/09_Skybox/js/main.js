@@ -42,8 +42,8 @@ window.onload = function(){
 		console.log("You are ready to start the game!?");
 		models = meshes;// All meshes
 		// Skybox(Test)
-		let textures = tm.loadTextureAtlas("./textures/skybox_temple.jpg", 6);
-		console.log(textures);
+		let skybox = tm.createSkybox("./textures/skybox_temple.jpg", 6);
+		tm.add(skybox);
 
 		// Invaders
 		for(let i=0; i<models.length; i++){

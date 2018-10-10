@@ -151,8 +151,8 @@ class ThreeManager{
 	}
 
 	//==========
-	// Texture
-	loadTextureAtlas(path, total){
+	// Skybox
+	createSkybox(path, total){
 		console.log("loadTextureAtlas!!");
 		let textures = [];
 		for(let i=0; i<total; i++){
@@ -174,7 +174,15 @@ class ThreeManager{
 			}
 		};
 		img.src = path;
-		return textures;
+
+		let materials = [];
+		for(let i=0; i<textures.length; i++){
+			materials.push(new THREE.MeshBasicMaterial({map: textures[i]}));
+		}
+
+		let skyBox = new THREE.Mesh(new THREE.BoxBufferGeometry(1, 1, 1), materials);
+		skyBox.geometry.scale(1, 1, -1);
+		return skyBox;
 	}
 
 	//==========
