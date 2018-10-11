@@ -6,7 +6,7 @@ const RAD_TO_DEG = 180 / Math.PI;
 // Three.js
 class ThreeManager{
 
-	constructor(x=0, y=0, z=0, rX=0, rY=0, rZ=0){
+	constructor(pcX=0, pcY=0, pcZ=0, vrX=0, vrY=0, vrZ=0){
 		console.log("ThreeManager");
 
 		// PC or VR
@@ -45,15 +45,15 @@ class ThreeManager{
 		// PC or VR
 		if(this._modeVR == false){
 			// Camera
-			this._camera.position.set(x, y, z);// PCでポジションを移動させる場合
-			this._cameraContainer.rotation.set(rX*DEG_TO_RAD, rY*DEG_TO_RAD, rZ*DEG_TO_RAD);
+			this._camera.position.set(pcX, pcY, pcZ);// PCでポジションを移動させる場合
+			this._cameraContainer.rotation.set(0*DEG_TO_RAD, 0*DEG_TO_RAD, 0*DEG_TO_RAD);
 			// Controls
 			this._controls = new THREE.TrackballControls(this._camera);// Cameraのみ対応
 			this._controls.target.set(0, 0, 0);
 		}else{
 			// CameraContainer
-			this._cameraContainer.position.set(x, y, z);// VRでポジションを移動させる場合
-			this._cameraContainer.rotation.set(rX*DEG_TO_RAD, rY*DEG_TO_RAD, rZ*DEG_TO_RAD);
+			this._cameraContainer.position.set(vrX, vrY, vrZ);// VRでポジションを移動させる場合
+			this._cameraContainer.rotation.set(0*DEG_TO_RAD, 0*DEG_TO_RAD, 0*DEG_TO_RAD);
 		}
 
 		// Light
@@ -146,14 +146,17 @@ class ThreeManager{
 		this._cssRenderer.render(this._scene, this._camera);
 	}
 
-	add(mesh){
+	addScene(mesh){
+		this._scene.add(mesh);
+	}
+
+	addGroup(mesh){
 		this._group.add(mesh);
 	}
 
 	//==========
 	// Skybox
-	createSkybox(path, total){
-		console.log("loadTextureAtlas!!");
+	createSkybox(path, total, scale){
 		let textures = [];
 		for(let i=0; i<total; i++){
 			textures[i] = new THREE.Texture();
@@ -163,10 +166,9 @@ class ThreeManager{
 			let canvas, context;
 			let size = img.height;
 			for(let i=0; i < textures.length; i++){
-				canvas = document.createElement("canvas");
+				canvas  = document.createElement("canvas");
 				context = canvas.getContext("2d");
-				canvas.height = size;
-				canvas.width  = size;
+				canvas.width = size; canvas.height = size;
 				context.drawImage(
 					img, size*i, 0, size, size, 0, 0, size, size);
 				textures[i].image = canvas
@@ -180,9 +182,10 @@ class ThreeManager{
 			materials.push(new THREE.MeshBasicMaterial({map: textures[i]}));
 		}
 
-		let skyBox = new THREE.Mesh(new THREE.BoxBufferGeometry(1, 1, 1), materials);
-		skyBox.geometry.scale(1, 1, -1);
-		return skyBox;
+		let skybox = new THREE.Mesh(new THREE.BoxBufferGeometry(1, 1, 1), materials);
+		skybox.geometry.scale(scale, scale, -scale);
+		skybox.position.set(0, 0, 0);
+		return skybox;
 	}
 
 	//==========
@@ -263,10 +266,10 @@ class ThreeManager{
 	}
 }
 
-class Controller{
+class CtlVR{
 
 	constructor(){
-		console.log("Controller");
+		console.log("Controller(VR)");
 
 		// State
 		this._state = {
@@ -322,3 +325,49 @@ class Controller{
 		}
 	}
 }
+
+/*
+class CtlRaycaster{
+
+	constructor(){
+		console.log("Controller(Raycaster)");
+
+		// Raycaster
+		let tempMatrix = new THREE.Matrix4();
+		let raycaster  = new THREE.Raycaster();
+		let targets    = this._group;
+
+		this._ctl1 = this._renderer.vr.getController(0);
+		this._ctl1.addEventListener("selectstart", onSelectStart);
+		this._ctl1.addEventListener("selectend",   onSelectEnd);
+		this._cameraContainer.add(this._ctl1);
+		this._ctl2 = this._renderer.vr.getController(1);
+		this._ctl2.addEventListener("selectstart", onSelectStart);
+		this._ctl2.addEventListener("selectend",   onSelectEnd);
+		this._cameraContainer.add(this._ctl2);
+
+		// Line
+		let geometry = new THREE.BufferGeometry().setFromPoints(
+			[new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, -1)]);
+		let line = new THREE.Line(geometry);
+		line.name = "line";
+		line.scale.z = 20;// Length of line
+		this._ctl1.add(line.clone());
+		this._ctl2.add(line.clone());
+
+		function onSelectStart(event){
+			console.log("onSelectStart");
+			let target = event.target;
+			tempMatrix.identity().extractRotation(target.matrixWorld);
+			raycaster.ray.origin.setFromMatrixPosition(target.matrixWorld);
+			raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
+			let intersections = raycaster.intersectObjects(targets.children, true);
+			console.log(intersections);
+			if(0 < intersections.length){
+				console.log("I captured:" + intersections.length);
+				console.log(intersections[0]);
+			}
+		}
+	}
+}
+*/

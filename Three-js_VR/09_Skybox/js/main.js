@@ -16,8 +16,8 @@ window.onload = function(){
 	console.log("OnLoad");
 
 	// ThreeManager
-	// Camera position: x, y, z
-	// Camera angle: rX, rY, rZ
+	// 	Camera position(PC): pcX, pcY, pcZ
+	// 	Camera position(VR): vrX, vrY, vrZ
 	let tm = new ThreeManager(0, 5, 10, 0, 0, 0);
 	tm._renderer.setAnimationLoop(animate);
 	tm.startPromise(assets, 
@@ -25,11 +25,11 @@ window.onload = function(){
 		(error)=>{onError(error);});
 
 	// Controller
-	let ctl = new Controller();
-	ctl.setTouchpadListener(
+	let ctlVR = new CtlVR();
+	ctlVR.setTouchpadListener(
 		(axes)=>{console.log("onPressed:"  + axes[0] + ", " + axes[1]);}, 
 		(axes)=>{console.log("onReleased:" + axes[0] + ", " + axes[1]);});
-	ctl.setTriggerListener(
+	ctlVR.setTriggerListener(
 		()=>{console.log("onPressed!!");}, 
 		()=>{console.log("onReleased!!");});
 
@@ -41,16 +41,17 @@ window.onload = function(){
 	function onReady(meshes){
 		console.log("You are ready to start the game!?");
 		models = meshes;// All meshes
-		// Skybox(Test)
-		let skybox = tm.createSkybox("./textures/skybox_temple.jpg", 6);
-		tm.add(skybox);
+
+		// Skybox
+		//let skybox = tm.createSkybox("./textures/skybox_temple.jpg", 6, 50);
+		//tm.addScene(skybox);
 
 		// Invaders
 		for(let i=0; i<models.length; i++){
 			helloInvader(i);
 		}
 		// Cubes
-		let total = Math.floor(Math.random() * 3) + 1;
+		let total = 10
 		for(let i=0; i<total; i++){
 			helloCube();
 		}
@@ -67,17 +68,17 @@ window.onload = function(){
 
 		if(models.length <= 0) return;
 
-		let area  = 10;
+		let area  = 30;
 		let x     = Math.floor(Math.random() * area) - area*0.5;
-		let y     = Math.floor(Math.random() * area);
-		let z     = Math.floor(Math.random() * area) - area*0.5 - 30;
+		let y     = Math.floor(Math.random() * area) - area*0.5;
+		let z     = Math.floor(Math.random() * area) - area*0.5;
 
 		let clone = models[index].clone();
 		clone.scale.set(0.4, 0.4, 0.4);
 		clone.rotation.set(0, Math.PI, 0);
 		clone.position.set(x, y, z);
 		invaders.push(clone);
-		tm.add(clone);// Add to group!!
+		tm.addGroup(clone);// Add to group!!
 
 		// Label
 		let str = "[" + x + ", " + y + ", " + z + "]";
@@ -91,12 +92,12 @@ window.onload = function(){
 		var geometry = new THREE.BoxGeometry(1, 1, 1);
 		var material = new THREE.MeshNormalMaterial();
 		var cube = new THREE.Mesh(geometry, material);
-		let area  = 10;
+		let area  = 30;
 		let x     = Math.floor(Math.random() * area) - area*0.5;
-		let y     = Math.floor(Math.random() * area);
-		let z     = Math.floor(Math.random() * area) - area*0.5 - 10;
+		let y     = Math.floor(Math.random() * area) - area*0.5;
+		let z     = Math.floor(Math.random() * area) - area*0.5;
 		cube.position.set(x, y, z);
-		tm.add(cube);
+		tm.addGroup(cube);
 	}
 
 	// Animate
@@ -114,7 +115,7 @@ window.onload = function(){
 		tm.update();
 
 		// Controller
-		ctl.update();
+		ctlVR.update();
 	};
 }
 
