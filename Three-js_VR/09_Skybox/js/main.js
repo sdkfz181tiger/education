@@ -43,8 +43,8 @@ window.onload = function(){
 		models = meshes;// All meshes
 
 		// Skybox
-		//let skybox = tm.createSkybox("./textures/skybox_temple.jpg", 6, 50);
-		//tm.addScene(skybox);
+		let skybox = tm.createSkybox("./textures/skybox_test.png", 6, 50);
+		tm.addScene(skybox);
 
 		// Invaders
 		for(let i=0; i<models.length; i++){
