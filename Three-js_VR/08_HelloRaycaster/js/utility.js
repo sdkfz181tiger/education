@@ -13,7 +13,9 @@ class ThreeManager{
 		//   false: PC mode(default)
 		//   true:  VR mode
 		this._modeVR = false;
-		if(navigator.getVRDisplays) this._modeVR = true;
+		if(0 < navigator.activeVRDisplays.length){
+			this._modeVR = true;
+		}
 
 		// Polyfill(for VR)
 		this._polyfill = new WebVRPolyfill();
