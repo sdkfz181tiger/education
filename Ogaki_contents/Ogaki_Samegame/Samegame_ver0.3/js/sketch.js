@@ -3,7 +3,7 @@
 // p5.js
 
 // "早消しマッチゲーム"
-// 	隣り合う同じアイテムを消すことが出来るよ!!
+// 	2つ以上隣り合った同じアイテムを消すことが出来るよ!!
 // 	30秒以内に何個消せるかな!?
 
 // 作業の流れ
@@ -12,7 +12,7 @@ console.log("Hello p5.js!!");
 
 const DEBUG   = false;
 
-const CHAINS  = 1;  // 必要連鎖数
+const CHAINS  = 2;  // 必要連鎖数
 const DISP_W  = 480;
 const DISP_H  = 320;
 const F_RATE  = 32;
@@ -32,8 +32,8 @@ let activeFlg = false;
 let matrix    = null;
 
 const images = [
-	"images/cat01.png",   "images/cat02.png",   
-	"images/cat03.png",   "images/cat04.png",   
+	//"images/cat01.png",   "images/cat02.png",   
+	//"images/cat03.png",   "images/cat04.png",   
 	"images/donut01.png", "images/donut02.png",
 	"images/donut03.png", "images/donut04.png",
 ];
@@ -49,22 +49,12 @@ function setup(){
 	createCanvas(DISP_W, DISP_H);
 	frameRate(F_RATE);
 
-	// Decorations, Tiles, Balls
-	createDecoA();
+	// Tiles, Balls
 	createTiles();
 	createBalls();
-	createDecoB();
 
 	// CountDown
 	startCountDown();
-}
-
-function createDecoA(){
-	
-}
-
-function createDecoB(){
-	
 }
 
 function createTiles(){
@@ -89,6 +79,16 @@ function createBalls(){
 			matrix[r][c] = ball;
 		}
 	}
+}
+
+function judgeMatrix(num){
+
+ 	if(num < CHAINS) return false;
+
+ 	// Score
+ 	numScore += num;
+
+ 	return true;
 }
 
 //==========
@@ -224,10 +224,7 @@ function createMatrix(){
 
 function checkMatrix(mtxBef, ball){
 	let checked = searchMatrix(mtxBef, ball);
- 	if(checked.length < CHAINS) return mtxBef;
-
- 	// Score
- 	numScore += checked.length;
+ 	if(judgeMatrix(checked.length) == false) return mtxBef;
 
 	// Remove
 	for(let i=checked.length-1; 0<=i; i--){
