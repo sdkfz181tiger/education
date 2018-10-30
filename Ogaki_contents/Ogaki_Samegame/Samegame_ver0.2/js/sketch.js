@@ -20,7 +20,6 @@ const R_MAX   = 8;
 const C_MAX   = 13;
 const B_SIZE  = 32;
 const B_PADD  = 4;
-
 const START_X = DISP_W * 0.5 - (C_MAX-1) * (B_SIZE+B_PADD) * 0.5;
 const START_Y = DISP_H - R_MAX * (B_SIZE+B_PADD) + 16;
 
@@ -46,23 +45,6 @@ const sounds = [
 	"sounds/pong.mp3", "sounds/shot.mp3", "sounds/go.mp3",
 ];
 
-function preload(){
-	console.log("preload");
-
-	// Font
-	let font = loadFont("fonts/misaki_gothic.ttf");
-	textFont(font);
-
-	// Images
-	for(let i=0; i<images.length; i++){
-		assets[images[i]] = loadImage(images[i]);
-	}
-	// Sounds
-	for(let i=0; i<sounds.length; i++){
-		assets[sounds[i]] = loadSound(sounds[i]);
-	}
-}
-
 function setup(){
 	createCanvas(DISP_W, DISP_H);
 	frameRate(F_RATE);
@@ -80,7 +62,7 @@ function setup(){
 	}
 
 	// CountDown
-	startCountDown();
+	//startCountDown();
 }
 
 function draw(){
@@ -95,6 +77,21 @@ function draw(){
 
 //==========
 // Utility
+
+function preload(){
+	console.log("preload");
+	// Font
+	let font = loadFont("fonts/misaki_gothic.ttf");
+	textFont(font);
+	// Images
+	for(let i=0; i<images.length; i++){
+		assets[images[i]] = loadImage(images[i]);
+	}
+	// Sounds
+	for(let i=0; i<sounds.length; i++){
+		assets[sounds[i]] = loadSound(sounds[i]);
+	}
+}
 
 function getIndex(arr){
 	return floor(random(0, arr.length));
