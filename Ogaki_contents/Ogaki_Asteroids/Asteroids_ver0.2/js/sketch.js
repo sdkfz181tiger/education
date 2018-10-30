@@ -1,3 +1,4 @@
+"use strict"
 //==========
 // p5.js
 
@@ -225,7 +226,9 @@ function isOutside(sprite){
 
 function isCollide(sprite, target){
 	let dX = sprite.position.x - target.position.x;
+	if(sprite.width < Math.abs(dX)) return false;
 	let dY = sprite.position.y - target.position.y;
+	if(sprite.height < Math.abs(dY)) return false;
 	let dist = Math.floor(Math.sqrt(dX*dX + dY*dY));
 	if(sprite.width*0.8 < dist) return false;
 	if(sprite.bounce(target)) return true;
