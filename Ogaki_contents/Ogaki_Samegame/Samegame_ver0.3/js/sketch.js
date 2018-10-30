@@ -32,15 +32,15 @@ let activeFlg = false;
 let matrix    = null;
 
 const images = [
-	//"images/cat01.png",   "images/cat02.png",   
-	//"images/cat03.png",   "images/cat04.png",   
+	//"images/cat01.png",   "images/cat02.png",
+	//"images/cat03.png",   "images/cat04.png",
 	"images/donut01.png", "images/donut02.png",
 	"images/donut03.png", "images/donut04.png",
 ];
 
 const sounds = [
 	"sounds/bgm_am.mp3", "sounds/bgm_pm.mp3",
-	"sounds/gameclear.mp3", "sounds/gameover.mp3", 
+	"sounds/gameclear.mp3", "sounds/gameover.mp3",
 	"sounds/confuse.mp3", "sounds/power1.mp3",
 	"sounds/power2.mp3", "sounds/power3.mp3",
 ];
@@ -49,24 +49,13 @@ function setup(){
 	createCanvas(DISP_W, DISP_H);
 	frameRate(F_RATE);
 
+	// Background
 	let bkg = createSprite(0, 0, DISP_W, DISP_H - 18);
 	bkg.shapeColor = color(88, 55, 33);
 	bkg.position.x = DISP_W * 0.5;
 	bkg.position.y = DISP_H * 0.5 + 18;
 
-	// Tiles, Balls
-	createTiles();
-	createBalls();
-
-	// CountDown
-	startCountDown();
-
-	// BGM
-	playSound("sounds/bgm_pm.mp3");
-}
-
-function createTiles(){
-
+	// Tiles
 	for(let i=0; i<B_TOTAL; i++){
 		let x = START_X + B_PADD * floor(i % C_MAX);
 		let y = START_Y + B_PADD * floor(i / C_MAX);
@@ -74,19 +63,15 @@ function createTiles(){
 			createTile(x, y, 140, 120, 100);
 		}
 	}
-}
 
-function createBalls(){
-	activeFlg = true;
-	matrix = createMatrix();
-	for(let r=0; r<R_MAX; r++){
-		for(let c=0; c<C_MAX; c++){
-			let x = START_X + c * B_PADD;
-			let y = START_Y + r * B_PADD;
-			matrix[r][c] = createBall(
-				x, y, r, c, getIndex(images));
-		}
-	}
+	// Balls
+	createBalls();
+
+	// CountDown
+	startCountDown();
+
+	// BGM
+	playSound("sounds/bgm_pm.mp3");
 }
 
 function judgeMatrix(num){
@@ -131,8 +116,17 @@ function draw(){
 	drawStatuses();
 }
 
-function getIndex(arr){
-	return floor(random(0, arr.length));
+function createBalls(){
+	activeFlg = true;
+	matrix = createMatrix();
+	for(let r=0; r<R_MAX; r++){
+		for(let c=0; c<C_MAX; c++){
+			let x = START_X + c * B_PADD;
+			let y = START_Y + r * B_PADD;
+			matrix[r][c] = createBall(
+				x, y, r, c, getIndex(images));
+		}
+	}
 }
 
 function createBall(x, y, r, c, index){
@@ -152,6 +146,10 @@ function createBall(x, y, r, c, index){
 function createTile(x, y, r, g, b){
 	let tile = createSprite(x, y, 32, 32);
 	tile.shapeColor = color(r, g, b);
+}
+
+function getIndex(arr){
+	return floor(random(0, arr.length));
 }
 
 //==========
