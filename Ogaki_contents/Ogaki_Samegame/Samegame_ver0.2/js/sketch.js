@@ -1,57 +1,49 @@
+"use strict"
 //==========
 // p5.js
 
+// "早消しマッチゲーム"
+// 	隣り合う同じアイテムを消すことが出来るよ!!
+// 	30秒以内に何個消せるかな!?
+
+// 作業の流れ
+
 console.log("Hello p5.js!!");
 
-const DISP_W = 480;
-const DISP_H = 320;
-const F_RATE = 32;
-const DEBUG  = false;
+const DEBUG   = false;// デバッグモード
 
-const TIME_LIMIT    = 60;
-const TIME_INTERVAL = 1000 * 1;
-const SCORE_MIN     = 0;
-
-const R_MAX  = 8;
-const C_MAX  = 13;
-const B_SIZE = 32;
-const B_PADD = 4;
+const CHAINS  = 1;    // 必要連鎖数
+const DISP_W  = 480;
+const DISP_H  = 320;
+const F_RATE  = 32;
+const R_MAX   = 8;
+const C_MAX   = 13;
+const B_SIZE  = 32;
+const B_PADD  = 4;
 
 const START_X = DISP_W * 0.5 - (C_MAX-1) * (B_SIZE+B_PADD) * 0.5;
 const START_Y = DISP_H - R_MAX * (B_SIZE+B_PADD) + 16;
 
-const CHAINS = 1;
-
-let assets = {};
-
-let numTimer  = TIME_LIMIT;
-let numScore  = SCORE_MIN;
+let assets    = {};
+let numTimer  = 30;// プレイ時間
+let numScore  = 0; // 初期スコア
 let msg       = "";
 
 let activeFlg = false;
 let matrix    = null;
 
 const images = [
-	"images/apple.png",
-	"images/banana.png",
-	"images/berry.png",
-	"images/cherry.png",
-	"images/kiwi.png",
-	"images/orange.png",
-	"images/peach.png",
-	"images/pear.png",
-	"images/pine.png",
-	"images/strawberry.png",
-	"images/watermelon.png",
+	"images/cat01.png",   "images/cat02.png",   
+	"images/cat03.png",   "images/cat04.png",   
+	"images/donut01.png", "images/donut02.png",
+	"images/donut03.png", "images/donut04.png",
 ];
 
 const sounds = [
-	"sounds/damage.mp3",
-	"sounds/gameclear.mp3",
-	"sounds/gameover.mp3",
-	"sounds/hit.mp3",
-	"sounds/pong.mp3",
-	"sounds/shot.mp3",
+	"sounds/bgm_am.mp3", "sounds/bgm_pm.mp3",
+	"sounds/damage.mp3", "sounds/gameclear.mp3",
+	"sounds/gameover.mp3", "sounds/hit.mp3",
+	"sounds/pong.mp3", "sounds/shot.mp3", "sounds/go.mp3",
 ];
 
 function preload(){
@@ -158,7 +150,7 @@ function startCountDown(){
 		gameOver();
 	}
 	// Timeout
-	setTimeout(startCountDown, TIME_INTERVAL);
+	setTimeout(startCountDown, 1000);
 }
 
 function playSound(path){
