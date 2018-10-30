@@ -1,145 +1,136 @@
 //==========
 // p5.js
 
+// 作業の流れ
+// 1, プレイヤーを出そう
+// 2-1, プレイヤーを操作しよう(UP/LEFT/RIGHT)
+// 2-2, プレイヤーを操作しよう(Z)
+// 2-3, 弾を発射しよう
+// 3, 画面外判定を実装しよう
+// 4, 隕石の出現と時間を実装しよう
+// 5-1, 隕石xプレイヤー
+// 5-2, 隕石x弾
+
 console.log("Hello p5.js!!");
 
-const DEBUG              = false;
+const DEBUG       = false;// デバッグモード
 
-const PLAYER_SPEED       = 4;
-const PLAYER_FRICTION    = 0.95;
-const BULLET_SPEED       = 8;
-const BULLET_FRICTION    = 1.0;
-const BULLET_LIMIT       = 3;
-const ASTEROID_SPEED_MIN = 2;
-const ASTEROID_SPEED_MAX = 6;
-const ASTEROID_LIMIT     = 100;
-const ASTEROID_INTERVAL  = 1000 * 1;
-const ASTEROID_REINFORCE = 10;
-const TIME_LIMIT         = 30;
-const TIME_INTERVAL      = 1000;
-const LIFE_MAX           = 50;
+const P_SPEED     = 4;   // プレイヤー移動速度
+const P_FRICTION  = 0.95;// プレイヤー減衰速度
+const B_SPEED     = 8;   // 弾のスピード
+const B_FRICTION  = 1.0; // 弾の減衰速度
+const B_LIMIT     = 3;   // 弾の最大数
+const A_SPEED_MIN = 1;   // アステロイド最低速度
+const A_SPEED_MAX = 3;   // アステロイド最高速度
+const A_LIMIT     = 100; // アステロイド最大数
+const A_INTERVAL  = 1000;// アステロイド出現タイミング
+const A_REINFORCE = 8;   // アステロイド出現数増加タイミング
+const T_INTERVAL  = 1000;// 時間経過タイミング
 
-let assets    = {};
-let player    = null;
-let asteroids = [];
-let bullets   = [];
-let numTimer  = TIME_LIMIT;
-let numLife   = LIFE_MAX;
-let numScore  = 0;
-let msg       = "";
+let assets        = {};  // アセット
+let player        = null;// プレイヤー
+let asteroids     = [];  // アステロイド
+let bullets       = [];  // 弾
+let numTime       = 0;   // タイム
+let numLife       = 3;   // ライフ
+let numScore      = 0;   // スコア
+let msg           = "";  // メッセージ
 
+//  プレイヤー、背景、アステロイドの種類
 const images = [
-	"images/soldier.png", "images/bkg.png",// Soldier, Background
-	"images/earth.png",   "images/moon.png",   "images/ume.png", 
-	"images/inv1a.png",   "images/inv2a.png",  "images/inv3a.png",
-	"images/inv4a.png",   "images/inv5a.png",  "images/inv6a.png",
-	"images/inv7a.png",   "images/inv8a.png",  "images/inv9a.png",
-	"images/inv10a.png",  "images/inv11a.png", "images/inv12a.png",
-	"images/inv13a.png",  "images/inv14a.png", "images/inv15a.png",
-	"images/inv16a.png",  "images/inv17a.png",
+	"images/inv1a.png", "images/bkg.png",// Soldier, Background
+	"images/inv1a.png", "images/inv2a.png", "images/inv3a.png",
+	"images/inv4a.png", "images/inv5a.png", "images/inv6a.png",
 ];
 
 const sounds = [
+	"sounds/bgm_am.mp3", "sounds/bgm_pm.mp3",
 	"sounds/damage.mp3", "sounds/gameclear.mp3",
 	"sounds/gameover.mp3", "sounds/hit.mp3",
 	"sounds/pong.mp3", "sounds/shot.mp3",
 ];
 
 function setup(){
-	createCanvas(480, 320);
-	frameRate(32);
-
-	// Background
+	createCanvas(480, 320); frameRate(32);
 	let bkg = createBkg(240, 160, "images/bkg.png");
 
-	// Player
-	player = createPlayer(width/2, height/2, "images/soldier.png");
+	// 1, プレイヤーを出そう
+	player = createPlayer(width/2, height/2, "images/inv1a.png");
 
-	// Asteroids, CountDown
+	// 4-1, 隕石の出現と時間を実装しよう
 	startAsteroids();
-	startCountDown();
-}
+	startCountUp();
 
-function draw(){
-	background(0, 0, 0);
-
-	// Player
-	if(player.position.x < 0) player.position.x = width;
-	if(width < player.position.x) player.position.x = 0;
-	if(player.position.y < 0) player.position.y = height;
-	if(height < player.position.y) player.position.y = 0;
-
-	// Collide
-	for(let a=0; a<asteroids.length; a++){
-		// Asteroid x Player
-		if(asteroids[a].bounce(player)){
-			numLife--;
-			if(numLife <= 0){
-				gameOver();
-			}
-			playSound("sounds/damage.mp3");
-		}
-		// Asteroid x Bullet
-		for(let b=0; b<bullets.length; b++){
-			if(bullets[b].bounce(asteroids[a])){
-				bullets[b].position.x = -100;
-				bullets[b].position.y = -100;
-				playSound("sounds/hit.mp3");
-			}
-		}
-	}
-
-	// Asteroids
-	cleanOutside(asteroids);
-	cleanOutside(bullets);
-
-	// Sprites
-	drawSprites();
-
-	// Status
-	drawStatuses();
+	// 4-2, BGMを再生しよう
+	playSound("sounds/bgm_am.mp3");
 }
 
 function keyPressed(){
-	// Up
+	// 2-1, プレイヤーを操作しよう(UP/LEFT/RIGHT)
 	if(keyCode == 38){
-		player.setSpeed(PLAYER_SPEED, player.rotation-90);
+		player.setSpeed(P_SPEED, player.rotation-90);
 	}
-	// Left
 	if(keyCode == 37){
 		player.rotationSpeed = -5;
 	}
-	// Right
 	if(keyCode == 39){
 		player.rotationSpeed = +5;
 	}
-	// Shot(Z)
-	if(keyCode == 90 && bullets.length < BULLET_LIMIT){
+	// 2-2, プレイヤーを操作しよう(Z)
+	if(keyCode == 90 && bullets.length < B_LIMIT){
+		// 2-3, 弾を発射しよう
 		let x = player.position.x;
 		let y = player.position.y;
-		let rotation = player.rotation-90;
+		let r = player.rotation-90;
 		let bullet = createBullet(x, y);
-		bullet.setSpeed(BULLET_SPEED, rotation);
+		bullet.setSpeed(B_SPEED, r);
 		bullets.push(bullet);
 		playSound("sounds/shot.mp3");
 	}
 }
 
 function keyReleased(){
-	// Release
 	if(keyCode == 37 || keyCode == 39){
 		player.rotationSpeed = 0;
 	}
 }
 
-function gameClear(){
-	msg = "GAME CLEAR!!";
-	playSound("sounds/gameclear.mp3");
-	noLoop();
+function draw(){
+	background(0, 0, 0);
+
+	// 3, 画面外判定を実装しよう
+	if(player.position.x < 0) player.position.x = width;
+	if(width < player.position.x) player.position.x = 0;
+	if(player.position.y < 0) player.position.y = height;
+	if(height < player.position.y) player.position.y = 0;
+
+	// 当たり判定を実装しよう
+	for(let a=0; a<asteroids.length; a++){
+		// 5-1, 隕石xプレイヤー
+		if(asteroids[a].bounce(player)){
+			if(--numLife <= 0) gameOver();
+			playSound("sounds/damage.mp3");
+		}
+		// 5-2, 隕石x弾
+		for(let b=0; b<bullets.length; b++){
+			if(bullets[b].bounce(asteroids[a])){
+				bullets[b].position.x = -100;
+				bullets[b].position.y = -100;
+				numScore++;
+				playSound("sounds/hit.mp3");
+			}
+		}
+	}
+
+	// Clean, Draw
+	cleanOutside(asteroids);
+	cleanOutside(bullets);
+	drawSprites(); drawStatuses();
 }
 
 function gameOver(){
 	msg = "GAME OVER!!";
+	stopSound("sounds/bgm_am.mp3");
 	playSound("sounds/gameover.mp3");
 	noLoop();
 }
@@ -165,7 +156,7 @@ function preload(){
 function createPlayer(x, y, path){
 	let spr = createSprite(x, y, 16, 16);
 	spr.addImage(assets[path]);
-	spr.friction = PLAYER_FRICTION;
+	spr.friction = P_FRICTION;
 	spr.debug = DEBUG;
 	return spr;
 }
@@ -178,8 +169,7 @@ function createBkg(x, y, path){
 
 function createAsteroid(min, max, path){
 	// Asteroids
-	let x = width / 2;
-	let y = height / 2;
+	let x = width / 2; let y = height / 2;
 	let speed = random(min, max);
 	let rotation = random(0, 360);
 
@@ -210,7 +200,7 @@ function createAsteroid(min, max, path){
 function createBullet(x, y){
 	let spr = createSprite(x, y, 4, 4);
 	spr.shapeColor = color(255, 255, 255);
-	spr.friction = BULLET_FRICTION;
+	spr.friction = B_FRICTION;
 	spr.debug = DEBUG;
 	return spr;
 }
@@ -236,41 +226,40 @@ function startAsteroids(){
 	//console.log("startAsteroids");
 	if(isFinished()) return;// Finished?
 	// Asteroids
-	if(asteroids.length < ASTEROID_LIMIT){
-		let r = floor((TIME_LIMIT-numTimer) / ASTEROID_REINFORCE) + 1;
+	if(asteroids.length < A_LIMIT){
+		let r = floor(numTime / A_REINFORCE) + 1;
 		for(let i=0; i<r; i++){
-			let rdm = floor(random(2, images.length-1));
+			let rdm = floor(random(2, images.length));
 			let asteroid = createAsteroid(
-					ASTEROID_SPEED_MIN, ASTEROID_SPEED_MAX, images[rdm]);
+					A_SPEED_MIN, A_SPEED_MAX, images[rdm]);
 			asteroids.push(asteroid);
 		}
 	}
 	// Timeout
-	setTimeout(startAsteroids, ASTEROID_INTERVAL);
+	setTimeout(startAsteroids, A_INTERVAL);
 }
 
-function startCountDown(){
-	//console.log("startCountDown");
+function startCountUp(){
+	//console.log("startCountUp");
 	if(isFinished()) return;// Finished?
-	// CountDown
-	numTimer--;
-	if(numTimer <= 0 && 0 < numLife){
-		gameClear();
-	}
+	// CountUp
+	numTime++;
 	// Timeout
-	setTimeout(startCountDown, TIME_INTERVAL);
+	setTimeout(startCountUp, T_INTERVAL);
 }
 
 function playSound(path){
-	if(assets[path].isPlaying()){
-		assets[path].stop();
-	}
+	stopSound(path);
 	assets[path].play();
 }
 
+function stopSound(path){
+	if(assets[path].isPlaying()) assets[path].stop();
+}
+
 function drawStatuses(){
-	fill(255, 255, 255); textSize(24);
-	let msgTimer = "TIME:"  + numTimer;
+	fill(255, 255, 255); noStroke(); textSize(24);
+	let msgTimer = "TIME:"  + numTime;
 	let msgLife  = "LIFE:"  + numLife;
 	let msgScore = "SCORE:" + numScore;
 	textAlign(LEFT);   text(msgTimer, 10, 25);
@@ -280,6 +269,6 @@ function drawStatuses(){
 }
 
 function isFinished(){
-	if(numTimer <= 0 || numLife <=0) return true;
+	if(numLife <=0) return true;
 	return false;
 }
