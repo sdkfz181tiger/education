@@ -13,7 +13,7 @@
 
 console.log("Hello p5.js!!");
 
-const DEBUG       = false;// デバッグモード
+const DEBUG       = true;// デバッグモード
 
 const P_SPEED     = 4;   // プレイヤー移動速度
 const P_FRICTION  = 0.95;// プレイヤー減衰速度
@@ -38,7 +38,7 @@ let msg           = "";  // メッセージ
 
 //  プレイヤー、背景、アステロイドの種類
 const images = [
-	"images/inv1a.png", "images/bkg.png",// Soldier, Background
+	"images/soldier.png", "images/bkg.png",// Soldier, Background
 	"images/inv1a.png", "images/inv2a.png", "images/inv3a.png",
 	"images/inv4a.png", "images/inv5a.png", "images/inv6a.png",
 ];
@@ -47,7 +47,7 @@ const sounds = [
 	"sounds/bgm_am.mp3", "sounds/bgm_pm.mp3",
 	"sounds/damage.mp3", "sounds/gameclear.mp3",
 	"sounds/gameover.mp3", "sounds/hit.mp3",
-	"sounds/pong.mp3", "sounds/shot.mp3",
+	"sounds/pong.mp3", "sounds/shot.mp3", "sounds/go.mp3",
 ];
 
 function setup(){
@@ -55,7 +55,7 @@ function setup(){
 	let bkg = createBkg(240, 160, "images/bkg.png");
 
 	// 1, プレイヤーを出そう
-	player = createPlayer(width/2, height/2, "images/inv1a.png");
+	player = createPlayer(width/2, height/2, "images/soldier.png");
 
 	// 4-1, 隕石の出現と時間を実装しよう
 	startAsteroids();
@@ -69,6 +69,7 @@ function keyPressed(){
 	// 2-1, プレイヤーを操作しよう(UP/LEFT/RIGHT)
 	if(keyCode == 38){
 		player.setSpeed(P_SPEED, player.rotation-90);
+		playSound("sounds/go.mp3");
 	}
 	if(keyCode == 37){
 		player.rotationSpeed = -5;
@@ -107,13 +108,13 @@ function draw(){
 	// 当たり判定を実装しよう
 	for(let a=0; a<asteroids.length; a++){
 		// 5-1, 隕石xプレイヤー
-		if(asteroids[a].bounce(player)){
+		if(isCollide(player, asteroids[a])){
 			if(--numLife <= 0) gameOver();
 			playSound("sounds/damage.mp3");
 		}
 		// 5-2, 隕石x弾
 		for(let b=0; b<bullets.length; b++){
-			if(bullets[b].bounce(asteroids[a])){
+			if(isBounce(bullets[b], asteroids[a])){
 				bullets[b].position.x = -100;
 				bullets[b].position.y = -100;
 				numScore++;
@@ -219,6 +220,20 @@ function isOutside(sprite){
 	if(width < sprite.position.x) return true;
 	if(sprite.position.y < 0) return true;
 	if(width < sprite.position.y) return true;
+	return false;
+}
+
+function isCollide(sprite, target){
+	let dX = sprite.position.x - target.position.x;
+	let dY = sprite.position.y - target.position.y;
+	let dist = Math.floor(Math.sqrt(dX*dX + dY*dY));
+	if(sprite.width*0.8 < dist) return false;
+	if(sprite.bounce(target)) return true;
+	return false;
+}
+
+function isBounce(sprite, target){
+	if(sprite.bounce(target)) return true;
 	return false;
 }
 
