@@ -10,15 +10,16 @@
 
 console.log("Hello p5.js!!");
 
-const DEBUG   = false;// デバッグモード
+const DEBUG   = false;
 
-const CHAINS  = 1;    // 必要連鎖数
+const CHAINS  = 1;  // 必要連鎖数
 const DISP_W  = 480;
 const DISP_H  = 320;
 const F_RATE  = 32;
 const R_MAX   = 8;
 const C_MAX   = 13;
 const B_SIZE  = 32;
+const B_TOTAL = R_MAX * C_MAX;
 const B_PADD  = B_SIZE + 4;
 const START_X = DISP_W * 0.5 - (C_MAX-1) * B_PADD * 0.5;
 const START_Y = DISP_H - R_MAX * B_PADD + 16;
@@ -48,19 +49,36 @@ function setup(){
 	createCanvas(DISP_W, DISP_H);
 	frameRate(F_RATE);
 
-	for(let r=0; r<R_MAX; r++){
-		for(let c=0; c<C_MAX; c++){
-			let x = START_X + c * B_PADD;
-			let y = START_Y + r * B_PADD;
-			let n = (r + c) % 2;
-			if(n == 0){
-				createTile(x, y, 66, 66, 66);
-			}else{
-				createTile(x, y, 99, 99, 99);
-			}
+	// Decorations, Tiles, Balls
+	createDecoA();
+	createTiles();
+	createBalls();
+	createDecoB();
+
+	// CountDown
+	startCountDown();
+}
+
+function createDecoA(){
+	
+}
+
+function createDecoB(){
+	
+}
+
+function createTiles(){
+
+	for(let i=0; i<B_TOTAL; i++){
+		let x = START_X + B_PADD * floor(i % C_MAX);
+		let y = START_Y + B_PADD * floor(i / C_MAX);
+		if(i % 2 == 0){
+			createTile(x, y, 99, 99, 99);
 		}
 	}
+}
 
+function createBalls(){
 	activeFlg = true;
 	matrix = createMatrix();
 	for(let r=0; r<R_MAX; r++){
@@ -71,17 +89,6 @@ function setup(){
 			matrix[r][c] = ball;
 		}
 	}
-
-	// CountDown
-	startCountDown();
-}
-
-function draw(){
-	background(33, 33, 33);
-
-	// Sprites, Status
-	drawSprites();
-	drawStatuses();
 }
 
 //==========
@@ -100,6 +107,12 @@ function preload(){
 	for(let i=0; i<sounds.length; i++){
 		assets[sounds[i]] = loadSound(sounds[i]);
 	}
+}
+
+function draw(){
+	background(33, 33, 33);
+	drawSprites();
+	drawStatuses();
 }
 
 function getIndex(arr){
