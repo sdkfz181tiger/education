@@ -74,7 +74,7 @@ function setup(){
 	playSound("sounds/bgm_pm.mp3");
 }
 
-function judgeMatrix(num){
+function judgeMatrix(num, ball){
 
  	if(3 < num){
  		playSound("sounds/power3.mp3");
@@ -84,12 +84,24 @@ function judgeMatrix(num){
  		playSound("sounds/power1.mp3");
  	}else{
  		playSound("sounds/confuse.mp3");
+ 		specialEffect(ball);
  		return false;
  	}
 
  	// Score
  	numScore += num;
  	return true;
+}
+
+function specialEffect(ball){
+	let x = ball.position.x;
+	let y = ball.position.y;
+	// Cat
+	let cat = createSprite(x, y, 32, 32);
+	cat.addImage(loadImage("images/cat01.png"));
+	// Cant
+	let cant = createSprite(x, y-22, 32, 32);
+	cant.addImage(loadImage("images/cant.png"));
 }
 
 //==========
@@ -241,7 +253,7 @@ function createMatrix(){
 
 function checkMatrix(mtxBef, ball){
 	let checked = searchMatrix(mtxBef, ball);
- 	if(judgeMatrix(checked.length) == false) return mtxBef;
+ 	if(judgeMatrix(checked.length, ball) == false) return mtxBef;
 
 	// Remove
 	for(let i=checked.length-1; 0<=i; i--){
