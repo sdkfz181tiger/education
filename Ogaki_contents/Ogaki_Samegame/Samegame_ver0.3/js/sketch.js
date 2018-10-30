@@ -40,9 +40,9 @@ const images = [
 
 const sounds = [
 	"sounds/bgm_am.mp3", "sounds/bgm_pm.mp3",
-	"sounds/damage.mp3", "sounds/gameclear.mp3",
-	"sounds/gameover.mp3", "sounds/hit.mp3",
-	"sounds/pong.mp3", "sounds/shot.mp3", "sounds/go.mp3",
+	"sounds/gameclear.mp3", "sounds/gameover.mp3", 
+	"sounds/confuse.mp3", "sounds/power1.mp3",
+	"sounds/power2.mp3", "sounds/power3.mp3",
 ];
 
 function setup(){
@@ -91,11 +91,19 @@ function createBalls(){
 
 function judgeMatrix(num){
 
- 	if(num < CHAINS) return false;
+ 	if(3 < num){
+ 		playSound("sounds/power3.mp3");
+ 	}else if(2 < num){
+ 		playSound("sounds/power2.mp3");
+ 	}else if(1 < num){
+ 		playSound("sounds/power1.mp3");
+ 	}else{
+ 		playSound("sounds/confuse.mp3");
+ 		return false;
+ 	}
 
  	// Score
  	numScore += num;
-
  	return true;
 }
 
