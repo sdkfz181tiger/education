@@ -25,7 +25,7 @@ const START_X = DISP_W * 0.5 - (C_MAX-1) * B_PADD * 0.5;
 const START_Y = DISP_H - R_MAX * B_PADD + 16;
 
 let assets    = {};
-let numTimer  = 30;// プレイ時間
+let numTimer  = 20;// プレイ時間
 let numScore  = 0; // 初期スコア
 let msg       = "";
 let activeFlg = false;
@@ -49,12 +49,20 @@ function setup(){
 	createCanvas(DISP_W, DISP_H);
 	frameRate(F_RATE);
 
+	let bkg = createSprite(0, 0, DISP_W, DISP_H - 18);
+	bkg.shapeColor = color(88, 55, 33);
+	bkg.position.x = DISP_W * 0.5;
+	bkg.position.y = DISP_H * 0.5 + 18;
+
 	// Tiles, Balls
 	createTiles();
 	createBalls();
 
 	// CountDown
 	startCountDown();
+
+	// BGM
+	playSound("sounds/bgm_pm.mp3");
 }
 
 function createTiles(){
@@ -63,7 +71,7 @@ function createTiles(){
 		let x = START_X + B_PADD * floor(i % C_MAX);
 		let y = START_Y + B_PADD * floor(i / C_MAX);
 		if(i % 2 == 0){
-			createTile(x, y, 99, 99, 99);
+			createTile(x, y, 140, 120, 100);
 		}
 	}
 }
@@ -75,8 +83,8 @@ function createBalls(){
 		for(let c=0; c<C_MAX; c++){
 			let x = START_X + c * B_PADD;
 			let y = START_Y + r * B_PADD;
-			let ball = createBall(x, y, r, c, getIndex(images));
-			matrix[r][c] = ball;
+			matrix[r][c] = createBall(
+				x, y, r, c, getIndex(images));
 		}
 	}
 }
@@ -178,10 +186,12 @@ function startCountDown(){
 }
 
 function playSound(path){
-	if(assets[path].isPlaying()){
-		assets[path].stop();
-	}
+	stopSound(path);
 	assets[path].play();
+}
+
+function stopSound(path){
+	if(assets[path].isPlaying()) assets[path].stop();
 }
 
 function drawStatuses(){
@@ -204,7 +214,8 @@ function isFinished(){
 
 function gameOver(){
 	msg = "GAME OVER!!";
-	playSound("sounds/gameover.mp3");
+	stopSound("sounds/bgm_pm.mp3");
+	playSound("sounds/gameclear.mp3");
 	noLoop();
 }
 
