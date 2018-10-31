@@ -32,14 +32,12 @@ let activeFlg = false;
 let matrix    = null;
 
 const images = [
-	//"images/cat01.png",   "images/cat02.png",
-	//"images/cat03.png",   "images/cat04.png",
 	"images/donut01.png", "images/donut02.png",
 	"images/donut03.png", "images/donut04.png",
 ];
 
 const sounds = [
-	"sounds/bgm_am.mp3", "sounds/bgm_pm.mp3",
+	"sounds/bgmam.mp3", "sounds/bgmpm.mp3",
 	"sounds/gameclear.mp3", "sounds/gameover.mp3",
 	"sounds/confuse.mp3", "sounds/power1.mp3",
 	"sounds/power2.mp3", "sounds/power3.mp3",
@@ -71,7 +69,7 @@ function setup(){
 	startCountDown();
 
 	// BGM
-	playSound("sounds/bgm_pm.mp3");
+	playSound("sounds/bgmpm.mp3");
 }
 
 function judgeMatrix(num, ball){
@@ -235,7 +233,7 @@ function isFinished(){
 
 function gameOver(){
 	msg = "GAME OVER!!";
-	stopSound("sounds/bgm_pm.mp3");
+	stopSound("sounds/bgmpm.mp3");
 	playSound("sounds/gameclear.mp3");
 	noLoop();
 }
