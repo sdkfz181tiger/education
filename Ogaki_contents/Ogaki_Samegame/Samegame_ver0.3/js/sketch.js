@@ -94,14 +94,10 @@ function judgeMatrix(num, ball){
 }
 
 function specialEffect(ball){
+	// Cant
 	let x = ball.position.x;
 	let y = ball.position.y;
-	// Cat
-	let cat = createSprite(x, y, 32, 32);
-	cat.addImage(loadImage("images/cat01.png"));
-	// Cant
-	let cant = createSprite(x, y-22, 32, 32);
-	cant.addImage(loadImage("images/cant.png"));
+	let cant = createCant(x, y, "images/cant.png");
 }
 
 //==========
@@ -153,6 +149,13 @@ function createBall(x, y, r, c, index){
 		matrix = checkMatrix(matrix, ball);
 	}
 	return ball;
+}
+
+function createCant(x, y, path){
+	// Cat
+	let cant = createSprite(x, y, 32, 32);
+	cant.addImage(loadImage(path));
+	setTimeout(()=>{cant.remove();}, 1000);
 }
 
 function createTile(x, y, r, g, b){

@@ -49,7 +49,7 @@ const images = [
 ];
 
 const sounds = [
-	"sounds/bgm_am.mp3", "sounds/bgm_pm.mp3",
+	"sounds/bgmam.mp3", "sounds/bgmpm.mp3",
 	"sounds/damage.mp3", "sounds/gameclear.mp3",
 	"sounds/gameover.mp3", "sounds/hit.mp3",
 	"sounds/pong.mp3", "sounds/shot.mp3", "sounds/go.mp3",
@@ -67,7 +67,7 @@ function setup(){
 	startCountUp();
 
 	// 4-2, BGMを再生しよう
-	playSound("sounds/bgm_am.mp3");
+	playSound("sounds/bgmam.mp3");
 }
 
 function keyPressed(){
@@ -136,7 +136,7 @@ function draw(){
 
 function gameOver(){
 	msg = "GAME OVER!!";
-	stopSound("sounds/bgm_am.mp3");
+	stopSound("sounds/bgmam.mp3");
 	playSound("sounds/gameover.mp3");
 	noLoop();
 }
