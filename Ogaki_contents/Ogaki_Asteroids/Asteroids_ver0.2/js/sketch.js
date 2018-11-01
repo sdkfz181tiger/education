@@ -44,6 +44,7 @@ let msg           = "";  // メッセージ
 //  プレイヤー、背景、アステロイドの種類
 const images = [
 	"images/soldier.png", "images/bkg.png",// Soldier, Background
+	"images/moon.png", "images/earth.png",
 	"images/inv1a.png", "images/inv2a.png", "images/inv3a.png",
 	"images/inv4a.png", "images/inv5a.png", "images/inv6a.png",
 ];
@@ -234,7 +235,7 @@ function isCollide(sprite, target){
 	let dY = sprite.position.y - target.position.y;
 	if(sprite.height < Math.abs(dY)) return false;
 	let dist = Math.floor(Math.sqrt(dX*dX + dY*dY));
-	if(sprite.width*0.8 < dist) return false;
+	if(target.width*0.8 < dist) return false;
 	if(sprite.bounce(target)) return true;
 	return false;
 }
