@@ -12,7 +12,6 @@ console.log("Hello p5.js!!");
 
 const DEBUG   = false;
 
-const CHAINS  = 2;  // 必要連鎖数
 const DISP_W  = 480;
 const DISP_H  = 320;
 const F_RATE  = 32;
@@ -89,17 +88,20 @@ function startCountDown(){
 	setTimeout(startCountDown, 1000);
 }
 
-function judgeMatrix(num, ball){
+function judgeMatrix(deleted, ball){
+	let num = deleted.length;
 
- 	if(3 < num){
+	if(5 < num){
  		playSound("sounds/power3.mp3");
- 	}else if(2 < num){
+ 		posiEf(deleted, "images/cant.png");
+	}else if(4 < num){
  		playSound("sounds/power2.mp3");
- 	}else if(1 < num){
- 		playSound("sounds/power1.mp3");
+ 		posiEf(deleted, "images/cant.png");
+ 	}else if(2 < num){
+ 		// Do nothing
  	}else{
  		playSound("sounds/confuse.mp3");
- 		specialEffect(ball);
+ 		negaEf(ball, "images/cant.png");
  		return false;
  	}
 
@@ -108,11 +110,21 @@ function judgeMatrix(num, ball){
  	return true;
 }
 
-function specialEffect(ball){
-	// Cant
+function posiEf(deleted, path){
+
+	console.log("posi:" + deleted.length);
+
+	for(let del of deleted){
+		let x = matrix[del.r][del.c].position.x;
+		let y = matrix[del.r][del.c].position.y;
+		let cant = createCant(x, y, path);
+	}
+}
+
+function negaEf(ball, path){
 	let x = ball.position.x;
 	let y = ball.position.y;
-	let cant = createCant(x, y, "images/cant.png");
+	let cant = createCant(x, y, path);
 }
 
 function gameOver(){
@@ -251,13 +263,13 @@ function createMatrix(){
 }
 
 function checkMatrix(mtxBef, ball){
-	let checked = searchMatrix(mtxBef, ball);
- 	if(judgeMatrix(checked.length, ball) == false) return mtxBef;
+	let deleted = searchMatrix(mtxBef, ball);
+ 	if(judgeMatrix(deleted, ball) == false) return mtxBef;
 
 	// Remove
-	for(let i=checked.length-1; 0<=i; i--){
-		let r = checked[i].r;
-		let c = checked[i].c;
+	for(let i=deleted.length-1; 0<=i; i--){
+		let r = deleted[i].r;
+		let c = deleted[i].c;
 		mtxBef[r][c].vanish();
 		mtxBef[r][c] = null;
 	}
@@ -307,11 +319,11 @@ function checkMatrix(mtxBef, ball){
 }
 
 function searchMatrix(mtxBef, ball){
-	let checked = [];
+	let deleted = [];
 	checkHV(ball);// Target
 
 	function checkHV(target){
-		checked.push({"r": target.r, "c": target.c, "index": target.index});
+		deleted.push({"r": target.r, "c": target.c, "index": target.index});
 		if(0 < target.c)       checkCell(target, 0, -1);// Left
 		if(target.c < C_MAX-1) checkCell(target, 0, 1); // Right
 		if(0 < target.r)       checkCell(target, -1, 0);// Top
@@ -328,9 +340,9 @@ function searchMatrix(mtxBef, ball){
 	}
 
 	function isChecked(target){
-		for(let i=0; i<checked.length; i++){
+		for(let i=0; i<deleted.length; i++){
 			if(target == null) return true;
-			if(target.r == checked[i].r && target.c == checked[i].c){
+			if(target.r == deleted[i].r && target.c == deleted[i].c){
 				return true;
 			}
 		}
@@ -345,5 +357,5 @@ function searchMatrix(mtxBef, ball){
 		return 0;
 	}
 
-	return checked.sort(compare);
+	return deleted.sort(compare);
 }
