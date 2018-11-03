@@ -183,17 +183,22 @@ function createBall(x, y, r, c, index){
 }
 
 function createStar(x, y, path){
-	let star = createSprite(x, y, 32, 32);
-	let anim = loadAnimation(
-		"images/star01.png", "images/star02.png", "images/star03.png");
-	star.addAnimation("cant", anim);
-	setTimeout(()=>{star.remove();}, 1000*1);
+	// let star = createSprite(x, y, 32, 32);
+	// let anim = loadAnimation(
+	// 	"images/star01.png", "images/star02.png", "images/star03.png");
+	// star.addAnimation("cant", anim);
+	// setTimeout(()=>{star.remove();}, 1000*1);
 }
 
 function createCant(x, y, path){
 	let cant = createSprite(x, y, 32, 32);
 	cant.addImage(loadImage(path));
-	setTimeout(()=>{cant.remove();}, 1000*2);
+	let tl = new TimelineMax({
+		repeat: 3, yoyo: false,
+		onComplete: ()=>{cant.remove();}});
+	tl.to(cant.position, 0.1, {x: "+=4"});
+	tl.to(cant.position, 0.2, {x: "-=8"});
+	tl.to(cant.position, 0.1, {x: "+=4"});
 }
 
 function createTile(x, y, r, g, b){
@@ -210,13 +215,15 @@ function getIndex(arr){
 const SPRITE_CLS = p5.prototype.Sprite;
 
 SPRITE_CLS.prototype.vanish = function(){
-	this.scale = 0.8;
-	setTimeout(()=>{this.remove();}, 100);
+	let tl = new TimelineMax({
+		onComplete: ()=>{this.remove();}
+	});
+	tl.to(this, 0.2, {scale: 0.2});
 }
 
 SPRITE_CLS.prototype.moveTo = function(x, y){
 	let tl = new TimelineMax();
-	tl.to(this.position, 0.2, {x: x, y: y});
+	tl.to(this.position, 0.4, {x: x, y: y});
 }
 
 function playSound(path){
@@ -296,11 +303,10 @@ function checkMatrix(mtxBef, ball){
 				let y = START_Y + r * B_PADD;
 				let index = getIndex(images);
 				let ball = createBall(x, y-B_PADD, r, c, index);
-				ball.visible = false;
-				setTimeout(()=>{
-					ball.visible = true;
-					ball.moveTo(x, y);
-				}, 500);
+				let tl = new TimelineMax();
+				tl.to(ball, 0, {visible: false});
+				tl.to(ball, 0, {visible: true}, "+=0.2");
+				tl.to(ball.position, 0.5, {x: x, y: y});
 				mtxAft[r][c] = ball;
 			}else{
 				mtxAft[r][c].moveTo(x, y);
