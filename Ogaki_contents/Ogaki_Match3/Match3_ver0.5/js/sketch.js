@@ -15,13 +15,13 @@ const DEBUG   = false;
 const DISP_W  = 480;
 const DISP_H  = 320;
 const F_RATE  = 32;
-const R_MAX   = 8;
-const C_MAX   = 13;
+const R_MAX   = 3;
+const C_MAX   = 3;
 const B_SIZE  = 32;
 const B_TOTAL = R_MAX * C_MAX;
-const B_PADD  = B_SIZE + 4;
+const B_PADD  = B_SIZE + 3;
 const START_X = DISP_W * 0.5 - (C_MAX-1) * B_PADD * 0.5;
-const START_Y = DISP_H - R_MAX * B_PADD + 14;
+const START_Y = DISP_H - R_MAX * B_PADD + 10;
 
 let assets    = {};
 let numTimer  = 20;// プレイ時間
@@ -91,14 +91,9 @@ function startCountDown(){
 function judgeMatrix(deleted, ball){
 	let num = deleted.length;
 
-	if(5 < num){
- 		playSound("sounds/power3.mp3");
- 		posiEf(deleted, "images/cant.png");
-	}else if(4 < num){
- 		playSound("sounds/power2.mp3");
- 		posiEf(deleted, "images/cant.png");
- 	}else if(2 < num){
- 		// Do nothing
+	if(1 < num){
+ 		playSound("sounds/power1.mp3");
+ 		//posiEf(deleted, "images/cant.png");
  	}else{
  		playSound("sounds/confuse.mp3");
  		negaEf(ball, "images/cant.png");
@@ -111,20 +106,17 @@ function judgeMatrix(deleted, ball){
 }
 
 function posiEf(deleted, path){
-
-	console.log("posi:" + deleted.length);
-
 	for(let del of deleted){
 		let x = matrix[del.r][del.c].position.x;
 		let y = matrix[del.r][del.c].position.y;
-		let cant = createCant(x, y, path);
+		createStar(x, y, path);
 	}
 }
 
 function negaEf(ball, path){
 	let x = ball.position.x;
 	let y = ball.position.y;
-	let cant = createCant(x, y, path);
+	createCant(x, y, path);
 }
 
 function gameOver(){
@@ -179,13 +171,25 @@ function createBall(x, y, r, c, index){
 		if(activeFlg == false) return;
 		activeFlg = false;
 		setTimeout(()=>{activeFlg = true}, 800);
-		matrix = checkMatrix(matrix, ball);
+		checkMatrix(matrix, ball, (mtxAft, deleted, added)=>{
+				console.log("Completed");
+				matrix=mtxAft;
+				console.log(deleted);
+				console.log(added);
+			});
 	}
 	return ball;
 }
 
+function createStar(x, y, path){
+	let star = createSprite(x, y, 32, 32);
+	let anim = loadAnimation(
+		"images/star01.png", "images/star02.png", "images/star03.png");
+	star.addAnimation("cant", anim);
+	setTimeout(()=>{star.remove();}, 1000*1);
+}
+
 function createCant(x, y, path){
-	// Cat
 	let cant = createSprite(x, y, 32, 32);
 	cant.addImage(loadImage(path));
 	setTimeout(()=>{cant.remove();}, 1000*2);
@@ -262,9 +266,10 @@ function createMatrix(){
 	return matrix;
 }
 
-function checkMatrix(mtxBef, ball){
+function checkMatrix(mtxBef, ball, onChecked){
+	// Deleted
 	let deleted = searchMatrix(mtxBef, ball);
- 	if(judgeMatrix(deleted, ball) == false) return mtxBef;
+ 	if(judgeMatrix(deleted, ball) == false) return;
 
 	// Remove
 	for(let i=deleted.length-1; 0<=i; i--){
@@ -293,6 +298,8 @@ function checkMatrix(mtxBef, ball){
 		}
 	}
 
+	// Added
+	let added = [];
 	// Fill or Reposition
 	for(let r=0; r<R_MAX; r++){
 		for(let c=0; c<C_MAX; c++){
@@ -309,13 +316,14 @@ function checkMatrix(mtxBef, ball){
 					ball.moveTo(x, y);
 				}, 500);
 				mtxAft[r][c] = ball;
+				added.push({"r": ball.r, "c": ball.c, "index": ball.index});
 			}else{
 				mtxAft[r][c].moveTo(x, y);
 			}
 		}
 	}
-
-	return mtxAft;
+	onChecked(mtxAft, deleted, added);// Callback
+	return;
 }
 
 function searchMatrix(mtxBef, ball){

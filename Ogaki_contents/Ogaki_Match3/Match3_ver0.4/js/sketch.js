@@ -12,7 +12,6 @@ console.log("Hello p5.js!!");
 
 const DEBUG   = false;
 
-const CHAINS  = 2;  // 必要連鎖数
 const DISP_W  = 480;
 const DISP_H  = 320;
 const F_RATE  = 32;
@@ -20,9 +19,9 @@ const R_MAX   = 8;
 const C_MAX   = 13;
 const B_SIZE  = 32;
 const B_TOTAL = R_MAX * C_MAX;
-const B_PADD  = B_SIZE + 4;
+const B_PADD  = B_SIZE + 3;
 const START_X = DISP_W * 0.5 - (C_MAX-1) * B_PADD * 0.5;
-const START_Y = DISP_H - R_MAX * B_PADD + 16;
+const START_Y = DISP_H - R_MAX * B_PADD + 10;
 
 let assets    = {};
 let numTimer  = 20;// プレイ時間
@@ -37,9 +36,8 @@ const images = [
 ];
 
 const sounds = [
-	"sounds/bgmam.mp3", "sounds/bgmpm.mp3",
-	"sounds/gameclear.mp3", "sounds/gameover.mp3",
-	"sounds/confuse.mp3", "sounds/power1.mp3",
+	"sounds/bgmam.mp3", "sounds/bgmpm.mp3", "sounds/gameclear.mp3",
+	"sounds/gameover.mp3", "sounds/confuse.mp3", "sounds/power1.mp3",
 	"sounds/power2.mp3", "sounds/power3.mp3",
 ];
 
@@ -49,7 +47,7 @@ function setup(){
 
 	// Background
 	let bkg = createSprite(0, 0, DISP_W, DISP_H - 18);
-	bkg.shapeColor = color(88, 55, 33);
+	bkg.shapeColor = color(255, 210, 180);
 	bkg.position.x = DISP_W * 0.5;
 	bkg.position.y = DISP_H * 0.5 + 18;
 
@@ -58,31 +56,53 @@ function setup(){
 		let x = START_X + B_PADD * floor(i % C_MAX);
 		let y = START_Y + B_PADD * floor(i / C_MAX);
 		if(i % 2 == 0){
-			createTile(x, y, 140, 120, 100);
+			createTile(x, y, 240, 185, 90);
 		}
 	}
 
 	// Balls
 	createBalls();
 
+	// Frame
+	let frame = createSprite(0, 0, DISP_W, DISP_H - 18);
+	frame.addImage(loadImage("images/frame.png"));
+	frame.position.x = DISP_W * 0.5;
+	frame.position.y = DISP_H * 0.5 + 12;
+
 	// CountDown
 	startCountDown();
 
 	// BGM
-	playSound("sounds/bgmpm.mp3");
+	//playSound("sounds/bgmpm.mp3");
 }
 
-function judgeMatrix(num, ball){
+function startCountDown(){
+	//console.log("startCountDown");
+	// CountDown
+	numTimer--;
+	if(numTimer <= 0){
+		//gameOver();
+		return;
+	}
+	// Timeout
+	setTimeout(startCountDown, 1000);
+}
 
- 	if(3 < num){
+function judgeMatrix(deleted, ball){
+	let num = deleted.length;
+
+	if(5 < num){
  		playSound("sounds/power3.mp3");
- 	}else if(2 < num){
+ 		posiEf(deleted, "images/cant.png");
+	}else if(4 < num){
  		playSound("sounds/power2.mp3");
- 	}else if(1 < num){
+ 		posiEf(deleted, "images/cant.png");
+ 	}else if(2 < num){
  		playSound("sounds/power1.mp3");
+ 		posiEf(deleted, "images/cant.png");
  	}else{
  		playSound("sounds/confuse.mp3");
- 		specialEffect(ball);
+ 		negaEf(ball, "images/cant.png");
  		return false;
  	}
 
@@ -91,11 +111,25 @@ function judgeMatrix(num, ball){
  	return true;
 }
 
-function specialEffect(ball){
-	// Cant
+function posiEf(deleted, path){
+	for(let del of deleted){
+		let x = matrix[del.r][del.c].position.x;
+		let y = matrix[del.r][del.c].position.y;
+		createStar(x, y, path);
+	}
+}
+
+function negaEf(ball, path){
 	let x = ball.position.x;
 	let y = ball.position.y;
-	let cant = createCant(x, y, "images/cant.png");
+	createCant(x, y, path);
+}
+
+function gameOver(){
+	msg = "GAME OVER!!";
+	stopSound("sounds/bgmpm.mp3");
+	playSound("sounds/gameclear.mp3");
+	noLoop();
 }
 
 //==========
@@ -129,8 +163,7 @@ function createBalls(){
 		for(let c=0; c<C_MAX; c++){
 			let x = START_X + c * B_PADD;
 			let y = START_Y + r * B_PADD;
-			matrix[r][c] = createBall(
-				x, y, r, c, getIndex(images));
+			matrix[r][c] = createBall(x, y, r, c, getIndex(images));
 		}
 	}
 }
@@ -149,11 +182,18 @@ function createBall(x, y, r, c, index){
 	return ball;
 }
 
+function createStar(x, y, path){
+	let star = createSprite(x, y, 32, 32);
+	let anim = loadAnimation(
+		"images/star01.png", "images/star02.png", "images/star03.png");
+	star.addAnimation("cant", anim);
+	setTimeout(()=>{star.remove();}, 1000*1);
+}
+
 function createCant(x, y, path){
-	// Cat
 	let cant = createSprite(x, y, 32, 32);
 	cant.addImage(loadImage(path));
-	setTimeout(()=>{cant.remove();}, 1000*10);
+	setTimeout(()=>{cant.remove();}, 1000*2);
 }
 
 function createTile(x, y, r, g, b){
@@ -191,19 +231,6 @@ SPRITE_CLS.prototype.moveTo = function(x, y){
 	}, time * 1.05);// Delayed...
 }
 
-function startCountDown(){
-	//console.log("startCountDown");
-	if(isFinished()) return;// Finished?
-
-	// CountDown
-	numTimer--;
-	if(numTimer <= 0){
-		gameOver();
-	}
-	// Timeout
-	setTimeout(startCountDown, 1000);
-}
-
 function playSound(path){
 	stopSound(path);
 	assets[path].play();
@@ -226,18 +253,6 @@ function drawStatuses(){
 	text(msg, width*0.5, 25);
 }
 
-function isFinished(){
-	if(numTimer <= 0) return true;
-	return false;
-}
-
-function gameOver(){
-	msg = "GAME OVER!!";
-	stopSound("sounds/bgmpm.mp3");
-	playSound("sounds/gameclear.mp3");
-	noLoop();
-}
-
 //==========
 // Matrix
 
@@ -253,13 +268,13 @@ function createMatrix(){
 }
 
 function checkMatrix(mtxBef, ball){
-	let checked = searchMatrix(mtxBef, ball);
- 	if(judgeMatrix(checked.length, ball) == false) return mtxBef;
+	let deleted = searchMatrix(mtxBef, ball);
+ 	if(judgeMatrix(deleted, ball) == false) return mtxBef;
 
 	// Remove
-	for(let i=checked.length-1; 0<=i; i--){
-		let r = checked[i].r;
-		let c = checked[i].c;
+	for(let i=deleted.length-1; 0<=i; i--){
+		let r = deleted[i].r;
+		let c = deleted[i].c;
 		mtxBef[r][c].vanish();
 		mtxBef[r][c] = null;
 	}
@@ -309,11 +324,11 @@ function checkMatrix(mtxBef, ball){
 }
 
 function searchMatrix(mtxBef, ball){
-	let checked = [];
+	let deleted = [];
 	checkHV(ball);// Target
 
 	function checkHV(target){
-		checked.push({"r": target.r, "c": target.c, "index": target.index});
+		deleted.push({"r": target.r, "c": target.c, "index": target.index});
 		if(0 < target.c)       checkCell(target, 0, -1);// Left
 		if(target.c < C_MAX-1) checkCell(target, 0, 1); // Right
 		if(0 < target.r)       checkCell(target, -1, 0);// Top
@@ -330,9 +345,9 @@ function searchMatrix(mtxBef, ball){
 	}
 
 	function isChecked(target){
-		for(let i=0; i<checked.length; i++){
+		for(let i=0; i<deleted.length; i++){
 			if(target == null) return true;
-			if(target.r == checked[i].r && target.c == checked[i].c){
+			if(target.r == deleted[i].r && target.c == deleted[i].c){
 				return true;
 			}
 		}
@@ -347,5 +362,5 @@ function searchMatrix(mtxBef, ball){
 		return 0;
 	}
 
-	return checked.sort(compare);
+	return deleted.sort(compare);
 }
