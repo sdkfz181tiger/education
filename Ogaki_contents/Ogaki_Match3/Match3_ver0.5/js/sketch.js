@@ -15,8 +15,8 @@ const DEBUG   = false;
 const DISP_W  = 480;
 const DISP_H  = 320;
 const F_RATE  = 32;
-const R_MAX   = 3;
-const C_MAX   = 3;
+const R_MAX   = 8;
+const C_MAX   = 13;
 const B_SIZE  = 32;
 const B_TOTAL = R_MAX * C_MAX;
 const B_PADD  = B_SIZE + 3;
@@ -91,9 +91,15 @@ function startCountDown(){
 function judgeMatrix(deleted, ball){
 	let num = deleted.length;
 
-	if(1 < num){
+	if(5 < num){
+ 		playSound("sounds/power3.mp3");
+ 		posiEf(deleted, "images/cant.png");
+	}else if(4 < num){
+ 		playSound("sounds/power2.mp3");
+ 		posiEf(deleted, "images/cant.png");
+ 	}else if(2 < num){
  		playSound("sounds/power1.mp3");
- 		//posiEf(deleted, "images/cant.png");
+ 		posiEf(deleted, "images/cant.png");
  	}else{
  		playSound("sounds/confuse.mp3");
  		negaEf(ball, "images/cant.png");
@@ -171,12 +177,7 @@ function createBall(x, y, r, c, index){
 		if(activeFlg == false) return;
 		activeFlg = false;
 		setTimeout(()=>{activeFlg = true}, 800);
-		checkMatrix(matrix, ball, (mtxAft, deleted, added)=>{
-				console.log("Completed");
-				matrix=mtxAft;
-				console.log(deleted);
-				console.log(added);
-			});
+		matrix = checkMatrix(matrix, ball);
 	}
 	return ball;
 }
@@ -214,20 +215,8 @@ SPRITE_CLS.prototype.vanish = function(){
 }
 
 SPRITE_CLS.prototype.moveTo = function(x, y){
-	let time = 1000 * 0.2;
-	let distance = Math.sqrt(
-		Math.pow(x-this.position.x,2) + 
-		Math.pow(y-this.position.y,2));
-	let speed = distance / time * F_RATE;
-	let rad = Math.atan2(y-this.position.y, x-this.position.x);
-	let deg = rad * 180 / Math.PI;
-	this.setSpeed(speed, deg);
-
-	setTimeout(()=>{
-		this.position.x = x;
-		this.position.y = y;
-		this.setSpeed(0, 0);
-	}, time * 1.05);// Delayed...
+	let tl = new TimelineMax();
+	tl.to(this.position, 0.2, {x: x, y: y});
 }
 
 function playSound(path){
@@ -266,10 +255,9 @@ function createMatrix(){
 	return matrix;
 }
 
-function checkMatrix(mtxBef, ball, onChecked){
-	// Deleted
+function checkMatrix(mtxBef, ball){
 	let deleted = searchMatrix(mtxBef, ball);
- 	if(judgeMatrix(deleted, ball) == false) return;
+ 	if(judgeMatrix(deleted, ball) == false) return mtxBef;
 
 	// Remove
 	for(let i=deleted.length-1; 0<=i; i--){
@@ -298,8 +286,6 @@ function checkMatrix(mtxBef, ball, onChecked){
 		}
 	}
 
-	// Added
-	let added = [];
 	// Fill or Reposition
 	for(let r=0; r<R_MAX; r++){
 		for(let c=0; c<C_MAX; c++){
@@ -316,14 +302,13 @@ function checkMatrix(mtxBef, ball, onChecked){
 					ball.moveTo(x, y);
 				}, 500);
 				mtxAft[r][c] = ball;
-				added.push({"r": ball.r, "c": ball.c, "index": ball.index});
 			}else{
 				mtxAft[r][c].moveTo(x, y);
 			}
 		}
 	}
-	onChecked(mtxAft, deleted, added);// Callback
-	return;
+
+	return mtxAft;
 }
 
 function searchMatrix(mtxBef, ball){
