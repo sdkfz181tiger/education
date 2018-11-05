@@ -2,9 +2,9 @@
 //==========
 // p5.js
 
-// "早消しマッチゲーム"
-// 	2つ以上隣り合った同じアイテムを消すことが出来るよ!!
-// 	30秒以内に何個消せるかな!?
+// "さめがめ"
+// 	3つ以上隣り合った同じアイテムを消すことが出来るよ!!
+// 	全部消せるかな?
 
 // 作業の流れ
 
@@ -15,8 +15,8 @@ const DEBUG   = false;
 const DISP_W  = 480;
 const DISP_H  = 320;
 const F_RATE  = 32;
-const R_MAX   = 4;
-const C_MAX   = 4;
+const R_MAX   = 8;
+const C_MAX   = 13;
 const B_SIZE  = 32;
 const B_TOTAL = R_MAX * C_MAX;
 const B_PADD  = B_SIZE + 3;
@@ -24,7 +24,6 @@ const START_X = DISP_W * 0.5 - (C_MAX-1) * B_PADD * 0.5;
 const START_Y = DISP_H - R_MAX * B_PADD + 10;
 
 let assets    = {};
-let numTimer  = 20;// プレイ時間
 let numScore  = 0; // 初期スコア
 let msg       = "";
 let activeFlg = false;
@@ -69,43 +68,28 @@ function setup(){
 	frame.position.x = DISP_W * 0.5;
 	frame.position.y = DISP_H * 0.5 + 12;
 
-	// CountDown
-	startCountDown();
-
 	// BGM
 	//playSound("sounds/bgmpm.mp3");
 }
 
-function startCountDown(){
-	//console.log("startCountDown");
-	// CountDown
-	numTimer--;
-	if(numTimer <= 0){
-		//gameOver();
-		return;
-	}
-	// Timeout
-	setTimeout(startCountDown, 1000);
-}
-
 function judgeMatrix(deleted, ball){
 	let num = deleted.length;
-	/*
-	if(5 < num){
-		playSound("sounds/power3.mp3");
-		posiEf(deleted, "images/cant.png");
-	}else if(4 < num){
-		playSound("sounds/power2.mp3");
-		posiEf(deleted, "images/cant.png");
-	}else if(2 < num){
-		playSound("sounds/power1.mp3");
-		posiEf(deleted, "images/cant.png");
-	}else{
-		playSound("sounds/confuse.mp3");
-		negaEf(ball, "images/cant.png");
-		return false;
-	}
-	*/
+	
+	// if(5 < num){
+	// 	playSound("sounds/power3.mp3");
+	// 	posiEf(deleted, "images/cant.png");
+	// }else if(4 < num){
+	// 	playSound("sounds/power2.mp3");
+	// 	posiEf(deleted, "images/cant.png");
+	// }else if(2 < num){
+	// 	playSound("sounds/power1.mp3");
+	// 	posiEf(deleted, "images/cant.png");
+	// }else{
+	// 	playSound("sounds/confuse.mp3");
+	// 	negaEf(ball, "images/cant.png");
+	// 	return false;
+	// }
+	
 	// Score
 	numScore += num;
 	return true;
@@ -218,8 +202,11 @@ SPRITE_CLS.prototype.vanish = function(){
 }
 
 SPRITE_CLS.prototype.moveTo = function(x, y){
+	let dX = x - this.position.x;
+	let dY = y - this.position.y;
 	let tl = new TimelineMax();
-	tl.to(this.position, 0.4, {x: x, y: y});
+	tl.to(this.position, 0.4, {y: "+="+dY});
+	tl.to(this.position, 0.4, {x: "+="+dX});
 }
 
 function playSound(path){
@@ -234,14 +221,11 @@ function stopSound(path){
 function drawStatuses(){
 	fill(255, 255, 255);
 	textSize(24);
-	let msgTimer = "TIME:" + numTimer;
 	let msgScore = "SCORE:" + numScore;
-	textAlign(LEFT);
-	text(msgTimer , 10, 25);
 	textAlign(RIGHT);
 	text(msgScore , width-10, 25);
-	textAlign(CENTER);
-	text(msg, width*0.5, 25);
+	textAlign(LEFT);
+	text(msg, 10, 25);
 }
 
 //==========
@@ -340,24 +324,24 @@ function searchMatrix(mtxBef, ball){
 	return deleted.sort(compare);
 }
 
-let Compresser = function(mtxBef){
-	this.mtxAft = mtxBef;
+let Compresser = function(mtx){
+	this.mtx = mtx;
 }
 
 Compresser.prototype = {
 	compressV: function(){
-		this.mtxAft = compressV(this.mtxAft);
+		this.mtx = compressV(this.mtx);
 		return this;
 	},
 	compressH: function(){
-		this.mtxAft = compressH(this.mtxAft);
+		this.mtx = compressH(this.mtx);
 		return this;
 	},
 	get: function(){
-		return this.mtxAft;
+		return this.mtx;
 	},
 	getMatrix: function(){
-		return this.mtxAft;
+		return this.mtx;
 	}
 };
 
@@ -384,21 +368,22 @@ function compressV(mtxBef){
 
 function compressH(mtxBef){
 	let mtxAft = createMatrix();
-	for(let c=C_MAX-1; 0<=c; c--){
-		for(let r=R_MAX-1; 0<=r; r--){
-			if(mtxBef[r][c] == null){
-				for(let h=c-1; 0<=h; h--){
-					if(mtxBef[r][h] == null) continue;
-					mtxAft[r][c]   = mtxBef[r][h];
-					mtxAft[r][c].r = r;
-					mtxAft[r][c].c = c;
-					mtxBef[r][h]   = null;
-					break;
-				}
-			}else{
-				mtxAft[r][c] = mtxBef[r][c];
-			}
+	for(let c=0, h=0; c<C_MAX; c++){
+		if(isEmpty(c) == true) continue;
+		for(let r=0; r<R_MAX; r++){
+			if(mtxBef[r][c] == null) continue;
+			mtxAft[r][h]   = mtxBef[r][c];
+			mtxAft[r][h].r = r;
+			mtxAft[r][h].c = h;
+			mtxBef[r][c]   = null;
 		}
+		h++;
+	}
+	function isEmpty(c){
+		for(let r=0; r<R_MAX; r++){
+			if(mtxBef[r][c] != null) return false;
+		}
+		return true;
 	}
 	return mtxAft;
 }
