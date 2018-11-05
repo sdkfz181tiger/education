@@ -22,8 +22,8 @@ const DEBUG   = false;
 const DISP_W  = 480;
 const DISP_H  = 320;
 const F_RATE  = 32;
-const R_MAX   = 8;
-const C_MAX   = 13;
+const R_MAX   = 4;
+const C_MAX   = 5;
 const B_SIZE  = 32;
 const B_TOTAL = R_MAX * C_MAX;
 const B_PADD  = B_SIZE + 3;
@@ -38,7 +38,6 @@ let matrix    = null;
 
 const images = [
 	"images/donut01.png", "images/donut02.png",
-	"images/donut03.png", "images/donut04.png",
 ];
 
 const sounds = [
@@ -52,50 +51,20 @@ function setup(){
 	frameRate(F_RATE);
 
 	// 1, 背景を出そう
-	let bkg = createSprite(0, 0, DISP_W, DISP_H - 18);
-	bkg.shapeColor = color(255, 210, 180);
-	bkg.position.x = DISP_W * 0.5;
-	bkg.position.y = DISP_H * 0.5 + 18;
 
 	// 2, チェック柄の模様を出そう
-	for(let i=0; i<B_TOTAL; i++){
-		let x = START_X + B_PADD * floor(i % C_MAX);
-		let y = START_Y + B_PADD * floor(i / C_MAX);
-		if(i % 2 == 0){
-			createTile(x, y, 240, 185, 90);
-		}
-	}
 
 	// 3, フレームを出そう
-	let frame = createSprite(0, 0, DISP_W, DISP_H - 18);
-	frame.addImage(loadImage("images/frame.png"));
-	frame.position.x = DISP_W * 0.5;
-	frame.position.y = DISP_H * 0.5 + 12;
 
 	// 4, さめがめを出そう
-	createBalls();
 
 	// 5, BGMを鳴らそう
-	//playSound("sounds/bgmpm.mp3", true);
 }
 
 function judgeMatrix(deleted, ball){
 	let num = deleted.length;
 	
 	// 6, 消えた数を判定して音を出そう
-	if(8 < num){
-		playSound("sounds/power3.mp3");
-		addScore(30);
-	}else if(6 < num){
-		playSound("sounds/power2.mp3");
-		addScore(10);
-	}else if(1 < num){
-		playSound("sounds/power1.mp3");
-	}else{
-		playSound("sounds/confuse.mp3");
-		impossible(ball);
-		return false;
-	}
 	return true;
 }
 
@@ -260,15 +229,7 @@ function checkMatrix(mtxBef, ball){
 			let x = START_X + c * B_PADD;
 			let y = START_Y + r * B_PADD;
 			if(mtxAft[r][c] == null){
-				// let x = START_X + c * B_PADD;
-				// let y = START_Y + r * B_PADD;
-				// let index = getIndex(images);
-				// let ball = createBall(x, y-B_PADD, r, c, index);
-				// let tl = new TimelineMax();
-				// tl.to(ball, 0, {visible: false});
-				// tl.to(ball, 0, {visible: true}, "+=0.2");
-				// tl.to(ball.position, 0.2, {x: x, y: y});
-				// mtxAft[r][c] = ball;
+				// Do nothing
 			}else{
 				mtxAft[r][c].moveTo(x, y);
 			}

@@ -13,8 +13,7 @@
 // 2-3, 弾を発射しよう
 // 3, 画面外判定を実装しよう
 // 4, 隕石の出現と時間を実装しよう
-// 5-1, 隕石xプレイヤー
-// 5-2, 隕石x弾
+// 5, 隕石xプレイヤー
 
 console.log("Hello p5.js!!");
 
@@ -44,9 +43,7 @@ let msg           = "";  // メッセージ
 //  プレイヤー、背景、アステロイドの種類
 const images = [
 	"images/soldier.png", "images/bkg.png",// Soldier, Background
-	"images/moon.png", "images/earth.png",
-	"images/inv1a.png", "images/inv2a.png", "images/inv3a.png",
-	"images/inv4a.png", "images/inv5a.png", "images/inv6a.png",
+	"images/inv1a.png", "images/inv2a.png", "images/inv3a.png"
 ];
 
 const sounds = [
@@ -61,39 +58,17 @@ function setup(){
 	let bkg = createBkg(240, 160, "images/bkg.png");
 
 	// 1, プレイヤーを出そう
-	player = createPlayer(width/2, height/2, "images/soldier.png");
 
 	// 4-1, 隕石の出現と時間を実装しよう
-	startAsteroids();
-	startCountUp();
 
 	// 4-2, BGMを再生しよう
-	playSound("sounds/bgmam.mp3", true);
 }
 
 function keyPressed(){
 	// 2-1, プレイヤーを操作しよう(UP/LEFT/RIGHT)
-	if(keyCode == 38){
-		player.setSpeed(P_SPEED, player.rotation-90);
-		playSound("sounds/go.mp3");
-	}
-	if(keyCode == 37){
-		player.rotationSpeed = -5;
-	}
-	if(keyCode == 39){
-		player.rotationSpeed = +5;
-	}
+
 	// 2-2, プレイヤーを操作しよう(Z)
-	if(keyCode == 90 && bullets.length < B_LIMIT){
-		// 2-3, 弾を発射しよう
-		let x = player.position.x;
-		let y = player.position.y;
-		let r = player.rotation-90;
-		let bullet = createBullet(x, y);
-		bullet.setSpeed(B_SPEED, r);
-		bullets.push(bullet);
-		playSound("sounds/shot.mp3");
-	}
+
 }
 
 function keyReleased(){
@@ -106,19 +81,12 @@ function draw(){
 	background(0, 0, 0);
 
 	// 3, 画面外判定を実装しよう
-	if(player.position.x < 0) player.position.x = width;
-	if(width < player.position.x) player.position.x = 0;
-	if(player.position.y < 0) player.position.y = height;
-	if(height < player.position.y) player.position.y = 0;
 
 	// 当たり判定を実装しよう
 	for(let a=0; a<asteroids.length; a++){
 		// 5-1, 隕石xプレイヤー
-		if(isCollide(player, asteroids[a])){
-			if(--numLife <= 0) gameOver();
-			playSound("sounds/damage.mp3");
-		}
-		// 5-2, 隕石x弾
+		
+		// 隕石x弾
 		for(let b=0; b<bullets.length; b++){
 			if(isBounce(bullets[b], asteroids[a])){
 				bullets[b].position.x = -100;
