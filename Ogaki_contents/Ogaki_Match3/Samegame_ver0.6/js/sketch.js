@@ -69,38 +69,27 @@ function setup(){
 	frame.position.y = DISP_H * 0.5 + 12;
 
 	// BGM
-	//playSound("sounds/bgmpm.mp3");
+	playSound("sounds/bgmpm.mp3");
 }
 
 function judgeMatrix(deleted, ball){
 	let num = deleted.length;
 	
-	// if(5 < num){
-	// 	playSound("sounds/power3.mp3");
-	// 	posiEf(deleted, "images/cant.png");
-	// }else if(4 < num){
-	// 	playSound("sounds/power2.mp3");
-	// 	posiEf(deleted, "images/cant.png");
-	// }else if(2 < num){
-	// 	playSound("sounds/power1.mp3");
-	// 	posiEf(deleted, "images/cant.png");
-	// }else{
-	// 	playSound("sounds/confuse.mp3");
-	// 	negaEf(ball, "images/cant.png");
-	// 	return false;
-	// }
+	if(8 < num){
+		playSound("sounds/power3.mp3");
+	}else if(6 < num){
+		playSound("sounds/power2.mp3");
+	}else if(1 < num){
+		playSound("sounds/power1.mp3");
+	}else{
+		playSound("sounds/confuse.mp3");
+		negaEf(ball, "images/cant.png");
+		return false;
+	}
 	
 	// Score
 	numScore += num;
 	return true;
-}
-
-function posiEf(deleted, path){
-	for(let del of deleted){
-		let x = matrix[del.r][del.c].position.x;
-		let y = matrix[del.r][del.c].position.y;
-		createStar(x, y, path);
-	}
 }
 
 function negaEf(ball, path){
@@ -164,10 +153,6 @@ function createBall(x, y, r, c, index){
 		matrix = checkMatrix(matrix, ball);
 	}
 	return ball;
-}
-
-function createStar(x, y, path){
-	// Do nothing
 }
 
 function createCant(x, y, path){
