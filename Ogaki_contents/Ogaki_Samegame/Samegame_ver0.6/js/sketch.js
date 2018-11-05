@@ -2,11 +2,19 @@
 //==========
 // p5.js
 
-// "早消しマッチゲーム"
-// 	2つ以上隣り合った同じアイテムを消すことが出来るよ!!
-// 	30秒以内に何個消せるかな!?
+// "さめがめ"
+// 	3つ以上隣り合った同じアイテムを消すことが出来るよ!!
+// 	全部消せるかな?
 
 // 作業の流れ
+// 1, プレイヤーを出そう
+// 2-1, プレイヤーを操作しよう(UP/LEFT/RIGHT)
+// 2-2, プレイヤーを操作しよう(Z)
+// 2-3, 弾を発射しよう
+// 3, 画面外判定を実装しよう
+// 4, 隕石の出現と時間を実装しよう
+// 5-1, 隕石xプレイヤー
+// 5-2, 隕石x弾
 
 console.log("Hello p5.js!!");
 
@@ -24,7 +32,6 @@ const START_X = DISP_W * 0.5 - (C_MAX-1) * B_PADD * 0.5;
 const START_Y = DISP_H - R_MAX * B_PADD + 10;
 
 let assets    = {};
-let numTimer  = 20;// プレイ時間
 let numScore  = 0; // 初期スコア
 let msg       = "";
 let activeFlg = false;
@@ -45,13 +52,13 @@ function setup(){
 	createCanvas(DISP_W, DISP_H);
 	frameRate(F_RATE);
 
-	// Background
+	// 1, 背景を出そう
 	let bkg = createSprite(0, 0, DISP_W, DISP_H - 18);
 	bkg.shapeColor = color(255, 210, 180);
 	bkg.position.x = DISP_W * 0.5;
 	bkg.position.y = DISP_H * 0.5 + 18;
 
-	// Tiles
+	// 2, チェック柄の模様を出そう
 	for(let i=0; i<B_TOTAL; i++){
 		let x = START_X + B_PADD * floor(i % C_MAX);
 		let y = START_Y + B_PADD * floor(i / C_MAX);
@@ -60,69 +67,54 @@ function setup(){
 		}
 	}
 
-	// Balls
-	createBalls();
-
-	// Frame
+	// 3, フレームを出そう
 	let frame = createSprite(0, 0, DISP_W, DISP_H - 18);
 	frame.addImage(loadImage("images/frame.png"));
 	frame.position.x = DISP_W * 0.5;
 	frame.position.y = DISP_H * 0.5 + 12;
 
-	// CountDown
-	startCountDown();
+	// 4, さめがめを出そう
+	createBalls();
 
 	// BGM
-	//playSound("sounds/bgmpm.mp3");
-}
-
-function startCountDown(){
-	//console.log("startCountDown");
-	// CountDown
-	numTimer--;
-	if(numTimer <= 0){
-		//gameOver();
-		return;
-	}
-	// Timeout
-	setTimeout(startCountDown, 1000);
+	//playSound("sounds/bgmpm.mp3", true);
 }
 
 function judgeMatrix(deleted, ball){
 	let num = deleted.length;
-
-	if(5 < num){
- 		playSound("sounds/power3.mp3");
- 		posiEf(deleted, "images/cant.png");
-	}else if(4 < num){
- 		playSound("sounds/power2.mp3");
- 		posiEf(deleted, "images/cant.png");
- 	}else if(2 < num){
- 		playSound("sounds/power1.mp3");
- 		posiEf(deleted, "images/cant.png");
- 	}else{
- 		playSound("sounds/confuse.mp3");
- 		negaEf(ball, "images/cant.png");
- 		return false;
- 	}
-
- 	// Score
- 	numScore += num;
- 	return true;
-}
-
-function posiEf(deleted, path){
-	for(let del of deleted){
-		let x = matrix[del.r][del.c].position.x;
-		let y = matrix[del.r][del.c].position.y;
-		createStar(x, y, path);
+	numScore += num;// Score
+	
+	// 5, 消えた数を判定して音を出そう
+	if(8 < num){
+		playSound("sounds/power3.mp3");
+		numScore += 30;// Bonus
+		msg = "BONUS:30!!";
+	}else if(6 < num){
+		playSound("sounds/power2.mp3");
+		numScore += 10;// Bonus
+		msg = "BONUS:10!!";
+	}else if(1 < num){
+		playSound("sounds/power1.mp3");
+	}else{
+		playSound("sounds/confuse.mp3");
+		impossible(ball);
+		return false;
 	}
+	return true;
 }
 
-function negaEf(ball, path){
+function impossible(ball, path){
 	let x = ball.position.x;
 	let y = ball.position.y;
-	createCant(x, y, path);
+	// 6, 猫に動きをつけてみよう
+	let cant = createSprite(x, y, 32, 32);
+	cant.addImage(loadImage("images/cant.png"));
+	let tl = new TimelineMax({
+		repeat: 3, yoyo: false,
+		onComplete: ()=>{cant.remove();}});
+	tl.to(cant.position, 0.1, {x: "+=4"});
+	tl.to(cant.position, 0.2, {x: "-=8"});
+	tl.to(cant.position, 0.1, {x: "+=4"});
 }
 
 function gameOver(){
@@ -176,29 +168,10 @@ function createBall(x, y, r, c, index){
 	ball.onMouseReleased = (e)=>{
 		if(activeFlg == false) return;
 		activeFlg = false;
-		setTimeout(()=>{activeFlg = true}, 800);
+		setTimeout(()=>{activeFlg = true}, 400);
 		matrix = checkMatrix(matrix, ball);
 	}
 	return ball;
-}
-
-function createStar(x, y, path){
-	// let star = createSprite(x, y, 32, 32);
-	// let anim = loadAnimation(
-	// 	"images/star01.png", "images/star02.png", "images/star03.png");
-	// star.addAnimation("cant", anim);
-	// setTimeout(()=>{star.remove();}, 1000*1);
-}
-
-function createCant(x, y, path){
-	let cant = createSprite(x, y, 32, 32);
-	cant.addImage(loadImage(path));
-	let tl = new TimelineMax({
-		repeat: 3, yoyo: false,
-		onComplete: ()=>{cant.remove();}});
-	tl.to(cant.position, 0.1, {x: "+=4"});
-	tl.to(cant.position, 0.2, {x: "-=8"});
-	tl.to(cant.position, 0.1, {x: "+=4"});
 }
 
 function createTile(x, y, r, g, b){
@@ -222,12 +195,16 @@ SPRITE_CLS.prototype.vanish = function(){
 }
 
 SPRITE_CLS.prototype.moveTo = function(x, y){
+	let dX = x - this.position.x;
+	let dY = y - this.position.y;
 	let tl = new TimelineMax();
-	tl.to(this.position, 0.4, {x: x, y: y});
+	tl.to(this.position, 0.4, {y: "+="+dY});
+	tl.to(this.position, 0.4, {x: "+="+dX});
 }
 
-function playSound(path){
+function playSound(path, loop=false){
 	stopSound(path);
+	assets[path].setLoop(loop);
 	assets[path].play();
 }
 
@@ -238,14 +215,11 @@ function stopSound(path){
 function drawStatuses(){
 	fill(255, 255, 255);
 	textSize(24);
-	let msgTimer = "TIME:" + numTimer;
 	let msgScore = "SCORE:" + numScore;
-	textAlign(LEFT);
-	text(msgTimer , 10, 25);
 	textAlign(RIGHT);
 	text(msgScore , width-10, 25);
-	textAlign(CENTER);
-	text(msg, width*0.5, 25);
+	textAlign(LEFT);
+	text(msg, 10, 25);
 }
 
 //==========
@@ -274,24 +248,9 @@ function checkMatrix(mtxBef, ball){
 		mtxBef[r][c] = null;
 	}
 
-	// Matrix(After)
-	let mtxAft = createMatrix();
-	for(let c=C_MAX-1; 0<=c; c--){
-		for(let r=R_MAX-1; 0<=r; r--){
-			if(mtxBef[r][c] == null){
-				for(let v=r-1; 0<=v; v--){
-					if(mtxBef[v][c] == null) continue;
-					mtxAft[r][c] = mtxBef[v][c];
-					mtxAft[r][c].r = r;
-					mtxAft[r][c].c = c;
-					mtxBef[v][c] = null;
-					break;
-				}
-			}else{
-				mtxAft[r][c] = mtxBef[r][c];
-			}
-		}
-	}
+	// Compresser
+	let cpr = new Compresser(mtxBef);
+	let mtxAft = cpr.compressV().compressH().getMatrix();
 
 	// Fill or Reposition
 	for(let r=0; r<R_MAX; r++){
@@ -299,15 +258,15 @@ function checkMatrix(mtxBef, ball){
 			let x = START_X + c * B_PADD;
 			let y = START_Y + r * B_PADD;
 			if(mtxAft[r][c] == null){
-				let x = START_X + c * B_PADD;
-				let y = START_Y + r * B_PADD;
-				let index = getIndex(images);
-				let ball = createBall(x, y-B_PADD, r, c, index);
-				let tl = new TimelineMax();
-				tl.to(ball, 0, {visible: false});
-				tl.to(ball, 0, {visible: true}, "+=0.2");
-				tl.to(ball.position, 0.5, {x: x, y: y});
-				mtxAft[r][c] = ball;
+				// let x = START_X + c * B_PADD;
+				// let y = START_Y + r * B_PADD;
+				// let index = getIndex(images);
+				// let ball = createBall(x, y-B_PADD, r, c, index);
+				// let tl = new TimelineMax();
+				// tl.to(ball, 0, {visible: false});
+				// tl.to(ball, 0, {visible: true}, "+=0.2");
+				// tl.to(ball.position, 0.2, {x: x, y: y});
+				// mtxAft[r][c] = ball;
 			}else{
 				mtxAft[r][c].moveTo(x, y);
 			}
@@ -357,4 +316,68 @@ function searchMatrix(mtxBef, ball){
 	}
 
 	return deleted.sort(compare);
+}
+
+let Compresser = function(mtx){
+	this.mtx = mtx;
+}
+
+Compresser.prototype = {
+	compressV: function(){
+		this.mtx = compressV(this.mtx);
+		return this;
+	},
+	compressH: function(){
+		this.mtx = compressH(this.mtx);
+		return this;
+	},
+	get: function(){
+		return this.mtx;
+	},
+	getMatrix: function(){
+		return this.mtx;
+	}
+};
+
+function compressV(mtxBef){
+	let mtxAft = createMatrix();
+	for(let c=C_MAX-1; 0<=c; c--){
+		for(let r=R_MAX-1; 0<=r; r--){
+			if(mtxBef[r][c] == null){
+				for(let v=r-1; 0<=v; v--){
+					if(mtxBef[v][c] == null) continue;
+					mtxAft[r][c]   = mtxBef[v][c];
+					mtxAft[r][c].r = r;
+					mtxAft[r][c].c = c;
+					mtxBef[v][c]   = null;
+					break;
+				}
+			}else{
+				mtxAft[r][c] = mtxBef[r][c];
+			}
+		}
+	}
+	return mtxAft;
+}
+
+function compressH(mtxBef){
+	let mtxAft = createMatrix();
+	for(let c=0, h=0; c<C_MAX; c++){
+		if(isEmpty(c) == true) continue;
+		for(let r=0; r<R_MAX; r++){
+			if(mtxBef[r][c] == null) continue;
+			mtxAft[r][h]   = mtxBef[r][c];
+			mtxAft[r][h].r = r;
+			mtxAft[r][h].c = h;
+			mtxBef[r][c]   = null;
+		}
+		h++;
+	}
+	function isEmpty(c){
+		for(let r=0; r<R_MAX; r++){
+			if(mtxBef[r][c] != null) return false;
+		}
+		return true;
+	}
+	return mtxAft;
 }
