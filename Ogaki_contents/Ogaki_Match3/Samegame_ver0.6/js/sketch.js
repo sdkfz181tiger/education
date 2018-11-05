@@ -69,7 +69,7 @@ function setup(){
 	frame.position.y = DISP_H * 0.5 + 12;
 
 	// BGM
-	playSound("sounds/bgmpm.mp3");
+	playSound("sounds/bgmpm.mp3", true);
 }
 
 function judgeMatrix(deleted, ball){
@@ -194,8 +194,9 @@ SPRITE_CLS.prototype.moveTo = function(x, y){
 	tl.to(this.position, 0.4, {x: "+="+dX});
 }
 
-function playSound(path){
+function playSound(path, loop=false){
 	stopSound(path);
+	assets[path].setLoop(loop);
 	assets[path].play();
 }
 
@@ -256,7 +257,7 @@ function checkMatrix(mtxBef, ball){
 				// let tl = new TimelineMax();
 				// tl.to(ball, 0, {visible: false});
 				// tl.to(ball, 0, {visible: true}, "+=0.2");
-				// tl.to(ball.position, 0.5, {x: x, y: y});
+				// tl.to(ball.position, 0.2, {x: x, y: y});
 				// mtxAft[r][c] = ball;
 			}else{
 				mtxAft[r][c].moveTo(x, y);

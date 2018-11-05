@@ -68,7 +68,7 @@ function setup(){
 	startCountUp();
 
 	// 4-2, BGMを再生しよう
-	playSound("sounds/bgmam.mp3");
+	playSound("sounds/bgmam.mp3", true);
 }
 
 function keyPressed(){
@@ -231,11 +231,11 @@ function isOutside(sprite){
 
 function isCollide(sprite, target){
 	let dX = sprite.position.x - target.position.x;
-	if(sprite.width < Math.abs(dX)) return false;
+	if(target.width*0.4 < Math.abs(dX)) return false;
 	let dY = sprite.position.y - target.position.y;
-	if(sprite.height < Math.abs(dY)) return false;
-	let dist = Math.floor(Math.sqrt(dX*dX + dY*dY));
-	if(target.width*0.8 < dist) return false;
+	if(target.height*0.4 < Math.abs(dY)) return false;
+	//let dist = Math.floor(Math.sqrt(dX*dX + dY*dY));
+	//if(target.width*0.4 < dist) return false;
 	if(sprite.bounce(target)) return true;
 	return false;
 }
@@ -271,8 +271,9 @@ function startCountUp(){
 	setTimeout(startCountUp, T_INTERVAL);
 }
 
-function playSound(path){
+function playSound(path, loop=false){
 	stopSound(path);
+	assets[path].setLoop(loop);
 	assets[path].play();
 }
 
