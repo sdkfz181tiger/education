@@ -13,7 +13,8 @@
 // 4, さめがめを出そう
 // 5, BGMを鳴らそう
 // 6, 消えた数を判定して音を出そう
-// 7, タッチできない時のキャラクター
+// 7, クリア判定をしよう
+// 8, タッチできない時のキャラクターに動きをつけよう
 
 console.log("Hello p5.js!!");
 
@@ -35,10 +36,10 @@ let numScore  = 0; // 初期スコア
 let msg       = "";
 let activeFlg = false;
 let matrix    = null;
+let rest      = R_MAX * C_MAX;
 
 const images = [
-	"images/donut01.png", "images/donut02.png",
-	"images/donut03.png", "images/donut04.png",
+	"images/donut01.png", "images/donut02.png"
 ];
 
 const sounds = [
@@ -85,29 +86,40 @@ function judgeMatrix(deleted, ball){
 	// 6, 消えた数を判定して音を出そう
 	if(8 < num){
 		playSound("sounds/power3.mp3");
-		addScore(30);
+		addScore(num*3);
+		return true;
 	}else if(6 < num){
 		playSound("sounds/power2.mp3");
-		addScore(10);
+		addScore(num*2);
+		return true;
 	}else if(1 < num){
 		playSound("sounds/power1.mp3");
-	}else{
-		playSound("sounds/confuse.mp3");
-		impossible(ball);
-		return false;
+		addScore(num*1);
+		return true;
 	}
-	return true;
+	playSound("sounds/confuse.mp3");
+	impossible(ball);
+	return false;
+}
+
+function judgeClear(deleted){
+	// 7, クリア判定をしよう
+	rest -= deleted.length;
+	if(rest <= 0){
+		stopSound("sounds/bgmpm.mp3");
+		playSound("sounds/gameclear.mp3");
+	}
 }
 
 function impossible(ball, path){
 	let x = ball.position.x;
 	let y = ball.position.y;
-	// 7, タッチできない時のキャラクター
 	let cant = createSprite(x, y, 32, 32);
 	cant.addImage(loadImage("images/cant.png"));
 	let tl = new TimelineMax({
 		repeat: 3, yoyo: false,
 		onComplete: ()=>{cant.remove();}});
+	// 8, タッチできない時のキャラクターに動きをつけよう
 	tl.to(cant.position, 0.1, {x: "+=4"});
 	tl.to(cant.position, 0.2, {x: "-=8"});
 	tl.to(cant.position, 0.1, {x: "+=4"});
@@ -117,13 +129,6 @@ function addScore(bonus){
 	numScore += bonus;// Bonus
 	msg = "BONUS:" + bonus + "!!";
 	setTimeout(()=>{msg = "";}, 1000*3);
-}
-
-function gameOver(){
-	msg = "GAME OVER!!";
-	stopSound("sounds/bgmpm.mp3");
-	playSound("sounds/gameclear.mp3");
-	noLoop();
 }
 
 //==========
@@ -240,7 +245,9 @@ function createMatrix(){
 
 function checkMatrix(mtxBef, ball){
 	let deleted = searchMatrix(mtxBef, ball);
- 	if(judgeMatrix(deleted, ball) == false) return mtxBef;
+	// Judge
+	if(!judgeMatrix(deleted, ball)) return mtxBef;
+	judgeClear(deleted);
 
 	// Remove
 	for(let i=deleted.length-1; 0<=i; i--){
@@ -249,11 +256,9 @@ function checkMatrix(mtxBef, ball){
 		mtxBef[r][c].vanish();
 		mtxBef[r][c] = null;
 	}
-
 	// Compresser
 	let cpr = new Compresser(mtxBef);
 	let mtxAft = cpr.compressV().compressH().getMatrix();
-
 	// Fill or Reposition
 	for(let r=0; r<R_MAX; r++){
 		for(let c=0; c<C_MAX; c++){
@@ -274,7 +279,6 @@ function checkMatrix(mtxBef, ball){
 			}
 		}
 	}
-
 	return mtxAft;
 }
 

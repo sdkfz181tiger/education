@@ -13,7 +13,8 @@
 // 4, さめがめを出そう
 // 5, BGMを鳴らそう
 // 6, 消えた数を判定して音を出そう
-// 7, タッチできない時のキャラクター
+// 7, クリア判定をしよう
+// 8, タッチできない時のキャラクターに動きをつけよう
 
 console.log("Hello p5.js!!");
 
@@ -35,9 +36,10 @@ let numScore  = 0; // 初期スコア
 let msg       = "";
 let activeFlg = false;
 let matrix    = null;
+let rest      = R_MAX * C_MAX;
 
 const images = [
-	"images/donut01.png", "images/donut02.png",
+	"images/donut01.png", "images/donut02.png"
 ];
 
 const sounds = [
@@ -59,40 +61,36 @@ function setup(){
 	// 4, さめがめを出そう
 
 	// 5, BGMを鳴らそう
+	//playSound("sounds/bgmpm.mp3", true);
 }
 
 function judgeMatrix(deleted, ball){
 	let num = deleted.length;
-	
 	// 6, 消えた数を判定して音を出そう
-	return true;
+	return false;
+}
+
+function judgeClear(deleted){
+	rest -= deleted.length;
+	// 7, クリア判定をしよう
+
 }
 
 function impossible(ball, path){
 	let x = ball.position.x;
 	let y = ball.position.y;
-	// 7, タッチできない時のキャラクター
 	let cant = createSprite(x, y, 32, 32);
 	cant.addImage(loadImage("images/cant.png"));
 	let tl = new TimelineMax({
 		repeat: 3, yoyo: false,
 		onComplete: ()=>{cant.remove();}});
-	tl.to(cant.position, 0.1, {x: "+=4"});
-	tl.to(cant.position, 0.2, {x: "-=8"});
-	tl.to(cant.position, 0.1, {x: "+=4"});
+	// 8, タッチできない時のキャラクターに動きをつけよう
 }
 
 function addScore(bonus){
 	numScore += bonus;// Bonus
 	msg = "BONUS:" + bonus + "!!";
 	setTimeout(()=>{msg = "";}, 1000*3);
-}
-
-function gameOver(){
-	msg = "GAME OVER!!";
-	stopSound("sounds/bgmpm.mp3");
-	playSound("sounds/gameclear.mp3");
-	noLoop();
 }
 
 //==========
@@ -209,7 +207,9 @@ function createMatrix(){
 
 function checkMatrix(mtxBef, ball){
 	let deleted = searchMatrix(mtxBef, ball);
- 	if(judgeMatrix(deleted, ball) == false) return mtxBef;
+	// Judge
+	if(!judgeMatrix(deleted, ball)) return mtxBef;
+	judgeClear(deleted);
 
 	// Remove
 	for(let i=deleted.length-1; 0<=i; i--){
@@ -218,24 +218,29 @@ function checkMatrix(mtxBef, ball){
 		mtxBef[r][c].vanish();
 		mtxBef[r][c] = null;
 	}
-
 	// Compresser
 	let cpr = new Compresser(mtxBef);
 	let mtxAft = cpr.compressV().compressH().getMatrix();
-
 	// Fill or Reposition
 	for(let r=0; r<R_MAX; r++){
 		for(let c=0; c<C_MAX; c++){
 			let x = START_X + c * B_PADD;
 			let y = START_Y + r * B_PADD;
 			if(mtxAft[r][c] == null){
-				// Do nothing
+				// let x = START_X + c * B_PADD;
+				// let y = START_Y + r * B_PADD;
+				// let index = getIndex(images);
+				// let ball = createBall(x, y-B_PADD, r, c, index);
+				// let tl = new TimelineMax();
+				// tl.to(ball, 0, {visible: false});
+				// tl.to(ball, 0, {visible: true}, "+=0.2");
+				// tl.to(ball.position, 0.2, {x: x, y: y});
+				// mtxAft[r][c] = ball;
 			}else{
 				mtxAft[r][c].moveTo(x, y);
 			}
 		}
 	}
-
 	return mtxAft;
 }
 
