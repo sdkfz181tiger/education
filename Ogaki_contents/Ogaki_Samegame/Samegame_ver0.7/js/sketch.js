@@ -23,8 +23,8 @@ const DEBUG   = false;
 const DISP_W  = 480;
 const DISP_H  = 320;
 const F_RATE  = 32;
-const R_MAX   = 8;
-const C_MAX   = 13;
+const R_MAX   = 4;
+const C_MAX   = 5;
 const B_SIZE  = 32;
 const B_TOTAL = R_MAX * C_MAX;
 const B_PADD  = B_SIZE + 3;
@@ -39,7 +39,8 @@ let matrix    = null;
 let rest      = R_MAX * C_MAX;
 
 const images = [
-	"images/donut01.png", "images/donut02.png"
+	"images/donut04.png", "images/donut05.png",
+	"images/donut06.png", "images/donut07.png"
 ];
 
 const sounds = [
@@ -128,7 +129,7 @@ function impossible(ball, path){
 function addScore(bonus){
 	numScore += bonus;// Bonus
 	msg = "BONUS:" + bonus + "!!";
-	setTimeout(()=>{msg = "";}, 1000*3);
+	//setTimeout(()=>{msg = "";}, 1000*3);
 }
 
 //==========
@@ -322,23 +323,22 @@ function searchMatrix(mtxBef, ball){
 	return deleted.sort(compare);
 }
 
-let Compresser = function(mtx){
-	this.mtx = mtx;
-}
-
-Compresser.prototype = {
-	compressV: function(){
+class Compresser{
+	constructor(mtx){
+		this.mtx = mtx;
+	}
+	compressV(){
 		this.mtx = compressV(this.mtx);
 		return this;
-	},
-	compressH: function(){
+	}
+	compressH(){
 		this.mtx = compressH(this.mtx);
 		return this;
-	},
-	get: function(){
+	}
+	get(){
 		return this.mtx;
 	}
-};
+}
 
 function compressV(mtxBef){
 	let mtxAft = createMatrix();

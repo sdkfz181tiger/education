@@ -164,11 +164,9 @@ SPRITE_CLS.prototype.vanish = function(){
 }
 
 SPRITE_CLS.prototype.moveTo = function(x, y){
-	let dX = x - this.position.x;
-	let dY = y - this.position.y;
 	let tl = new TimelineMax();
-	tl.to(this.position, 0.4, {y: "+="+dY});
-	tl.to(this.position, 0.4, {x: "+="+dX});
+	tl.to(this.position, 0.3, {y: y});
+	tl.to(this.position, 0.3, {x: x});
 }
 
 function playSound(path, loop=false){
@@ -291,18 +289,18 @@ let Compresser = function(mtx){
 }
 
 Compresser.prototype = {
-	compressV: function(){
+	compressV: ()=>{
 		this.mtx = compressV(this.mtx);
 		return this;
 	},
-	compressH: function(){
+	compressH: ()=>{
 		this.mtx = compressH(this.mtx);
 		return this;
 	},
-	get: function(){
+	get: ()=>{
 		return this.mtx;
 	},
-	getMatrix: function(){
+	getMatrix: ()=>{
 		return this.mtx;
 	}
 };
