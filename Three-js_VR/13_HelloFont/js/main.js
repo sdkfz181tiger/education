@@ -90,14 +90,14 @@ window.onload = function(){
 
 		// Font(Test)
 		let loader = new THREE.FontLoader();
-		let path = "./fonts/droid_sans_mono_regular.typeface.json";
+		let path = "./fonts/MisakiGothic_Regular.json";
 		loader.load(path, (font)=>{
 			console.log(font.data.familyName);
 
-			let str = "Hello!!";
+			let str = "INVADER!!";
 			let textGeo = new THREE.TextGeometry(str, {
-				font: font, size: 32, height: 10, curveSegments: 4,
-				bevelThickness: 2, bevelSize: 0.5, bevelEnabled: true
+				font: font, size: 8, height: 2, curveSegments: 4,
+				bevelThickness: 2, bevelSize: 0.2, bevelEnabled: false
 			});
 			textGeo.computeBoundingBox();
 			textGeo.computeVertexNormals();
@@ -112,7 +112,7 @@ window.onload = function(){
 			let textMesh = new THREE.Mesh(textGeo, materials);
 			textMesh.position.x = centerOffset;
 			textMesh.position.y = 0;
-			textMesh.position.z = -50;
+			textMesh.position.z = -10;
 			textMesh.rotation.x = 0;
 			textMesh.rotation.y = Math.PI * 2;
 			tm.addGroup(textMesh);
