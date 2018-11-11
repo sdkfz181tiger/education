@@ -9,15 +9,16 @@
 // 作業の流れ
 // 1, プレイヤーを出そう
 // 2-1, プレイヤーを操作しよう(UP/LEFT/RIGHT)
-// 2-2, プレイヤーを操作しよう(Z)
-// 2-3, 弾を発射しよう
-// 3, 画面外判定を実装しよう
-// 4, 隕石の出現と時間を実装しよう
-// 5, 隕石xプレイヤー
+// 2-2, 画面外判定を実装しよう
+// 3, 星空を出そう
+// 4-1, 隕石の出現と時間を実装しよう
+// 4-2, BGMを再生しよう
+// 5-1, 弾を発射しよう
+// 5-2, 隕石xプレイヤー
 
 console.log("Hello p5.js!!");
 
-const DEBUG       = true;// デバッグモード
+const DEBUG       = false;// デバッグモード
 
 const P_SPEED     = 4;   // プレイヤー移動速度
 const P_FRICTION  = 0.95;// プレイヤー減衰速度
@@ -26,7 +27,7 @@ const B_FRICTION  = 1.0; // 弾の減衰速度
 const B_LIMIT     = 3;   // 弾の最大数
 const A_SPEED_MIN = 1;   // アステロイド最低速度
 const A_SPEED_MAX = 3;   // アステロイド最高速度
-const A_LIMIT     = 100; // アステロイド最大数
+const A_LIMIT     = 30; // アステロイド最大数
 const A_INTERVAL  = 1000;// アステロイド出現タイミング
 const A_REINFORCE = 8;   // アステロイド出現数増加タイミング
 const T_INTERVAL  = 1000;// 時間経過タイミング
@@ -43,7 +44,8 @@ let msg           = "";  // メッセージ
 //  プレイヤー、背景、アステロイドの種類
 const images = [
 	"images/soldier.png", "images/bkg.png",// Soldier, Background
-	"images/inv1a.png", "images/inv2a.png", "images/inv3a.png"
+	//"images/moon.png", "images/earth.png",
+	"images/inv1a.png", "images/inv2a.png", "images/inv3a.png",
 ];
 
 const sounds = [
@@ -55,7 +57,8 @@ const sounds = [
 
 function setup(){
 	createCanvas(480, 320); frameRate(32);
-	let bkg = createBkg(240, 160, "images/bkg.png");
+
+	// 3, 星空を出そう
 
 	// 1, プレイヤーを出そう
 
@@ -66,8 +69,8 @@ function setup(){
 
 function keyPressed(){
 	// 2-1, プレイヤーを操作しよう(UP/LEFT/RIGHT)
-
-	// 2-2, プレイヤーを操作しよう(Z)
+	
+	// 5-1, 弾を発射しよう
 
 }
 
@@ -80,11 +83,11 @@ function keyReleased(){
 function draw(){
 	background(0, 0, 0);
 
-	// 3, 画面外判定を実装しよう
+	// 2-2, 画面外判定を実装しよう
 
 	// 当たり判定を実装しよう
 	for(let a=0; a<asteroids.length; a++){
-		// 5-1, 隕石xプレイヤー
+		// 5-2, 隕石xプレイヤー
 		
 		// 隕石x弾
 		for(let b=0; b<bullets.length; b++){
@@ -136,9 +139,11 @@ function createPlayer(x, y, path){
 	return spr;
 }
 
-function createBkg(x, y, path){
-	let spr = createSprite(x, y, 480, 320);
-	spr.addImage(assets[path]);
+function createStar(){
+	let x = random(0, width);
+	let y = random(0, height);
+	let size = random(1, 3);
+	let spr = createSprite(x, y, size, size);
 	return spr;
 }
 
@@ -172,11 +177,16 @@ function createAsteroid(min, max, path){
 	return spr;
 }
 
-function createBullet(x, y){
+function createBullet(){
+	let x = player.position.x;
+	let y = player.position.y;
+	let r = player.rotation-90;
 	let spr = createSprite(x, y, 4, 4);
+	spr.setSpeed(B_SPEED, r);
 	spr.shapeColor = color(255, 255, 255);
 	spr.friction = B_FRICTION;
 	spr.debug = DEBUG;
+	bullets.push(spr);
 	return spr;
 }
 

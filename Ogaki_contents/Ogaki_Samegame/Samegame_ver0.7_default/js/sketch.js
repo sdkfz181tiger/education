@@ -8,11 +8,12 @@
 
 // 作業の流れ
 // 1, 背景を出そう
-// 2, チェック柄の模様を出そう
-// 3, フレームを出そう
-// 4, さめがめを出そう
+// 2, フレームを出そう
+// 3, さめがめを出そう
+// 4-1, タイルの模様を出そう
+// 4-2, チェック柄にしてみよう
 // 5, BGMを鳴らそう
-// 6, 消えた数を判定して音を出そう
+// 6, 繋がっている数を判定して音を出そう
 // 7, クリア判定をしよう
 // 8, タッチできない時のキャラクターに動きをつけよう
 
@@ -23,8 +24,8 @@ const DEBUG   = false;
 const DISP_W  = 480;
 const DISP_H  = 320;
 const F_RATE  = 32;
-const R_MAX   = 8;
-const C_MAX   = 13;
+const R_MAX   = 4;  // 縦の総数
+const C_MAX   = 5; // 横の総数
 const B_SIZE  = 32;
 const B_TOTAL = R_MAX * C_MAX;
 const B_PADD  = B_SIZE + 3;
@@ -39,7 +40,8 @@ let matrix    = null;
 let rest      = R_MAX * C_MAX;
 
 const images = [
-	"images/donut01.png", "images/donut02.png"
+	"images/donut01.png", "images/donut02.png",
+	//"images/donut03.png",
 ];
 
 const sounds = [
@@ -53,62 +55,29 @@ function setup(){
 	frameRate(F_RATE);
 
 	// 1, 背景を出そう
-	let bkg = createSprite(0, 0, DISP_W, DISP_H - 18);
-	bkg.shapeColor = color(255, 210, 180);
-	bkg.position.x = DISP_W * 0.5;
-	bkg.position.y = DISP_H * 0.5 + 18;
 
-	// 2, チェック柄の模様を出そう
-	for(let i=0; i<B_TOTAL; i++){
-		let x = START_X + B_PADD * floor(i % C_MAX);
-		let y = START_Y + B_PADD * floor(i / C_MAX);
-		if(i % 2 == 0){
-			createTile(x, y, 240, 185, 90);
-		}
-	}
+	// 4-1, タイルの模様を出そう
 
-	// 3, フレームを出そう
-	let frame = createSprite(0, 0, DISP_W, DISP_H - 18);
-	frame.addImage(loadImage("images/frame.png"));
-	frame.position.x = DISP_W * 0.5;
-	frame.position.y = DISP_H * 0.5 + 12;
+	// 2, フレームを出そう
 
-	// 4, さめがめを出そう
-	createBalls();
+	// 3, さめがめを出そう
 
 	// 5, BGMを鳴らそう
-	//playSound("sounds/bgmpm.mp3", true);
+
 }
 
 function judgeMatrix(deleted, ball){
 	let num = deleted.length;
 	
-	// 6, 消えた数を判定して音を出そう
-	if(8 < num){
-		playSound("sounds/power3.mp3");
-		addScore(num*3);
-		return true;
-	}else if(6 < num){
-		playSound("sounds/power2.mp3");
-		addScore(num*2);
-		return true;
-	}else if(1 < num){
-		playSound("sounds/power1.mp3");
-		addScore(num*1);
-		return true;
-	}
-	playSound("sounds/confuse.mp3");
-	impossible(ball);
+	// 6, 繋がっている数を判定して音を出そう
+	
 	return false;
 }
 
 function judgeClear(deleted){
-	// 7, クリア判定をしよう
 	rest -= deleted.length;
-	if(rest <= 0){
-		stopSound("sounds/bgmpm.mp3");
-		playSound("sounds/gameclear.mp3");
-	}
+	// 7, クリア判定をしよう
+	
 }
 
 function impossible(ball, path){
@@ -120,15 +89,15 @@ function impossible(ball, path){
 		repeat: 3, yoyo: false,
 		onComplete: ()=>{cant.remove();}});
 	// 8, タッチできない時のキャラクターに動きをつけよう
-	tl.to(cant.position, 0.1, {x: "+=4"});
-	tl.to(cant.position, 0.2, {x: "-=8"});
-	tl.to(cant.position, 0.1, {x: "+=4"});
+	tl.to(cant.position, 0.2, {x: "+=0"});
+	tl.to(cant.position, 0.2, {x: "-=0"});
+	tl.to(cant.position, 0.2, {x: "+=0"});
 }
 
 function addScore(bonus){
 	numScore += bonus;// Bonus
 	msg = "BONUS:" + bonus + "!!";
-	setTimeout(()=>{msg = "";}, 1000*3);
+	//setTimeout(()=>{msg = "";}, 1000*3);
 }
 
 //==========
@@ -181,9 +150,16 @@ function createBall(x, y, r, c, index){
 	return ball;
 }
 
-function createTile(x, y, r, g, b){
-	let tile = createSprite(x, y, 32, 32);
-	tile.shapeColor = color(r, g, b);
+function createTile(x, y, i, r=240, g=185, b=90){
+	let oX = x + B_PADD * floor(i % C_MAX);
+	let oY = y + B_PADD * floor(i / C_MAX);
+	let tile = createSprite(oX, oY, 32, 32);
+	// 4-2, チェック柄にしてみよう
+	if(i % 2 == 0){
+		tile.shapeColor = color(r, g, b);
+	}else{
+		tile.shapeColor = color(r, g, b);
+	}
 }
 
 function getIndex(arr){
@@ -322,23 +298,22 @@ function searchMatrix(mtxBef, ball){
 	return deleted.sort(compare);
 }
 
-let Compresser = function(mtx){
-	this.mtx = mtx;
-}
-
-Compresser.prototype = {
-	compressV: function(){
+class Compresser{
+	constructor(mtx){
+		this.mtx = mtx;
+	}
+	compressV(){
 		this.mtx = compressV(this.mtx);
 		return this;
-	},
-	compressH: function(){
+	}
+	compressH(){
 		this.mtx = compressH(this.mtx);
 		return this;
-	},
-	get: function(){
+	}
+	get(){
 		return this.mtx;
 	}
-};
+}
 
 function compressV(mtxBef){
 	let mtxAft = createMatrix();
