@@ -46,9 +46,6 @@ class ThreeManager{
 
 		// PC or VR
 		if(this._modeVR == false){
-
-			console.log("Here!!!");
-
 			// Camera
 			this._camera.position.set(pcX, pcY, pcZ);// PCでポジションを移動させる場合
 			this._cameraContainer.rotation.set(0*DEG_TO_RAD, 0*DEG_TO_RAD, 0*DEG_TO_RAD);
@@ -63,13 +60,13 @@ class ThreeManager{
 
 		// Light
 		this._directionalLight = new THREE.DirectionalLight(0xffffff);
-		this._directionalLight.position.set(0, 0.7, 0.7);
+		this._directionalLight.position.set(0.0, 100.0, 100.0);
 		this._scene.add(this._directionalLight);
 
 		// Renderer
 		this._renderer = new THREE.WebGLRenderer({antialias: true});
 		this._renderer.setSize(window.innerWidth, window.innerHeight);
-		this._renderer.setClearColor(0x333333);
+		this._renderer.setClearColor(0x666666);
 		this._renderer.setPixelRatio(window.devicePixelRatio);
 		this._renderer.vr.enabled = this._modeVR;// Important(for VR)
 		document.body.appendChild(this._renderer.domElement);

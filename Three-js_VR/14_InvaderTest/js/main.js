@@ -6,6 +6,8 @@ console.log("Hello Three.js!!");
 
 // Data
 const assets = {data:[
+	{path:"./models/", mtl:"city_1.mtl", obj:"city_1.obj"},
+	{path:"./models/", mtl:"city_2.mtl", obj:"city_2.obj"},
 	{path:"./models/", mtl:"inv01.mtl", obj:"inv01.obj"},
 	{path:"./models/", mtl:"inv02.mtl", obj:"inv02.obj"},
 	{path:"./models/", mtl:"inv03.mtl", obj:"inv03.obj"},
@@ -28,7 +30,7 @@ window.onload = function(){
 	// ThreeManager
 	// 	Camera position(PC): pcX, pcY, pcZ
 	// 	Camera position(VR): vrX, vrY, vrZ
-	let tm = new ThreeManager(0, 5, 10, 0, 0, 0);
+	let tm = new ThreeManager(0, 10, 30, 0, 0, 0);
 	tm._renderer.setAnimationLoop(animate);
 	tm.loadAssets(assets,
 		(results)=>{onReadyAssets(results);},
@@ -65,6 +67,10 @@ window.onload = function(){
 		let cContainer = tm.getCameraContainer();
 		//let tl = new TimelineMax({repeat: 100, yoyo: true});
 		//tl.to(cContainer.position, 10, {y: 50});
+
+		// City
+		helloCity(1);
+		helloInvader(2);
 
 		// Invaders
 		// for(let i=0; i<20; i++){
@@ -111,7 +117,7 @@ window.onload = function(){
 
 			let textMesh = new THREE.Mesh(textGeo, materials);
 			textMesh.position.x = centerOffset;
-			textMesh.position.y = 0;
+			textMesh.position.y = 8;
 			textMesh.position.z = -10;
 			textMesh.rotation.x = 0;
 			textMesh.rotation.y = Math.PI * 2;
@@ -135,6 +141,18 @@ window.onload = function(){
 		console.log(error);
 	}
 
+	function helloCity(index){
+		console.log("helloCity!!");
+
+		if(models.length <= 0) return;
+
+		let clone = models[index].clone();
+		clone.scale.set(0.2, 0.2, 0.2);
+		clone.rotation.set(0, Math.PI, 0);
+		tm.addGroup(clone);// Add to group!!
+		clone.position.set(0, 0, 0);
+	}
+
 	function helloInvader(index){
 		console.log("helloInvader!!");
 
@@ -148,12 +166,13 @@ window.onload = function(){
 
 		// Timeline
 		let area = 30;
-		let x = Math.floor(Math.random() * area) - area*0.5;
-		let y = Math.floor(Math.random() * area) + 2;
-		let z = Math.floor(Math.random() * area) - area*0.5;
+		let x = Math.floor(Math.random() * 60) - 60*0.5;
+		let y = Math.floor(Math.random() * 15) + 2;
+		let z = Math.floor(Math.random() * 30) - 30*0.5;
 		clone.position.set(x, y, z);
-		//let tl = new TimelineMax({repeat: -1, yoyo: true});
-		//tl.to(clone.position, 60, {x: 0, y: 0, z: 0});
+		let tl = new TimelineMax({repeat: -1, yoyo: true});
+		tl.to(clone.position, 1.0, {x: "+=3.0"});
+		tl.to(clone.position, 1.0, {x: "-=3.0"});
 
 		// Label
 		//let str = "[" + x + ", " + y + ", " + z + "]";
