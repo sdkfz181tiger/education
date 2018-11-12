@@ -6,19 +6,19 @@ console.log("Hello Three.js!!");
 
 // Data
 const assets = {data:[
-	{path:"./models/", mtl:"city_1.mtl", obj:"city_1.obj"},
-	{path:"./models/", mtl:"city_2.mtl", obj:"city_2.obj"},
-	{path:"./models/", mtl:"inv01.mtl", obj:"inv01.obj"},
-	{path:"./models/", mtl:"inv02.mtl", obj:"inv02.obj"},
-	{path:"./models/", mtl:"inv03.mtl", obj:"inv03.obj"},
-	{path:"./models/", mtl:"inv04.mtl", obj:"inv04.obj"},
+	{dir:"./models/", mtl:"city_1.mtl", obj:"city_1.obj"},
+	{dir:"./models/", mtl:"city_2.mtl", obj:"city_2.obj"},
+	{dir:"./models/", mtl:"inv_1.mtl", obj:"inv_1.obj"},
+	{dir:"./models/", mtl:"inv_2.mtl", obj:"inv_2.obj"},
+	{dir:"./models/", mtl:"inv_3.mtl", obj:"inv_3.obj"},
+	{dir:"./models/", mtl:"inv_4.mtl", obj:"inv_4.obj"},
 ]};
 
 const sounds = {data:[
-	{path:"./sounds/", mp3:"test_1.mp3"},
-	{path:"./sounds/", mp3:"test_2.mp3"},
-	{path:"./sounds/", mp3:"test_3.mp3"},
-	{path:"./sounds/", mp3:"test_4.mp3"},
+	{dir:"./sounds/", mp3:"test_1.mp3"},
+	{dir:"./sounds/", mp3:"test_2.mp3"},
+	{dir:"./sounds/", mp3:"test_3.mp3"},
+	{dir:"./sounds/", mp3:"test_4.mp3"},
 ]};
 
 window.onload = function(){
@@ -30,7 +30,7 @@ window.onload = function(){
 	// ThreeManager
 	// 	Camera position(PC): pcX, pcY, pcZ
 	// 	Camera position(VR): vrX, vrY, vrZ
-	let tm = new ThreeManager(0, 10, 30, 0, 0, 0);
+	let tm = new ThreeManager(0, 20, 25, 0, 0, 0);
 	tm._renderer.setAnimationLoop(animate);
 	tm.loadAssets(assets,
 		(results)=>{onReadyAssets(results);},
@@ -59,24 +59,19 @@ window.onload = function(){
 		console.log("You are ready to use assets!!");
 		models = results;// All assets
 
+		// Camera
+		let cContainer = tm.getCameraContainer();
+		//let tl = new TimelineMax({repeat: -1, yoyo: true});
+		//tl.to(cContainer.position, 10, {y: 50});
+
 		// Skybox
 		//let skybox = tm.createSkybox("./textures/skybox_test.png", 6, 50);
 		//tm.addScene(skybox);
 
-		// Camera
-		let cContainer = tm.getCameraContainer();
-		//let tl = new TimelineMax({repeat: 100, yoyo: true});
-		//tl.to(cContainer.position, 10, {y: 50});
-
-		// City
-		helloCity(1);
-		helloInvader(2);
-
-		// Invaders
-		// for(let i=0; i<20; i++){
-		// 	let index = i % models.length;
-		// 	helloInvader(index);
-		// }
+		showCity();
+		for(let i=0; i<20; i++){
+			helloInvader();
+		}
 
 		// Cubes / Wireframe
 		let pad  = 2;
@@ -141,11 +136,8 @@ window.onload = function(){
 		console.log(error);
 	}
 
-	function helloCity(index){
-		console.log("helloCity!!");
-
-		if(models.length <= 0) return;
-
+	function showCity(){
+		let index = tm.findAssets("./models/", "city_2.obj");
 		let clone = models[index].clone();
 		clone.scale.set(0.2, 0.2, 0.2);
 		clone.rotation.set(0, Math.PI, 0);
@@ -153,11 +145,10 @@ window.onload = function(){
 		clone.position.set(0, 0, 0);
 	}
 
-	function helloInvader(index){
-		console.log("helloInvader!!");
-
-		if(models.length <= 0) return;
-
+	function helloInvader(){
+		let num = Math.floor(Math.random() * 4) + 1;
+		let fileName = "inv_" + num + ".obj";
+		let index = tm.findAssets("./models/", fileName);
 		let clone = models[index].clone();
 		clone.scale.set(0.2, 0.2, 0.2);
 		clone.rotation.set(0, Math.PI, 0);
@@ -170,9 +161,9 @@ window.onload = function(){
 		let y = Math.floor(Math.random() * 15) + 2;
 		let z = Math.floor(Math.random() * 30) - 30*0.5;
 		clone.position.set(x, y, z);
-		let tl = new TimelineMax({repeat: -1, yoyo: true});
-		tl.to(clone.position, 1.0, {x: "+=3.0"});
-		tl.to(clone.position, 1.0, {x: "-=3.0"});
+		let tl = new TimelineMax({repeat: -1, yoyo: false});
+		tl.to(clone.position, 5.0, {x: "+=3.0"});
+		tl.to(clone.position, 5.0, {x: "-=3.0"});
 
 		// Label
 		//let str = "[" + x + ", " + y + ", " + z + "]";
@@ -181,7 +172,6 @@ window.onload = function(){
 
 	function helloCube(x, y, z){
 		console.log("helloCube!!");
-
 		let size = 1;
 
 		// Cube
@@ -206,7 +196,6 @@ window.onload = function(){
 
 	function helloWire(x, y, z){
 		console.log("helloWire!!");
-
 		let size = 1;
 
 		// Cube

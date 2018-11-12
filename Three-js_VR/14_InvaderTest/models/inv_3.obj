@@ -4,7 +4,7 @@
 g inv03
 
 # material
-mtllib inv03.mtl
+mtllib inv_3.mtl
 usemtl palette
 
 # normals

@@ -1,10 +1,10 @@
 # MagicaVoxel @ Ephtracy
 
 # group
-g inv01
+g inv04
 
 # material
-mtllib inv01.mtl
+mtllib inv_4.mtl
 usemtl palette
 
 # normals
@@ -16,7 +16,7 @@ vn 0 -1 0
 vn 0 1 0
 
 # texcoords
-vt 0.0175781 0.5
+vt 0.0253906 0.5
 
 # verts
 v -5.5 1 1

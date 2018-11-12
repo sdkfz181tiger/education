@@ -1,10 +1,10 @@
 # MagicaVoxel @ Ephtracy
 
 # group
-g inv02
+g inv_2
 
 # material
-mtllib inv02.mtl
+mtllib inv_2.mtl
 usemtl palette
 
 # normals

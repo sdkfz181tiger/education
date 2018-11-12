@@ -58,10 +58,21 @@ class ThreeManager{
 			this._cameraContainer.rotation.set(0*DEG_TO_RAD, 0*DEG_TO_RAD, 0*DEG_TO_RAD);
 		}
 
+		// HemiLight
+		this._hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6);
+		this._hemiLight.position.set(0, 30, 0);
+		this._hemiLight.color.setHSL(0.4, 0.4, 0.4);
+		this._hemiLight.groundColor.setHSL(0.9, 0.9, 0.9);
+		this._scene.add(this._hemiLight);
+		this._hemiLightHelper = new THREE.HemisphereLightHelper(this._hemiLight, 10);
+		this._scene.add(this._hemiLightHelper);
+
 		// Light
-		this._directionalLight = new THREE.DirectionalLight(0xffffff);
-		this._directionalLight.position.set(0.0, 100.0, 100.0);
-		this._scene.add(this._directionalLight);
+		this._dirLight = new THREE.DirectionalLight(0xffffff);
+		this._dirLight.position.set(-20.0, 20.0, 20.0);
+		this._scene.add(this._dirLight);
+		this._dirLightHelper = new THREE.DirectionalLightHelper(this._dirLight, 5);
+		this._scene.add(this._dirLightHelper);
 
 		// Renderer
 		this._renderer = new THREE.WebGLRenderer({antialias: true});
@@ -83,9 +94,6 @@ class ThreeManager{
 
 		// Wire
 		this.createWire(30, 30, 2, {color: 0x999999});
-
-		// Promises
-		this._promises = [];
 
 		// Group
 		this._group = new THREE.Group();
@@ -113,6 +121,10 @@ class ThreeManager{
 		line.scale.z = 20;// Length of line
 		this._ctl1.add(line.clone());
 		this._ctl2.add(line.clone());
+
+		// Promises, Assets
+		this._promises = [];
+		this._assets   = [];
 
 		function onSelectStart(event){
 			console.log("onSelectStart");
@@ -233,26 +245,38 @@ class ThreeManager{
 	//==========
 	// Assets
 	loadAssets(assets, onSuccess, onError){
-
+		this._assets = assets;// Assets
 		for(let i=0; i<assets.data.length; i++){
 			let data = assets.data[i];
 			this._promises.push(
-				this.asyncAsset(data.path, data.mtl, data.obj));
+				this.asyncAsset(data.dir, data.mtl, data.obj));
 		}
 		Promise.all(this._promises).then(onSuccess, onError);
 	}
 
-	asyncAsset(path, mtl, obj){
+	findAssets(dir, fileName){
+		for(let i=0; i<this._assets.data.length; i++){
+			let asset = this._assets.data[i];
+			let pMtl = dir + fileName;
+			let pObj = dir + fileName;
+			let aMtl = asset.dir + asset.mtl;
+			let aObj = asset.dir + asset.obj;
+			if(pMtl == aMtl || pObj == aObj) return i;
+		}
+		return -1;
+	}
+
+	asyncAsset(dir, mtl, obj){
 		return new Promise((resolve, reject)=>{
 			// MTLLoader
 			let mtlLoader = new THREE.MTLLoader();
-			mtlLoader.setPath(path);
+			mtlLoader.setPath(dir);
 			mtlLoader.load(mtl, (materials)=>{
 				//console.log("onLoaded:" + mtl);
 				materials.preload();
 				// OBJLoader
 				let objLoader = new THREE.OBJLoader();
-				objLoader.setPath(path);
+				objLoader.setPath(dir);
 				objLoader.setMaterials(materials);
 				objLoader.load(obj, (meshes)=>{
 					meshes.children.forEach((mesh)=>{
@@ -282,19 +306,19 @@ class ThreeManager{
 		for(let i=0; i<sounds.data.length; i++){
 			let data = sounds.data[i];
 			promises.push(
-				this.asyncSound(data.path, data.mp3));
+				this.asyncSound(data.dir, data.mp3));
 		}
 		Promise.all(promises).then(onSuccess, onError);
 	}
 
-	asyncSound(path, mp3){
+	asyncSound(dir, mp3){
 		return new Promise((resolve, reject)=>{
 			// AudioLoader
 			let aListener = new THREE.AudioListener();
 			this._camera.add(aListener);
 			let sound = new THREE.PositionalAudio(aListener);
 			let aLoader = new THREE.AudioLoader();
-			let file = path + mp3;
+			let file = dir + mp3;
 			aLoader.load(file, (buffer)=>{
 				//console.log("onLoaded:" + mp3);
 				sound.setBuffer(buffer);
