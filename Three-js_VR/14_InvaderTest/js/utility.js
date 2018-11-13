@@ -221,9 +221,9 @@ class ThreeManager{
 		return label;
 	}
 
-	createText(str="***", font){
+	createText(str="***", font, size=8, x=0, y=8, z=-10){
 		let textGeo = new THREE.TextGeometry(str, {
-			font: font, size: 8, height: 2, curveSegments: 4,
+			font: font, size: size, height: 2, curveSegments: 4,
 			bevelThickness: 2, bevelSize: 0.2, bevelEnabled: false
 		});
 		textGeo.computeBoundingBox();
@@ -232,11 +232,11 @@ class ThreeManager{
 			new THREE.MeshPhongMaterial({color: 0xffffff, flatShading: true}),
 			new THREE.MeshPhongMaterial({color: 0xffffff })
 		];
-		let centerOffset = -0.5 * (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x);
+		let centerOffset = (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x) * 0.5;
 		let textMesh = new THREE.Mesh(textGeo, materials);
-		textMesh.position.x = centerOffset;
-		textMesh.position.y = 8;
-		textMesh.position.z = -10;
+		textMesh.position.x = x - centerOffset;
+		textMesh.position.y = y;
+		textMesh.position.z = z;
 		textMesh.rotation.x = 0;
 		textMesh.rotation.y = Math.PI * 2;
 		return textMesh;

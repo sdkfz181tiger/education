@@ -36,7 +36,7 @@ window.onload = function(){
 	// ThreeManager
 	// 	Camera position(PC): pcX, pcY, pcZ
 	// 	Camera position(VR): vrX, vrY, vrZ
-	let tm = new ThreeManager(0, 20, 25, 0, 0, 0);
+	let tm = new ThreeManager(0, 10, 45, 0, 0, 0);
 	tm._renderer.setAnimationLoop(animate);
 	tm.loadAssets(assets,
 		(results)=>{onReadyAssets(results);},
@@ -77,8 +77,17 @@ window.onload = function(){
 		let skybox = tm.createSkybox("./textures/skybox_space.png", 6, 300);
 		tm.addScene(skybox);
 
-		showCity();
-		for(let i=0; i<20; i++){
+		showCity("./models/", "city_1.obj", -26, 0, -26);
+		showCity("./models/", "city_2.obj", 0,   0, -26);
+		showCity("./models/", "city_1.obj", +26, 0, -26);
+		showCity("./models/", "city_2.obj", -26, 0, 0);
+		showCity("./models/", "city_2.obj", 0,   0, 0);
+		showCity("./models/", "city_2.obj", +26, 0, 0);
+		showCity("./models/", "city_1.obj", -26, 0, +26);
+		showCity("./models/", "city_2.obj", 0,   0, +26);
+		showCity("./models/", "city_1.obj", +26, 0, +26);
+
+		for(let i=0; i<60; i++){
 			helloInvader();
 		}
 
@@ -112,7 +121,7 @@ window.onload = function(){
 		fonts = results;// All fonts
 		// Test
 		let index = tm.findFaces("./fonts/", "MisakiGothic_Regular.json");
-		let text = tm.createText("TEST", fonts[index]);
+		let text = tm.createText("INVADER!", fonts[index], 8, 0, 10, -15);
 		tm.addGroup(text);
 	}
 
@@ -122,13 +131,14 @@ window.onload = function(){
 		console.log(error);
 	}
 
-	function showCity(){
-		let index = tm.findAssets("./models/", "city_2.obj");
+	function showCity(dir, obj, x, y, z){
+		let index = tm.findAssets(dir, obj);
+		let rY = Math.floor(Math.random()*4) * Math.PI;
 		let clone = models[index].clone();
 		clone.scale.set(0.2, 0.2, 0.2);
-		clone.rotation.set(0, Math.PI, 0);
+		clone.position.set(x, y, z);
+		clone.rotation.set(0, rY, 0);
 		tm.addGroup(clone);// Add to group!!
-		clone.position.set(0, 0, 0);
 	}
 
 	function helloInvader(){
@@ -142,10 +152,10 @@ window.onload = function(){
 		invaders.push(clone);
 
 		// Timeline
-		let area = 30;
-		let x = Math.floor(Math.random() * 60) - 60*0.5;
-		let y = Math.floor(Math.random() * 15) + 2;
-		let z = Math.floor(Math.random() * 30) - 30*0.5;
+		let area = 60;
+		let x = Math.floor(Math.random() * area) - area*0.5;
+		let y = Math.floor(Math.random() * area*0.5);
+		let z = Math.floor(Math.random() * area) - area*0.5;
 		clone.position.set(x, y, z);
 		let tl = new TimelineMax({repeat: -1, yoyo: false});
 		tl.to(clone.position, 5.0, {x: "+=3.0"});
