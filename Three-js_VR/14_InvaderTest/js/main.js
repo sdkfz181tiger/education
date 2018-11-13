@@ -21,11 +21,17 @@ const sounds = {data:[
 	{dir:"./sounds/", mp3:"test_4.mp3"},
 ]};
 
+const fonts = {data:[
+	{dir:"./fonts/", json:"MisakiGothic_Regular.json"},
+	{dir:"./fonts/", json:"MisakiMincho_Regular.json"},
+]};
+
 window.onload = function(){
 	console.log("OnLoad");
 
-	let models   = [];
-	let mp3s     = [];
+	let models = [];
+	let mp3s   = [];
+	let faces  = [];
 
 	// ThreeManager
 	// 	Camera position(PC): pcX, pcY, pcZ
@@ -37,6 +43,9 @@ window.onload = function(){
 		(error)=>{onError(error);});
 	tm.loadSounds(sounds,
 		(results)=>{onReadySounds(results);},
+		(error)=>{console.log(error);});
+	tm.loadFonts(fonts,
+		(results)=>{onReadyFonts(results);},
 		(error)=>{console.log(error);});
 
 	// Controller
@@ -88,7 +97,7 @@ window.onload = function(){
 				//helloWire(x, y, z);// Wireframe
 			}
 		}
-
+		/*
 		// Font(Test)
 		let loader = new THREE.FontLoader();
 		let path = "./fonts/MisakiGothic_Regular.json";
@@ -123,11 +132,17 @@ window.onload = function(){
 		}, (error)=>{
 			console.log("onError:" + error);
 		});
+		*/
 	}
 
 	function onReadySounds(results){
 		console.log("You are ready to use sounds!!");
 		mp3s = results;// All sounds
+	}
+
+	function onReadyFonts(results){
+		console.log("You are ready to use fonts!!");
+		faces = results;// All fonts
 	}
 
 	// Error

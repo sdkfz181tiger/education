@@ -122,9 +122,10 @@ class ThreeManager{
 		this._ctl1.add(line.clone());
 		this._ctl2.add(line.clone());
 
-		// Promises, Assets
-		this._promises = [];
-		this._assets   = [];
+		// Assets, Sounds, Fonts
+		this._assets = [];
+		this._sounds = [];
+		this._fonts  = [];
 
 		function onSelectStart(event){
 			console.log("onSelectStart");
@@ -246,12 +247,13 @@ class ThreeManager{
 	// Assets
 	loadAssets(assets, onSuccess, onError){
 		this._assets = assets;// Assets
+		let promises = [];
 		for(let i=0; i<assets.data.length; i++){
 			let data = assets.data[i];
-			this._promises.push(
+			promises.push(
 				this.asyncAsset(data.dir, data.mtl, data.obj));
 		}
-		Promise.all(this._promises).then(onSuccess, onError);
+		Promise.all(promises).then(onSuccess, onError);
 	}
 
 	findAssets(dir, fileName){
@@ -301,7 +303,7 @@ class ThreeManager{
 	//==========
 	// Sounds
 	loadSounds(sounds, onSuccess, onError){
-
+		this._sounds = sounds;// Sounds
 		let promises = [];
 		for(let i=0; i<sounds.data.length; i++){
 			let data = sounds.data[i];
@@ -318,13 +320,43 @@ class ThreeManager{
 			this._camera.add(aListener);
 			let sound = new THREE.PositionalAudio(aListener);
 			let aLoader = new THREE.AudioLoader();
-			let file = dir + mp3;
-			aLoader.load(file, (buffer)=>{
+			let path = dir + mp3;
+			aLoader.load(path, (buffer)=>{
 				//console.log("onLoaded:" + mp3);
 				sound.setBuffer(buffer);
 				sound.setRefDistance(10);
 				sound.name = mp3;// Name
 				resolve(sound);  // Resolve
+			}, (progress)=>{
+				//console.log("onProgress");
+			}, (error)=>{
+				console.log("onError:" + error);
+				reject(error);// Reject
+			});
+		});
+	}
+
+	//==========
+	// Fonts
+	loadFonts(fonts, onSuccess, onError){
+		this._fonts = fonts;// Fonts
+		let promises = [];
+		for(let i=0; i<fonts.data.length; i++){
+			let data = fonts.data[i];
+			promises.push(
+				this.asyncFonts(data.dir, data.json));
+		}
+		Promise.all(promises).then(onSuccess, onError);
+	}
+
+	asyncFonts(dir, json){
+		return new Promise((resolve, reject)=>{
+			// FontLoader
+			let loader = new THREE.FontLoader();
+			let path = dir + json;
+			loader.load(path, (face)=>{
+				//console.log(face.data.familyName);
+				resolve(face);// Resolve
 			}, (progress)=>{
 				//console.log("onProgress");
 			}, (error)=>{
