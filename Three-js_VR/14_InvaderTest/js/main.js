@@ -26,17 +26,18 @@ const faces = {data:[
 	{dir:"./fonts/", face:"MisakiMincho_Regular.json"},
 ]};
 
+let tm     = null;
+let models = [];
+let mp3s   = [];
+let fonts  = [];
+
 window.onload = function(){
 	console.log("OnLoad");
-
-	let models = [];
-	let mp3s   = [];
-	let fonts  = [];
 
 	// ThreeManager
 	// 	Camera position(PC): pcX, pcY, pcZ
 	// 	Camera position(VR): vrX, vrY, vrZ
-	let tm = new ThreeManager(0, 10, 45, 0, 0, 0);
+	tm = new ThreeManager(0, 10, 45, 0, 0, 0);
 	tm._renderer.setAnimationLoop(animate);
 	tm.loadAssets(assets,
 		(results)=>{onReadyAssets(results);},
@@ -87,9 +88,7 @@ window.onload = function(){
 		showCity("./models/", "city_2.obj", 0,   0, +26);
 		showCity("./models/", "city_1.obj", +26, 0, +26);
 
-		for(let i=0; i<60; i++){
-			helloInvader();
-		}
+		helloInvader(0, 15, 0);
 
 		// Cubes / Wireframe
 		let pad  = 2;
@@ -141,25 +140,24 @@ window.onload = function(){
 		tm.addGroup(clone);// Add to group!!
 	}
 
-	function helloInvader(){
-		let num = Math.floor(Math.random() * 4) + 1;
-		let fileName = "inv_" + num + ".obj";
-		let index = tm.findAssets("./models/", fileName);
-		let clone = models[index].clone();
-		clone.scale.set(0.2, 0.2, 0.2);
-		clone.rotation.set(0, Math.PI, 0);
-		tm.addGroup(clone);// Add to group!!
-		invaders.push(clone);
-
-		// Timeline
-		let area = 60;
-		let x = Math.floor(Math.random() * area) - area*0.5;
-		let y = Math.floor(Math.random() * area*0.5);
-		let z = Math.floor(Math.random() * area) - area*0.5;
-		clone.position.set(x, y, z);
-		let tl = new TimelineMax({repeat: -1, yoyo: false});
-		tl.to(clone.position, 5.0, {x: "+=3.0"});
-		tl.to(clone.position, 5.0, {x: "-=3.0"});
+	function helloInvader(bX, bY, bZ){
+		let padding = 4;
+		let rows = 7;
+		let cols = 13;
+		let sX = bX - (cols-1) * padding * 0.5;
+		let sY = bY;
+		let sZ = bZ;
+		for(let r=0; r<rows; r++){
+			for(let c=0; c<cols; c++){
+				let num = r % 4 + 1;
+				let name = "inv_" + num + ".obj";
+				console.log(name);
+				let x = sX + c * padding;
+				let y = sY + r * padding;
+				let inv = new Invader(name, x, y, sZ);
+				inv.wander();
+			}
+		}
 	}
 
 	function helloCube(x, y, z){
@@ -186,44 +184,28 @@ window.onload = function(){
 		}, 1.6);
 	}
 
-	function helloWire(x, y, z){
-		console.log("helloWire!!");
-		let size = 1;
-
-		// Cube
-		let geometry = new THREE.WireframeGeometry(
-			new THREE.BoxGeometry(size, size, size));
-		let matLineBasic = new THREE.LineBasicMaterial(
-			{color: 0x4080ff});
-		let matLineDashed = new THREE.LineDashedMaterial(
-			{scale: 1, dashSize: 1, gapSize: 1});
-		let wf = new THREE.LineSegments(geometry, matLineBasic);
-		wf.position.set(x, y, z);
-		wf.computeLineDistances();
-		wf.visible = true;
-		tm.addGroup(wf);
-
-		// Timeline
-		let dY = Math.floor(Math.random()*20+3) * size;
-		let tl = new TimelineMax({repeat: -1, yoyo: true});
-		tl.to(wf.position, 2, {y: dY});
-		tl.addCallback(()=>{
-			tl.timeScale(1.0);
-		}, 1.5);
-		tl.addCallback(()=>{
-			tl.timeScale(0.2);
-		}, 1.6);
-	}
-
 	// Animate
 	function animate(){
-		//console.log("Animate");
-
-		// Manager
-		tm.update();
-
-		// Controller
-		ctlVR.update();
+		tm.update();   // Manager
+		ctlVR.update();// Controller
 	};
+}
+
+class Invader{
+
+	constructor(name, x, y, z){
+		let index = tm.findAssets("./models/", name);
+		this._clone = models[index].clone();
+		this._clone.scale.set(0.2, 0.2, 0.2);
+		this._clone.position.set(x, y, z);
+		this._clone.rotation.set(0, Math.PI, 0);
+		tm.addGroup(this._clone);// Add to group!!
+	}
+
+	wander(){
+		let tl = new TimelineMax({repeat: -1, yoyo: false});
+		tl.to(this._clone.position, 5.0, {x: "+=3.0"});
+		tl.to(this._clone.position, 5.0, {x: "-=3.0"});
+	}
 }
 
