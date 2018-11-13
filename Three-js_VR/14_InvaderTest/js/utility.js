@@ -382,9 +382,9 @@ class ThreeManager{
 
 	findFaces(dir, fileName){
 		for(let i=0; i<this._faces.data.length; i++){
-			let sound = this._faces.data[i];
+			let face = this._faces.data[i];
 			let path = dir + fileName;
-			let file = sound.dir + sound.face;
+			let file = face.dir + face.face;
 			if(path == file) return i;
 		}
 		return -1;

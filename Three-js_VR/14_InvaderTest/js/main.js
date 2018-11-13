@@ -104,7 +104,7 @@ window.onload = function(){
 		mp3s = results;// All sounds
 		// Test
 		let index = tm.findSounds("./sounds/", "test_1.mp3");
-		console.log(index);
+		mp3s[index].play();
 	}
 
 	function onReadyFaces(results){
