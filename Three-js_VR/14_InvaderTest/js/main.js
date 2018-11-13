@@ -137,11 +137,17 @@ window.onload = function(){
 
 	function onReadySounds(results){
 		console.log("You are ready to use sounds!!");
+		// Test
+		let index = tm.findSounds("./sounds/", "test_1.mp3");
+		console.log(index);
 		mp3s = results;// All sounds
 	}
 
 	function onReadyFonts(results){
 		console.log("You are ready to use fonts!!");
+		// Test
+		let index = tm.findFonts("./fonts/", "MisakiGothic_Regular.json");
+		console.log(index);
 		faces = results;// All fonts
 	}
 

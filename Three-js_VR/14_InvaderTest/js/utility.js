@@ -313,6 +313,16 @@ class ThreeManager{
 		Promise.all(promises).then(onSuccess, onError);
 	}
 
+	findSounds(dir, fileName){
+		for(let i=0; i<this._sounds.data.length; i++){
+			let sound = this._sounds.data[i];
+			let path = dir + fileName;
+			let file = sound.dir + sound.mp3;
+			if(path == file) return i;
+		}
+		return -1;
+	}
+
 	asyncSound(dir, mp3){
 		return new Promise((resolve, reject)=>{
 			// AudioLoader
@@ -347,6 +357,16 @@ class ThreeManager{
 				this.asyncFonts(data.dir, data.json));
 		}
 		Promise.all(promises).then(onSuccess, onError);
+	}
+
+	findFonts(dir, fileName){
+		for(let i=0; i<this._fonts.data.length; i++){
+			let sound = this._fonts.data[i];
+			let path = dir + fileName;
+			let file = sound.dir + sound.json;
+			if(path == file) return i;
+		}
+		return -1;
 	}
 
 	asyncFonts(dir, json){
