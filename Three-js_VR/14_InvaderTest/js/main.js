@@ -21,9 +21,9 @@ const sounds = {data:[
 	{dir:"./sounds/", mp3:"test_4.mp3"},
 ]};
 
-const fonts = {data:[
-	{dir:"./fonts/", json:"MisakiGothic_Regular.json"},
-	{dir:"./fonts/", json:"MisakiMincho_Regular.json"},
+const faces = {data:[
+	{dir:"./fonts/", face:"MisakiGothic_Regular.json"},
+	{dir:"./fonts/", face:"MisakiMincho_Regular.json"},
 ]};
 
 window.onload = function(){
@@ -31,7 +31,7 @@ window.onload = function(){
 
 	let models = [];
 	let mp3s   = [];
-	let faces  = [];
+	let fonts  = [];
 
 	// ThreeManager
 	// 	Camera position(PC): pcX, pcY, pcZ
@@ -44,8 +44,8 @@ window.onload = function(){
 	tm.loadSounds(sounds,
 		(results)=>{onReadySounds(results);},
 		(error)=>{console.log(error);});
-	tm.loadFonts(fonts,
-		(results)=>{onReadyFonts(results);},
+	tm.loadFaces(faces,
+		(results)=>{onReadyFaces(results);},
 		(error)=>{console.log(error);});
 
 	// Controller
@@ -97,42 +97,6 @@ window.onload = function(){
 				//helloWire(x, y, z);// Wireframe
 			}
 		}
-		/*
-		// Font(Test)
-		let loader = new THREE.FontLoader();
-		let path = "./fonts/MisakiGothic_Regular.json";
-		loader.load(path, (font)=>{
-			console.log(font.data.familyName);
-
-			let str = "INVADER!!";
-			let textGeo = new THREE.TextGeometry(str, {
-				font: font, size: 8, height: 2, curveSegments: 4,
-				bevelThickness: 2, bevelSize: 0.2, bevelEnabled: false
-			});
-			textGeo.computeBoundingBox();
-			textGeo.computeVertexNormals();
-
-			let materials = [
-				new THREE.MeshPhongMaterial({color: 0xffffff, flatShading: true}),
-				new THREE.MeshPhongMaterial({color: 0xffffff })
-			];
-
-			let centerOffset = -0.5 * (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x);
-
-			let textMesh = new THREE.Mesh(textGeo, materials);
-			textMesh.position.x = centerOffset;
-			textMesh.position.y = 8;
-			textMesh.position.z = -10;
-			textMesh.rotation.x = 0;
-			textMesh.rotation.y = Math.PI * 2;
-			tm.addGroup(textMesh);
-
-		}, (progress)=>{
-			//console.log("onProgress");
-		}, (error)=>{
-			console.log("onError:" + error);
-		});
-		*/
 	}
 
 	function onReadySounds(results){
@@ -143,14 +107,13 @@ window.onload = function(){
 		console.log(index);
 	}
 
-	function onReadyFonts(results){
-		console.log("You are ready to use fonts!!");
-		faces = results;// All fonts
+	function onReadyFaces(results){
+		console.log("You are ready to use faces!!");
+		fonts = results;// All fonts
 		// Test
-		let index = tm.findFonts("./fonts/", "MisakiGothic_Regular.json");
+		let index = tm.findFaces("./fonts/", "MisakiGothic_Regular.json");
 		console.log(index);
-		let font = faces[index];
-		let text = tm.createText("Hello", font);
+		let text = tm.createText("TEST", fonts[index]);
 		tm.addGroup(text);
 	}
 

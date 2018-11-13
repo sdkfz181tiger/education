@@ -211,7 +211,7 @@ class ThreeManager{
 	}
 
 	//==========
-	// Label, Font
+	// Label, Text
 	createLabel(str="***", className="label"){
 		let div = document.createElement("div");
 		div.textContent = str;
@@ -368,36 +368,36 @@ class ThreeManager{
 	}
 
 	//==========
-	// Fonts
-	loadFonts(fonts, onSuccess, onError){
-		this._fonts = fonts;// Fonts
+	// Faces
+	loadFaces(faces, onSuccess, onError){
+		this._faces = faces;// Faces
 		let promises = [];
-		for(let i=0; i<fonts.data.length; i++){
-			let data = fonts.data[i];
+		for(let i=0; i<faces.data.length; i++){
+			let data = faces.data[i];
 			promises.push(
-				this.asyncFonts(data.dir, data.json));
+				this.asyncFaces(data.dir, data.face));
 		}
 		Promise.all(promises).then(onSuccess, onError);
 	}
 
-	findFonts(dir, fileName){
-		for(let i=0; i<this._fonts.data.length; i++){
-			let sound = this._fonts.data[i];
+	findFaces(dir, fileName){
+		for(let i=0; i<this._faces.data.length; i++){
+			let sound = this._faces.data[i];
 			let path = dir + fileName;
-			let file = sound.dir + sound.json;
+			let file = sound.dir + sound.face;
 			if(path == file) return i;
 		}
 		return -1;
 	}
 
-	asyncFonts(dir, json){
+	asyncFaces(dir, face){
 		return new Promise((resolve, reject)=>{
 			// FontLoader
 			let loader = new THREE.FontLoader();
-			let path = dir + json;
-			loader.load(path, (face)=>{
+			let path = dir + face;
+			loader.load(path, (font)=>{
 				//console.log(face.data.familyName);
-				resolve(face);// Resolve
+				resolve(font);// Resolve
 			}, (progress)=>{
 				//console.log("onProgress");
 			}, (error)=>{
