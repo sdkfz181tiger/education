@@ -61,8 +61,8 @@ class ThreeManager{
 		// HemiLight
 		this._hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6);
 		this._hemiLight.position.set(0, 30, 0);
-		this._hemiLight.color.setHSL(0.4, 0.4, 0.4);
-		this._hemiLight.groundColor.setHSL(0.9, 0.9, 0.9);
+		this._hemiLight.color.setHSL(0.7, 0.9, 0.7);
+		this._hemiLight.groundColor.setHSL(1, 1, 1);
 		this._scene.add(this._hemiLight);
 		this._hemiLightHelper = new THREE.HemisphereLightHelper(this._hemiLight, 10);
 		this._scene.add(this._hemiLightHelper);

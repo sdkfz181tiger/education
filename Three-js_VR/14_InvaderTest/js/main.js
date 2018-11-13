@@ -112,7 +112,6 @@ window.onload = function(){
 		fonts = results;// All fonts
 		// Test
 		let index = tm.findFaces("./fonts/", "MisakiGothic_Regular.json");
-		console.log(index);
 		let text = tm.createText("TEST", fonts[index]);
 		tm.addGroup(text);
 	}
