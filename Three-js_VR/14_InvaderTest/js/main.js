@@ -137,18 +137,21 @@ window.onload = function(){
 
 	function onReadySounds(results){
 		console.log("You are ready to use sounds!!");
+		mp3s = results;// All sounds
 		// Test
 		let index = tm.findSounds("./sounds/", "test_1.mp3");
 		console.log(index);
-		mp3s = results;// All sounds
 	}
 
 	function onReadyFonts(results){
 		console.log("You are ready to use fonts!!");
+		faces = results;// All fonts
 		// Test
 		let index = tm.findFonts("./fonts/", "MisakiGothic_Regular.json");
 		console.log(index);
-		faces = results;// All fonts
+		let font = faces[index];
+		let text = tm.createText("Hello", font);
+		tm.addGroup(text);
 	}
 
 	// Error
@@ -185,10 +188,6 @@ window.onload = function(){
 		let tl = new TimelineMax({repeat: -1, yoyo: false});
 		tl.to(clone.position, 5.0, {x: "+=3.0"});
 		tl.to(clone.position, 5.0, {x: "-=3.0"});
-
-		// Label
-		//let str = "[" + x + ", " + y + ", " + z + "]";
-		//clone.add(tm.createLabel(str));
 	}
 
 	function helloCube(x, y, z){

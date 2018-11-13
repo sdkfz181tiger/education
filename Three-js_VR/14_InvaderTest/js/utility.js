@@ -211,7 +211,7 @@ class ThreeManager{
 	}
 
 	//==========
-	// Label
+	// Label, Font
 	createLabel(str="***", className="label"){
 		let div = document.createElement("div");
 		div.textContent = str;
@@ -219,6 +219,27 @@ class ThreeManager{
 		let label = new THREE.CSS2DObject(div);
 		label.position.set(0, 0, 0);
 		return label;
+	}
+
+	createText(str="***", font){
+		let textGeo = new THREE.TextGeometry(str, {
+			font: font, size: 8, height: 2, curveSegments: 4,
+			bevelThickness: 2, bevelSize: 0.2, bevelEnabled: false
+		});
+		textGeo.computeBoundingBox();
+		textGeo.computeVertexNormals();
+		let materials = [
+			new THREE.MeshPhongMaterial({color: 0xffffff, flatShading: true}),
+			new THREE.MeshPhongMaterial({color: 0xffffff })
+		];
+		let centerOffset = -0.5 * (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x);
+		let textMesh = new THREE.Mesh(textGeo, materials);
+		textMesh.position.x = centerOffset;
+		textMesh.position.y = 8;
+		textMesh.position.z = -10;
+		textMesh.rotation.x = 0;
+		textMesh.rotation.y = Math.PI * 2;
+		return textMesh;
 	}
 
 	//==========
