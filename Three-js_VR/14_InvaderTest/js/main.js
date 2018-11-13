@@ -65,8 +65,8 @@ window.onload = function(){
 		//tl.to(cContainer.position, 10, {y: 50});
 
 		// Skybox
-		//let skybox = tm.createSkybox("./textures/skybox_test.png", 6, 50);
-		//tm.addScene(skybox);
+		let skybox = tm.createSkybox("./textures/skybox_space.png", 6, 300);
+		tm.addScene(skybox);
 
 		showCity();
 		for(let i=0; i<20; i++){
