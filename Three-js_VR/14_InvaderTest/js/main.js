@@ -61,6 +61,7 @@ window.onload = function(){
 		}, 
 		()=>{console.log("onReleased!!");});
 
+	let city     = null;
 	let invaders = [];
 	let cubes    = [];
 
@@ -78,16 +79,7 @@ window.onload = function(){
 		let skybox = tm.createSkybox("./textures/skybox_space.png", 6, 300);
 		tm.addScene(skybox);
 
-		showCity("./models/", "city_1.obj", -26, 0, -26);
-		showCity("./models/", "city_2.obj", 0,   0, -26);
-		showCity("./models/", "city_1.obj", +26, 0, -26);
-		showCity("./models/", "city_2.obj", -26, 0, 0);
-		showCity("./models/", "city_2.obj", 0,   0, 0);
-		showCity("./models/", "city_2.obj", +26, 0, 0);
-		showCity("./models/", "city_1.obj", -26, 0, +26);
-		showCity("./models/", "city_2.obj", 0,   0, +26);
-		showCity("./models/", "city_1.obj", +26, 0, +26);
-
+		city = new City(0, 0, 0);
 		helloInvader(0, 15, 0);
 
 		// Cubes / Wireframe
@@ -151,11 +143,11 @@ window.onload = function(){
 			for(let c=0; c<cols; c++){
 				let num = r % 4 + 1;
 				let name = "inv_" + num + ".obj";
-				console.log(name);
 				let x = sX + c * padding;
 				let y = sY + r * padding;
-				let inv = new Invader(name, x, y, sZ);
-				inv.wander();
+				let invader = new Invader(name, x, y, sZ);
+				invader.wander();
+				invaders.push(invader);
 			}
 		}
 	}
@@ -194,6 +186,8 @@ window.onload = function(){
 class Invader{
 
 	constructor(name, x, y, z){
+		this._name = name;
+		this._x = x; this._y = y; this._z = z;
 		let index = tm.findAssets("./models/", name);
 		this._clone = models[index].clone();
 		this._clone.scale.set(0.2, 0.2, 0.2);
@@ -207,5 +201,41 @@ class Invader{
 		tl.to(this._clone.position, 5.0, {x: "+=3.0"});
 		tl.to(this._clone.position, 5.0, {x: "-=3.0"});
 	}
+
+	trip(){
+
+	}
 }
 
+class City{
+
+	constructor(cX=0, cY=0, cZ=0){
+		this._cX = cX; this._cY = cY; this._cZ = cZ;
+		this.makeCilinder();
+	}
+
+	makeCilinder(){
+		let radius = 20;
+		for(let i=0; i<360; i+=30){
+			let num = Math.floor(Math.random() * 2) + 1;
+			let name = "city_" + num + ".obj";
+			let rad = i * DEG_TO_RAD;
+			let y  = radius * Math.sin(rad);
+			let z  = radius * Math.cos(rad);
+			let rX = -rad + Math.PI * 0.5;
+			let rY = Math.floor(Math.random()*4) * Math.PI;
+			let rZ = 0;
+			this.makePanel(name, 0, y, z, rX, rY, rZ);
+		}
+	}
+
+	makePanel(name, x, y, z, rX=0, rY=0, rZ=0){
+		console.log("makePanel");
+		let index = tm.findAssets("./models/", name);
+		let clone = models[index].clone();
+		clone.scale.set(0.08, 0.08, 0.08);
+		clone.position.set(x, y, z);
+		clone.rotation.set(rX, rY, rZ);
+		tm.addGroup(clone);// Add to group!!
+	}
+}
