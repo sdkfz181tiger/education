@@ -79,7 +79,7 @@ window.onload = function(){
 		let skybox = tm.createSkybox("./textures/skybox_space.png", 6, 300);
 		tm.addScene(skybox);
 
-		city = new City(0, 0, 0);
+		city = new City(0, -15, 0);
 		helloInvader(0, 15, 0);
 
 		// Cubes / Wireframe
@@ -187,23 +187,26 @@ class Invader{
 
 	constructor(name, x, y, z){
 		this._name = name;
-		this._x = x; this._y = y; this._z = z;
-		let index = tm.findAssets("./models/", name);
-		this._clone = models[index].clone();
-		this._clone.scale.set(0.2, 0.2, 0.2);
-		this._clone.position.set(x, y, z);
-		this._clone.rotation.set(0, Math.PI, 0);
+		this._clone = this.createClone(name, x, y, z);
 		tm.addGroup(this._clone);// Add to group!!
+		this.wander();
+	}
+
+	createClone(name, x, y, z){
+		let index = tm.findAssets("./models/", name);
+		let clone = models[index].clone();
+		clone.scale.set(0.2, 0.2, 0.2);
+		clone.position.set(x, y, z);
+		clone.rotation.set(0, Math.PI, 0);
+		return clone;
 	}
 
 	wander(){
 		let tl = new TimelineMax({repeat: -1, yoyo: false});
-		tl.to(this._clone.position, 5.0, {x: "+=3.0"});
-		tl.to(this._clone.position, 5.0, {x: "-=3.0"});
-	}
-
-	trip(){
-
+		tl.to(this._clone.position, 1.0, {x: "+=8.0"});
+		tl.to(this._clone.position, 1.0, {x: "-=8.0"});
+		tl.to(this._clone.position, 1.0, {x: "-=8.0"});
+		tl.to(this._clone.position, 1.0, {x: "+=8.0"});
 	}
 }
 
@@ -211,31 +214,64 @@ class City{
 
 	constructor(cX=0, cY=0, cZ=0){
 		this._cX = cX; this._cY = cY; this._cZ = cZ;
+		this._panels = [];
+		this._group = new THREE.Group();
+		this._group.position.set(cX, cY, cZ);
+		tm.addGroup(this._group);
 		this.makeCilinder();
+		this.checkCilinder();
+		this.roll();
 	}
 
 	makeCilinder(){
-		let radius = 20;
-		for(let i=0; i<360; i+=30){
-			let num = Math.floor(Math.random() * 2) + 1;
-			let name = "city_" + num + ".obj";
-			let rad = i * DEG_TO_RAD;
-			let y  = radius * Math.sin(rad);
-			let z  = radius * Math.cos(rad);
-			let rX = -rad + Math.PI * 0.5;
-			let rY = Math.floor(Math.random()*4) * Math.PI;
-			let rZ = 0;
-			this.makePanel(name, 0, y, z, rX, rY, rZ);
+		let radius  = 20;
+		let padding = 11;
+		let rows    = 360;
+		let cols    = 1;
+		for(let r=0; r<rows; r+=30){
+			for(let c=0; c<cols; c++){
+				let num = Math.floor(Math.random() * 2) + 1;
+				let name = "city_" + num + ".obj";
+				console.log(r);
+				let rad = r * DEG_TO_RAD;
+				let x  = padding * c - (cols-1) * padding * 0.5;
+				let y  = radius * Math.sin(rad);
+				let z  = radius * Math.cos(rad);
+				let rX = -rad + Math.PI * 0.5;
+				let panel = this.makePanel(name, x, y, z, rX, 0, 0);
+				this._panels.push(panel);
+				this._group.add(panel);// Add to group!!
+			}
 		}
 	}
 
+	checkCilinder(){
+		if(this._panels.length <= 0) return;
+		for(let i=0; i<this._panels.length; i++){
+			let position = this._panels[i].position;
+			let rad = this._panels[i].rotation.x + this._group.rotation.x;
+			let deg = (rad * RAD_TO_DEG + 90) % 360;
+			if(45 < deg && deg < 150){
+				this._panels[i].visible = true;
+			}else{
+				this._panels[i].visible = false;
+			}
+		}
+		setTimeout(()=>{this.checkCilinder();}, 500);
+	}
+
 	makePanel(name, x, y, z, rX=0, rY=0, rZ=0){
-		console.log("makePanel");
 		let index = tm.findAssets("./models/", name);
 		let clone = models[index].clone();
 		clone.scale.set(0.08, 0.08, 0.08);
 		clone.position.set(x, y, z);
 		clone.rotation.set(rX, rY, rZ);
-		tm.addGroup(clone);// Add to group!!
+		return clone;
+	}
+
+	roll(){
+		let deg = 360 * DEG_TO_RAD;
+		let tl = new TimelineMax({repeat: -1, yoyo: false});
+		tl.to(this._group.rotation, 300.0, {x: "+="+deg});
 	}
 }
