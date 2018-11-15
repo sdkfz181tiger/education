@@ -146,7 +146,7 @@ window.onload = function(){
 				let x = sX + c * padding;
 				let y = sY + r * padding;
 				let invader = new Invader(name, x, y, sZ);
-				invader.wander();
+				//invader.wander();
 				invaders.push(invader);
 			}
 		}
@@ -189,7 +189,6 @@ class Invader{
 		this._name = name;
 		this._clone = this.createClone(name, x, y, z);
 		tm.addGroup(this._clone);// Add to group!!
-		this.wander();
 	}
 
 	createClone(name, x, y, z){
@@ -232,7 +231,6 @@ class City{
 			for(let c=0; c<cols; c++){
 				let num = Math.floor(Math.random() * 2) + 1;
 				let name = "city_" + num + ".obj";
-				console.log(r);
 				let rad = r * DEG_TO_RAD;
 				let x  = padding * c - (cols-1) * padding * 0.5;
 				let y  = radius * Math.sin(rad);
