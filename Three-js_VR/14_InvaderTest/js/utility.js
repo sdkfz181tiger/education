@@ -296,7 +296,6 @@ class ThreeManager{
 			let mtlLoader = new THREE.MTLLoader();
 			mtlLoader.setPath(dir);
 			mtlLoader.load(mtl, (materials)=>{
-				//console.log("onLoaded:" + mtl);
 				materials.preload();
 				// OBJLoader
 				let objLoader = new THREE.OBJLoader();
@@ -357,7 +356,6 @@ class ThreeManager{
 			let aLoader = new THREE.AudioLoader();
 			let path = dir + mp3;
 			aLoader.load(path, (buffer)=>{
-				//console.log("onLoaded:" + mp3);
 				sound.setBuffer(buffer);
 				sound.setRefDistance(10);
 				sound.name = mp3;// Name
@@ -402,9 +400,8 @@ class ThreeManager{
 			// FontLoader
 			let loader = new THREE.FontLoader();
 			let path = dir + font;
-			loader.load(path, (face)=>{
-				//console.log(face.data.familyName);
-				resolve(face);// Resolve
+			loader.load(path, (result)=>{
+				resolve(result);// Resolve
 			}, (progress)=>{
 				//console.log("onProgress");
 			}, (error)=>{
