@@ -8,10 +8,10 @@ console.log("Hello Three.js!!");
 const models = {data:[
 	{dir:"./models/", mtl:"city_1.mtl", obj:"city_1.obj"},
 	{dir:"./models/", mtl:"city_2.mtl", obj:"city_2.obj"},
-	{dir:"./models/", mtl:"inv_1.mtl", obj:"inv_1.obj"},
-	{dir:"./models/", mtl:"inv_2.mtl", obj:"inv_2.obj"},
-	{dir:"./models/", mtl:"inv_3.mtl", obj:"inv_3.obj"},
-	{dir:"./models/", mtl:"inv_4.mtl", obj:"inv_4.obj"},
+	{dir:"./models/", mtl:"inv_1.mtl",  obj:"inv_1.obj"},
+	{dir:"./models/", mtl:"inv_2.mtl",  obj:"inv_2.obj"},
+	{dir:"./models/", mtl:"inv_3.mtl",  obj:"inv_3.obj"},
+	{dir:"./models/", mtl:"inv_4.mtl",  obj:"inv_4.obj"},
 ]};
 
 const sounds = {data:[
@@ -51,14 +51,9 @@ window.onload = function(){
 		}, 
 		()=>{console.log("onReleased!!");});
 
-	let invaders = [];
-	let cubes    = [];
-
 	// Ready
 	function onReadyModels(){
 		console.log("You are ready to use models!!");
-
-		tm.findModels("hoge");
 
 		// Camera
 		let cContainer = tm.getCameraContainer();
@@ -70,11 +65,9 @@ window.onload = function(){
 		tm.addScene(skybox);
 
 		let city = new City(0, -25, 0);
-		helloInvader(0, 15, 0);
+		let invaders = new Invaders(0, 10, -10);
 
 		/*
-		let player = new Player("inv_1.obj", 0, 0, 0);
-
 		// Cubes / Wireframe
 		let pad  = 2;
 		let rows = 10;
@@ -104,7 +97,7 @@ window.onload = function(){
 		console.log("You are ready to use fonts!!");
 		// Test
 		let font = tm.findFonts("MisakiGothic");
-		let text = tm.createText("INVADER!", font, 8, 0, 10, -15);
+		let text = tm.createText("INVADER!", font, 8, 0, 5, 0);
 		tm.addGroup(text);
 	}
 
@@ -113,59 +106,29 @@ window.onload = function(){
 		console.log("Something went wrong...");
 	}
 
-	function showCity(dir, obj, x, y, z){
-		let index = tm.findAssets(dir, obj);
-		let rY = Math.floor(Math.random()*4) * Math.PI;
-		let clone = models[index].clone();
-		clone.scale.set(0.2, 0.2, 0.2);
-		clone.position.set(x, y, z);
-		clone.rotation.set(0, rY, 0);
-		tm.addGroup(clone);// Add to group!!
-	}
+	// function helloCube(x, y, z){
+	// 	console.log("helloCube!!");
+	// 	let size = 1;
 
-	function helloInvader(bX, bY, bZ){
-		let padding = 4;
-		let rows = 7;
-		let cols = 13;
-		let sX = bX - (cols-1) * padding * 0.5;
-		let sY = bY;
-		let sZ = bZ;
-		for(let r=0; r<rows; r++){
-			for(let c=0; c<cols; c++){
-				let num = r % 4 + 1;
-				let name = "inv_" + num + ".obj";
-				let x = sX + c * padding;
-				let y = sY + r * padding;
-				let invader = new Invader(name, x, y, sZ);
-				invader.wander();
-				invaders.push(invader);
-			}
-		}
-	}
+	// 	// Cube
+	// 	let geometry = new THREE.BoxGeometry(size, size, size);
+	// 	let material = new THREE.MeshNormalMaterial();
+	// 	let cube = new THREE.Mesh(geometry, material);
+	// 	cube.position.set(x, y, z);
+	// 	tm.addGroup(cube);// Add to group!!
+	// 	cubes.push(cube);
 
-	function helloCube(x, y, z){
-		console.log("helloCube!!");
-		let size = 1;
-
-		// Cube
-		let geometry = new THREE.BoxGeometry(size, size, size);
-		let material = new THREE.MeshNormalMaterial();
-		let cube = new THREE.Mesh(geometry, material);
-		cube.position.set(x, y, z);
-		tm.addGroup(cube);// Add to group!!
-		cubes.push(cube);
-
-		// Timeline
-		let dY = Math.floor(Math.random()*20+3) * size;
-		let tl = new TimelineMax({repeat: -1, yoyo: true});
-		tl.to(cube.position, 2, {y: dY});
-		tl.addCallback(()=>{
-			tl.timeScale(1.0);
-		}, 1.5);
-		tl.addCallback(()=>{
-			tl.timeScale(0.2);
-		}, 1.6);
-	}
+	// 	// Timeline
+	// 	let dY = Math.floor(Math.random()*20+3) * size;
+	// 	let tl = new TimelineMax({repeat: -1, yoyo: true});
+	// 	tl.to(cube.position, 2, {y: dY});
+	// 	tl.addCallback(()=>{
+	// 		tl.timeScale(1.0);
+	// 	}, 1.5);
+	// 	tl.addCallback(()=>{
+	// 		tl.timeScale(0.2);
+	// 	}, 1.6);
+	// }
 
 	// Animate
 	function animate(){
@@ -174,43 +137,51 @@ window.onload = function(){
 	};
 }
 
-class Bullet{
+class Invaders{
 
-	constructor(name, x, y, z){
-		this._name = name;
-		this._clone = tm.findModels(name);
-		this._clone.scale.set(0.2, 0.2, 0.2);
-		this._clone.position.set(x, y, z);
-		this._clone.rotation.set(0, Math.PI, 0);
-		tm.addGroup(this._clone);// Add to group!!
+	constructor(cX, cY, cZ){
+		this._cX = cX; this._cY = cY; this._cZ = cZ;
+		this._invaders = [];
+		this._group = new THREE.Group();
+		this._group.position.set(cX, cY, cZ);
+		tm.addGroup(this._group);
+		this.setupInvaders();
+		this.wonderInvaders();
 	}
 
-	wander(){
+	setupInvaders(){
+		let padding = 4;
+		let rows = 7;
+		let cols = 13;
+		let sX = (cols-1) * padding * -0.5;
+		let sY = 0;
+		let sZ = 0;
+		for(let r=0; r<rows; r++){
+			for(let c=0; c<cols; c++){
+				let num = r % 4 + 1;
+				let name = "inv_" + num + ".obj";
+				let x = sX + c * padding;
+				let y = sY + r * padding;
+				let z = 0;
+				let clone = tm.findModels(name);
+				clone.scale.set(0.3, 0.3, 0.3);
+				clone.position.set(x, y, z);
+				clone.rotation.set(0, Math.PI, 0);
+				this._invaders.push(clone);
+				this._group.add(clone);// Add to group!!
+			}
+		}
+	}
+
+	wonderInvaders(){
 		let tl = new TimelineMax({repeat: -1, yoyo: false});
-		tl.to(this._clone.position, 1.0, {x: "+=8.0"});
-		tl.to(this._clone.position, 1.0, {x: "-=8.0"});
-		tl.to(this._clone.position, 1.0, {x: "-=8.0"});
-		tl.to(this._clone.position, 1.0, {x: "+=8.0"});
-	}
-}
-
-class Invader{
-
-	constructor(name, x, y, z){
-		this._name = name;
-		this._clone = tm.findModels(name);
-		this._clone.scale.set(0.2, 0.2, 0.2);
-		this._clone.position.set(x, y, z);
-		this._clone.rotation.set(0, Math.PI, 0);
-		tm.addGroup(this._clone);// Add to group!!
-	}
-
-	wander(){
-		let tl = new TimelineMax({repeat: -1, yoyo: false});
-		tl.to(this._clone.position, 1.0, {x: "+=8.0"});
-		tl.to(this._clone.position, 1.0, {x: "-=8.0"});
-		tl.to(this._clone.position, 1.0, {x: "-=8.0"});
-		tl.to(this._clone.position, 1.0, {x: "+=8.0"});
+		tl.to(this._group.position, 1.0, {x: "+=4.0"});
+		tl.to(this._group.position, 1.0, {x: "-=4.0"});
+		tl.to(this._group.position, 1.0, {x: "-=4.0"});
+		tl.to(this._group.position, 1.0, {x: "+=4.0"});
+		// tl.addCallback(()=>{
+		// 	tl.clear();
+		// });
 	}
 }
 
@@ -228,10 +199,10 @@ class City{
 	}
 
 	setupCilinder(){
-		let radius  = 20;
+		let radius  = 24;
 		let padding = 11;
 		let rows    = 360;
-		let cols    = 1;
+		let cols    = 5;
 		for(let r=0; r<rows; r+=30){
 			for(let c=0; c<cols; c++){
 				let num = Math.floor(Math.random() * 2) + 1;
@@ -244,7 +215,7 @@ class City{
 				let rY = 0;
 				let rZ = 0;
 				let clone = tm.findModels(name);
-				clone.scale.set(0.08, 0.08, 0.08);
+				clone.scale.set(0.1, 0.1, 0.1);
 				clone.position.set(x, y, z);
 				clone.rotation.set(rX, rY, rZ);
 				this._panels.push(clone);
@@ -259,7 +230,7 @@ class City{
 			let position = this._panels[i].position;
 			let rad = this._panels[i].rotation.x + this._group.rotation.x;
 			let deg = (rad * RAD_TO_DEG + 90) % 360;
-			if(45 < deg && deg < 150){
+			if(45 < deg && deg < 180){
 				this._panels[i].visible = true;
 			}else{
 				this._panels[i].visible = false;
@@ -269,8 +240,9 @@ class City{
 	}
 
 	rollCilinder(){
-		let deg = 360 * DEG_TO_RAD;
-		let tl = new TimelineMax({repeat: -1, yoyo: false});
-		tl.to(this._group.rotation, 300.0, {x: "+="+deg});
+		let rad = Math.PI;
+		let tl = new TimelineMax({repeat: -1, yoyo: true});
+		tl.to(this._group.rotation, 5.0, {x: "+="+rad});
+		tl.addCallback(()=>{console.log("yoyo!!");}, 0);
 	}
 }
