@@ -122,8 +122,8 @@ class ThreeManager{
 		this._ctl1.add(line.clone());
 		this._ctl2.add(line.clone());
 
-		// Assets, Sounds, Fonts
-		this._assets = [];
+		// Models, Sounds, Fonts
+		this._models = [];
 		this._sounds = [];
 		this._fonts  = [];
 
@@ -265,31 +265,32 @@ class ThreeManager{
 	}
 
 	//==========
-	// Assets
-	loadAssets(assets, onSuccess, onError){
-		this._assets = assets;// Assets
+	// Models
+	loadModels(models, onSuccess, onError){
 		let promises = [];
-		for(let i=0; i<assets.data.length; i++){
-			let data = assets.data[i];
+		for(let i=0; i<models.data.length; i++){
+			let data = models.data[i];
 			promises.push(
-				this.asyncAsset(data.dir, data.mtl, data.obj));
+				this.asyncModel(data.dir, data.mtl, data.obj));
 		}
-		Promise.all(promises).then(onSuccess, onError);
+		Promise.all(promises).then((results)=>{
+			this._models = results;// Models
+			onSuccess();
+		}, (error)=>{
+			console.log(error);
+			onError();
+		});
 	}
 
-	findAssets(dir, fileName){
-		for(let i=0; i<this._assets.data.length; i++){
-			let asset = this._assets.data[i];
-			let pMtl = dir + fileName;
-			let pObj = dir + fileName;
-			let aMtl = asset.dir + asset.mtl;
-			let aObj = asset.dir + asset.obj;
-			if(pMtl == aMtl || pObj == aObj) return i;
+	findModels(name){
+		for(let i=0; i<this._models.length; i++){
+			if(this._models[i].name != name) continue;
+			return this._models[i].clone();
 		}
-		return -1;
+		return null;
 	}
 
-	asyncAsset(dir, mtl, obj){
+	asyncModel(dir, mtl, obj){
 		return new Promise((resolve, reject)=>{
 			// MTLLoader
 			let mtlLoader = new THREE.MTLLoader();
@@ -309,7 +310,7 @@ class ThreeManager{
 					meshes.scale.set(1, 1, 1);
 					meshes.rotation.set(0, Math.PI, 0);
 					meshes.position.set(0, 0, 0);
-					meshes.name = mtl;// Name
+					meshes.name = obj;// Name
 					resolve(meshes);  // Resolve
 				});
 			}, (progress)=>{
@@ -324,24 +325,27 @@ class ThreeManager{
 	//==========
 	// Sounds
 	loadSounds(sounds, onSuccess, onError){
-		this._sounds = sounds;// Sounds
 		let promises = [];
 		for(let i=0; i<sounds.data.length; i++){
 			let data = sounds.data[i];
 			promises.push(
 				this.asyncSound(data.dir, data.mp3));
 		}
-		Promise.all(promises).then(onSuccess, onError);
+		Promise.all(promises).then((results)=>{
+			this._sounds = results;// Sounds
+			onSuccess();
+		}, (error)=>{
+			console.log(error);
+			onError();
+		});
 	}
 
-	findSounds(dir, fileName){
-		for(let i=0; i<this._sounds.data.length; i++){
-			let sound = this._sounds.data[i];
-			let path = dir + fileName;
-			let file = sound.dir + sound.mp3;
-			if(path == file) return i;
+	findSounds(name){
+		for(let i=0; i<this._sounds.length; i++){
+			if(this._sounds[i].name != name) continue;
+			return this._sounds[i];
 		}
-		return -1;
+		return null;
 	}
 
 	asyncSound(dir, mp3){

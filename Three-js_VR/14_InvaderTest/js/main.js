@@ -5,7 +5,7 @@
 console.log("Hello Three.js!!");
 
 // Data
-const assets = {data:[
+const models = {data:[
 	{dir:"./models/", mtl:"city_1.mtl", obj:"city_1.obj"},
 	{dir:"./models/", mtl:"city_2.mtl", obj:"city_2.obj"},
 	{dir:"./models/", mtl:"inv_1.mtl", obj:"inv_1.obj"},
@@ -27,8 +27,6 @@ const faces = {data:[
 ]};
 
 let tm     = null;
-let models = [];
-let mp3s   = [];
 let fonts  = [];
 
 window.onload = function(){
@@ -39,9 +37,7 @@ window.onload = function(){
 	// 	Camera position(VR): vrX, vrY, vrZ
 	tm = new ThreeManager(0, 10, 45, 0, 0, 0);
 	tm._renderer.setAnimationLoop(animate);
-	tm.loadAssets(assets,
-		(results)=>{onReadyAssets(results);},
-		(error)=>{onError(error);});
+	tm.loadModels(models, onReadyModels, onError);
 	tm.loadSounds(sounds,
 		(results)=>{onReadySounds(results);},
 		(error)=>{console.log(error);});
@@ -57,18 +53,17 @@ window.onload = function(){
 	ctlVR.setTriggerListener(
 		()=>{
 			console.log("onPressed!!");
-			mp3s[0].play();// Test
 		}, 
 		()=>{console.log("onReleased!!");});
 
-	let city     = null;
 	let invaders = [];
 	let cubes    = [];
 
 	// Ready
-	function onReadyAssets(results){
-		console.log("You are ready to use assets!!");
-		models = results;// All assets
+	function onReadyModels(){
+		console.log("You are ready to use models!!");
+
+		tm.findModels("hoge");
 
 		// Camera
 		let cContainer = tm.getCameraContainer();
@@ -79,8 +74,11 @@ window.onload = function(){
 		let skybox = tm.createSkybox("./textures/skybox_space.png", 6, 300);
 		tm.addScene(skybox);
 
-		city = new City(0, -15, 0);
+		let city = new City(0, -25, 0);
 		helloInvader(0, 15, 0);
+
+		/*
+		let player = new Player("inv_1.obj", 0, 0, 0);
 
 		// Cubes / Wireframe
 		let pad  = 2;
@@ -97,14 +95,14 @@ window.onload = function(){
 				//helloWire(x, y, z);// Wireframe
 			}
 		}
+		*/
 	}
 
 	function onReadySounds(results){
 		console.log("You are ready to use sounds!!");
-		mp3s = results;// All sounds
 		// Test
-		let index = tm.findSounds("./sounds/", "test_1.mp3");
-		mp3s[index].play();
+		let sound = tm.findSounds("test_1.mp3");
+		sound.play();
 	}
 
 	function onReadyFaces(results){
@@ -117,9 +115,8 @@ window.onload = function(){
 	}
 
 	// Error
-	function onError(error){
+	function onError(){
 		console.log("Something went wrong...");
-		console.log(error);
 	}
 
 	function showCity(dir, obj, x, y, z){
@@ -146,7 +143,7 @@ window.onload = function(){
 				let x = sX + c * padding;
 				let y = sY + r * padding;
 				let invader = new Invader(name, x, y, sZ);
-				//invader.wander();
+				invader.wander();
 				invaders.push(invader);
 			}
 		}
@@ -183,21 +180,35 @@ window.onload = function(){
 	};
 }
 
+class Bullet{
+
+	constructor(name, x, y, z){
+		this._name = name;
+		this._clone = tm.findModels(name);
+		this._clone.scale.set(0.2, 0.2, 0.2);
+		this._clone.position.set(x, y, z);
+		this._clone.rotation.set(0, Math.PI, 0);
+		tm.addGroup(this._clone);// Add to group!!
+	}
+
+	wander(){
+		let tl = new TimelineMax({repeat: -1, yoyo: false});
+		tl.to(this._clone.position, 1.0, {x: "+=8.0"});
+		tl.to(this._clone.position, 1.0, {x: "-=8.0"});
+		tl.to(this._clone.position, 1.0, {x: "-=8.0"});
+		tl.to(this._clone.position, 1.0, {x: "+=8.0"});
+	}
+}
+
 class Invader{
 
 	constructor(name, x, y, z){
 		this._name = name;
-		this._clone = this.createClone(name, x, y, z);
+		this._clone = tm.findModels(name);
+		this._clone.scale.set(0.2, 0.2, 0.2);
+		this._clone.position.set(x, y, z);
+		this._clone.rotation.set(0, Math.PI, 0);
 		tm.addGroup(this._clone);// Add to group!!
-	}
-
-	createClone(name, x, y, z){
-		let index = tm.findAssets("./models/", name);
-		let clone = models[index].clone();
-		clone.scale.set(0.2, 0.2, 0.2);
-		clone.position.set(x, y, z);
-		clone.rotation.set(0, Math.PI, 0);
-		return clone;
 	}
 
 	wander(){
@@ -217,12 +228,12 @@ class City{
 		this._group = new THREE.Group();
 		this._group.position.set(cX, cY, cZ);
 		tm.addGroup(this._group);
-		this.makeCilinder();
+		this.setupCilinder();
 		this.checkCilinder();
-		this.roll();
+		this.rollCilinder();
 	}
 
-	makeCilinder(){
+	setupCilinder(){
 		let radius  = 20;
 		let padding = 11;
 		let rows    = 360;
@@ -236,9 +247,14 @@ class City{
 				let y  = radius * Math.sin(rad);
 				let z  = radius * Math.cos(rad);
 				let rX = -rad + Math.PI * 0.5;
-				let panel = this.makePanel(name, x, y, z, rX, 0, 0);
-				this._panels.push(panel);
-				this._group.add(panel);// Add to group!!
+				let rY = 0;
+				let rZ = 0;
+				let clone = tm.findModels(name);
+				clone.scale.set(0.08, 0.08, 0.08);
+				clone.position.set(x, y, z);
+				clone.rotation.set(rX, rY, rZ);
+				this._panels.push(clone);
+				this._group.add(clone);// Add to group!!
 			}
 		}
 	}
@@ -258,16 +274,7 @@ class City{
 		setTimeout(()=>{this.checkCilinder();}, 500);
 	}
 
-	makePanel(name, x, y, z, rX=0, rY=0, rZ=0){
-		let index = tm.findAssets("./models/", name);
-		let clone = models[index].clone();
-		clone.scale.set(0.08, 0.08, 0.08);
-		clone.position.set(x, y, z);
-		clone.rotation.set(rX, rY, rZ);
-		return clone;
-	}
-
-	roll(){
+	rollCilinder(){
 		let deg = 360 * DEG_TO_RAD;
 		let tl = new TimelineMax({repeat: -1, yoyo: false});
 		tl.to(this._group.rotation, 300.0, {x: "+="+deg});
