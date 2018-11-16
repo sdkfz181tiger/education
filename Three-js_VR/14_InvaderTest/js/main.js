@@ -21,13 +21,12 @@ const sounds = {data:[
 	{dir:"./sounds/", mp3:"test_4.mp3"},
 ]};
 
-const faces = {data:[
-	{dir:"./fonts/", face:"MisakiGothic_Regular.json"},
-	{dir:"./fonts/", face:"MisakiMincho_Regular.json"},
+const fonts = {data:[
+	{dir:"./fonts/", font:"MisakiGothic_Regular.json"},
+	{dir:"./fonts/", font:"MisakiMincho_Regular.json"},
 ]};
 
-let tm     = null;
-let fonts  = [];
+let tm = null;
 
 window.onload = function(){
 	console.log("OnLoad");
@@ -38,12 +37,8 @@ window.onload = function(){
 	tm = new ThreeManager(0, 10, 45, 0, 0, 0);
 	tm._renderer.setAnimationLoop(animate);
 	tm.loadModels(models, onReadyModels, onError);
-	tm.loadSounds(sounds,
-		(results)=>{onReadySounds(results);},
-		(error)=>{console.log(error);});
-	tm.loadFaces(faces,
-		(results)=>{onReadyFaces(results);},
-		(error)=>{console.log(error);});
+	tm.loadSounds(sounds, onReadySounds, onError);
+	tm.loadFonts(fonts,   onReadyFonts,  onError);
 
 	// Controller
 	let ctlVR = new CtlVR();
@@ -98,19 +93,18 @@ window.onload = function(){
 		*/
 	}
 
-	function onReadySounds(results){
+	function onReadySounds(){
 		console.log("You are ready to use sounds!!");
 		// Test
 		let sound = tm.findSounds("test_1.mp3");
 		sound.play();
 	}
 
-	function onReadyFaces(results){
-		console.log("You are ready to use faces!!");
-		fonts = results;// All fonts
+	function onReadyFonts(){
+		console.log("You are ready to use fonts!!");
 		// Test
-		let index = tm.findFaces("./fonts/", "MisakiGothic_Regular.json");
-		let text = tm.createText("INVADER!", fonts[index], 8, 0, 10, -15);
+		let font = tm.findFonts("MisakiGothic");
+		let text = tm.createText("INVADER!", font, 8, 0, 10, -15);
 		tm.addGroup(text);
 	}
 
