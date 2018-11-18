@@ -179,9 +179,23 @@ class Invaders{
 		tl.to(this._group.position, 1.0, {x: "-=4.0"});
 		tl.to(this._group.position, 1.0, {x: "-=4.0"});
 		tl.to(this._group.position, 1.0, {x: "+=4.0"});
-		// tl.addCallback(()=>{
-		// 	tl.clear();
-		// });
+		tl.addCallback(()=>{
+			this.stepInvader();
+		});
+	}
+
+	stepInvader(){
+		let area = 100;
+		for(let i=0; i<this._invaders.length; i++){
+			if(i%2 == 0){
+				let rdmX = 100 * Math.random() - area * 0.5;
+				let rdmY = 100 * Math.random() - area * 0.5;
+				let rdmZ = 100 * Math.random() - area * 0.5;
+				let tl = new TimelineMax({repeat: 1, yoyo: true});
+				tl.to(this._invaders[i].position, 2.0, 
+					{x: rdmX, y: rdmY, x: rdmX, z: rdmZ});
+			}
+		}
 	}
 }
 
