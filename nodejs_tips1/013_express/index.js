@@ -1,9 +1,5 @@
 console.log("Hello Node JS!!");
 
-
-// Hello SSH?
-
-
 const express = require("express");
 const ejs     = require("ejs");
 const bParser = require("body-parser");
