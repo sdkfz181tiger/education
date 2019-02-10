@@ -1,7 +1,5 @@
 console.log("Hello Node JS!!");
 
-// Again?
-
 const express = require("express");
 const ejs     = require("ejs");
 const bParser = require("body-parser");
