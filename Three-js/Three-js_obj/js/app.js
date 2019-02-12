@@ -40,6 +40,10 @@ renderer.setClearColor(0x333333);
 renderer.setPixelRatio(window.devicePixelRatio);
 document.getElementById("stage").appendChild(renderer.domElement);
 
+// Controls
+let controls = new THREE.TrackballControls(camera);
+controls.target.set(0, 0, 0);
+
 // Floor
 let geometry = new THREE.BoxGeometry(100, 0, 100);
 let material = new THREE.MeshBasicMaterial({color: 0xcccccc});
@@ -50,14 +54,14 @@ scene.add(floor);
 // MTLLoader
 var mtlLoader = new THREE.MTLLoader();
 mtlLoader.setPath("./models/");
-mtlLoader.load("hakaman.mtl", function(materials){
+mtlLoader.load("tower.mtl", function(materials){
 	materials.preload();
 
 	// OBJLoader
 	var objLoader = new THREE.OBJLoader();
 	objLoader.setPath("./models/");
 	objLoader.setMaterials(materials);
-	objLoader.load("hakaman.obj", function(meshes){
+	objLoader.load("tower.obj", function(meshes){
 		meshes.children.forEach(function(mesh){
 			mesh.geometry.computeFaceNormals();
 			mesh.geometry.computeVertexNormals();
@@ -85,6 +89,7 @@ function loop(){
 	// Handling
 	loopEventHandling();
 
+	controls.update();
 	renderer.render(scene, camera);
 	window.requestAnimationFrame(loop);
 };

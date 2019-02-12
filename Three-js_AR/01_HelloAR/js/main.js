@@ -63,7 +63,7 @@ function initAR(){
 	// Resize
 	window.addEventListener("resize", onWindowResize, false);
 	// Click
-	canvas.addEventListener("touchstart", onClick, false);
+	canvas.addEventListener("touchstart", setBoxes, false);
 
 	// Update
 	update();
@@ -91,14 +91,17 @@ function update(){
 	arDisplay.requestAnimationFrame(update);
 }
 
-function onClick(){
+function setBoxes(){
 	// Create some cubes around the origin point
 	for(let i = 0; i < BOX_QUANTITY; i++) {
 		let angle = Math.PI * 2 * (i / BOX_QUANTITY);
 		let geometry = new THREE.BoxGeometry(BOX_SIZE, BOX_SIZE, BOX_SIZE);
 		let material = new THREE.MeshNormalMaterial();
 		let cube = new THREE.Mesh(geometry, material);
-		cube.position.set(Math.cos(angle) * BOX_DISTANCE, camera.position.y - 0.25, Math.sin(angle) * BOX_DISTANCE);
+		let x = Math.cos(angle) * BOX_DISTANCE;
+		let y = camera.position.y - 0.25;
+		let z = Math.sin(angle) * BOX_DISTANCE;
+		cube.position.set(x, y, z);
 		scene.add(cube);
 	}
 }
