@@ -8,7 +8,7 @@ const BOX_DISTANCE = 5.0;
 const BOX_SIZE     = 0.025;
 const BOX_QUANTITY = 4;
 
-let arDisplay, vrControls, arView;
+let vrDisplay, vrControls, arView;
 
 let scene, renderer, camera;
 let ambientLight, directionalLight, canvas;
@@ -28,7 +28,7 @@ function startAR(){
 	THREE.ARUtils.getARDisplay().then((display)=>{
 		if(display){
 			// Supported
-			arDisplay = display;
+			vrDisplay = display;
 			initAR();
 		}else{
 			// Unsupported
@@ -39,9 +39,6 @@ function startAR(){
 
 function initAR(){
 	console.log("initAR!!");
-
-	var arDebug = new THREE.ARDebug(arDisplay);
-	document.body.appendChild(arDebug.getElement());
 
 	// Three.js(Scene)
 	scene = new THREE.Scene();
@@ -54,14 +51,22 @@ function initAR(){
 	canvas = renderer.domElement;
 	document.body.appendChild(canvas);
 
+	// ARDebug
+	var arDebug = new THREE.ARDebug(vrDisplay, scene, {
+		showLastHit: true,
+		showPoseStatus: true,
+		showPlanes: true
+	});
+	document.body.appendChild(arDebug.getElement());
+
 	// ARView
-	arView = new THREE.ARView(arDisplay, renderer);
+	arView = new THREE.ARView(vrDisplay, renderer);
 
 	// Camera
 	camera = new THREE.ARPerspectiveCamera(
-		arDisplay, 60,
+		vrDisplay, 60,
 		window.innerWidth / window.innerHeight,
-		arDisplay.depthNear, arDisplay.depthFar
+		vrDisplay.depthNear, vrDisplay.depthFar
 	);
 
 	// Controls
@@ -131,7 +136,7 @@ function update(){
 	renderer.render(scene, camera);
 
 	// Update
-	arDisplay.requestAnimationFrame(update);
+	vrDisplay.requestAnimationFrame(update);
 }
 
 function onClick(e){
@@ -141,7 +146,7 @@ function onClick(e){
 	let y = e.clientY / window.innerHeight;
 	console.log("onClick:" + x + ", " + y);
 
-	let hits = arDisplay.hitTest(x, y);
+	let hits = vrDisplay.hitTest(x, y);
 	if(hits && hits.length){
 		let hit = hits[0];
 		console.log(hit);
