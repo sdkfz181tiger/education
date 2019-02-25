@@ -8,7 +8,7 @@ const BOX_DISTANCE = 1.5;
 const BOX_SIZE     = 0.25;
 const BOX_QUANTITY = 12;
 
-let arDisplay, vrControls, arView;
+let vrDisplay, vrControls, arView;
 
 let scene, renderer, camera, canvas
 
@@ -24,7 +24,7 @@ function startAR(){
 	THREE.ARUtils.getARDisplay().then((display)=>{
 		if(display){
 			// Supported
-			arDisplay = display;
+			vrDisplay = display;
 			initAR();
 		}else{
 			// Unsupported
@@ -49,13 +49,13 @@ function initAR(){
 
 	// Camera
 	camera = new THREE.ARPerspectiveCamera(
-		arDisplay, 60,
+		vrDisplay, 60,
 		window.innerWidth / window.innerHeight,
-		arDisplay.depthNear, arDisplay.depthFar
+		vrDisplay.depthNear, vrDisplay.depthFar
 	);
 
 	// ARView
-	arView = new THREE.ARView(arDisplay, renderer);
+	arView = new THREE.ARView(vrDisplay, renderer);
 
 	// Controls
 	vrControls = new THREE.VRControls(camera);
@@ -88,7 +88,7 @@ function update(){
 	renderer.render(scene, camera);
 
 	// Update
-	arDisplay.requestAnimationFrame(update);
+	vrDisplay.requestAnimationFrame(update);
 }
 
 function setBoxes(){
