@@ -9,9 +9,6 @@ const appKey = "2162b705a12b3356ac7a7488c9adc6c2";
 
 let rec, utter;
 
-	let msg = new SpeechSynthesisUtterance();
-	let voices = window.speechSynthesis.getVoices();
-
 window.onload = function(){
 	console.log("onload!!");
 
