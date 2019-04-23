@@ -1,14 +1,13 @@
 console.log("utility.js!!");
 
-const STATES = ['Idle', 'Walking', 'Running', 'Dance', 'Death', 'Sitting', 'Standing'];
-const EMOTES = ['Jump', 'Yes', 'No', 'Wave', 'Punch', 'ThumbsUp'];
+const STATES = ["Idle", "Walking", "Running", "Dance", "Death", "Sitting", "Standing"];
+const EMOTES = ["Jump", "Yes", "No", "Wave", "Punch", "ThumbsUp"];
 
 // GLTF
-let gltf           = null;
-let animations     = null;
 let api            = {state:STATES[0]};
-let activeAction   = null;
 let animationMixer = null;
+let activeAction   = null;
+let previousAction = null;
 
 //==========
 // Character
@@ -20,16 +19,16 @@ function initGLTFCharacter(modelFile){
 	// GLTF
 	var loader = new THREE.GLTFLoader();
 	loader.load(modelFile, (model)=>{
-		gltf       = model.scene;
-		animations = model.animations;
+		let gltf       = model.scene;
+		let animations = model.animations;
 		scene.add(gltf);
-		createScene();
+		reaady(gltf, animations);
 	}, undefined, (e)=>{
 		console.log(e);
 	});
 }
 
-function createScene(){
+function reaady(gltf, animations){
 	console.log("createScene");
 	// AnimationMixer
 	animationMixer = new THREE.AnimationMixer(gltf);
@@ -44,15 +43,32 @@ function createScene(){
 		}
 	}
 
-	console.log(actions);
-
 	// Active
 	activeAction = actions[STATES[0]];
+	activeAction.play();
+
+	// Buttons
+	$(".btnStates").click((e)=>{
+		let index = $(e.target).attr("index");
+		changeAction(actions[STATES[index]]);
+	});
+
+	$(".btnEmotes").click((e)=>{
+		let index = $(e.target).attr("index");
+		changeAction(actions[EMOTES[index]]);
+	});
+}
+
+function changeAction(action){
+	previousAction = activeAction;
+	activeAction   = action;
+	if(activeAction !== previousAction){
+		previousAction.fadeOut(0.5);
+	}
+
 	activeAction.reset()
 					.setEffectiveTimeScale(1)
 					.setEffectiveWeight(1)
 					.fadeIn(0.5)
 					.play();
-
-	console.log(activeAction);
 }
