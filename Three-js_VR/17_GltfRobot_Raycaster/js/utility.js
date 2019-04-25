@@ -106,7 +106,15 @@ class ThreeManager{
 		let raycaster = new THREE.Raycaster();
 		this._raycasterListener = null;
 
-		// EventListener
+		// Resize
+		window.addEventListener("resize", (e)=>{
+			this._camera.aspect = window.innerWidth / window.innerHeight;
+			this._camera.updateProjectionMatrix();
+			this._renderer.setSize(window.innerWidth, window.innerHeight);
+			this._cssRenderer.setSize(window.innerWidth, window.innerHeight);
+		}, false);
+
+		// Click
 		window.addEventListener("click", (e)=>{
 			event.preventDefault();
 			let x = (e.layerX/window.innerWidth)*2-1;

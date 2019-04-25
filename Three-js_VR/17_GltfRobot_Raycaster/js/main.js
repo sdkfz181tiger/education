@@ -70,29 +70,42 @@ window.onload = function(){
 		}, 500);
 
 		// Cube
-		let geometry = new THREE.BoxGeometry(1.5, 1.5, 1.5);
+		let geometry = new THREE.BoxGeometry(1.0, 1.0, 1.0);
 		let material = new THREE.MeshNormalMaterial();
-		let cubeA = new THREE.Mesh(geometry, material);
-		cubeA.position.set(-3, 1, 15);
-		cubeA.name = "A";
-		tm.addGroup(cubeA);
-		let cubeB = new THREE.Mesh(geometry, material);
-		cubeB.position.set(0, 1, 15);
-		cubeB.name = "B";
-		tm.addGroup(cubeB);
-		let cubeC = new THREE.Mesh(geometry, material);
-		cubeC.position.set(+3, 1, 15);
-		cubeC.name = "C";
-		tm.addGroup(cubeC);
+		let p = 1.5;
+		let startS = p * ACT_STATES.length * 0.5 - p*0.5;
+		for(let i=0; i<ACT_STATES.length; i++){
+			let cube = new THREE.Mesh(geometry, material);
+			cube.position.set(p*i-startS, 1, 14);
+			cube.name = ACT_STATES[i];
+			tm.addGroup(cube);
+		}
+		let startE = p * ACT_EMOTES.length * 0.5 - p*0.5;
+		for(let i=0; i<ACT_EMOTES.length; i++){
+			let cube = new THREE.Mesh(geometry, material);
+			cube.position.set(p*i-startE, 1, 14+p);
+			cube.name = ACT_EMOTES[i];
+			tm.addGroup(cube);
+		}
 
 		// Raycaster
 		tm.setRaycasterListener((intersects)=>{
 			for(let target of intersects){
 				console.log("distance:" + target.distance + "_" + target.object.name);
 				let name = target.object.name;
-				if(name == "A") robot.action("ThumbsUp", 1.5);
-				if(name == "B") robot.action("Walking", 3);
-				if(name == "C") robot.action("Running", 3);
+				if(name == "Idle")     robot.action("Idle", 3);
+				if(name == "Walking")  robot.action("Walking", 3);
+				if(name == "Running")  robot.action("Running", 3);
+				if(name == "Dance")    robot.action("Dance", 3);
+				if(name == "Death")    robot.action("Death", 3);
+				if(name == "Sitting")  robot.action("Sitting", 3);
+				if(name == "Standing") robot.action("Standing", 3);
+				if(name == "Jump")     robot.action("Jump", 1.5);
+				if(name == "Yes")      robot.action("Yes", 1.5);
+				if(name == "No")       robot.action("No", 1.5);
+				if(name == "Wave")     robot.action("Wave", 1.5);
+				if(name == "Punch")    robot.action("Punch", 1.5);
+				if(name == "ThumbsUp") robot.action("ThumbsUp", 1.5);
 				if(name == "Head_1" || name == "Head_2") robot.action("Death", 5);
 			}
 		});
