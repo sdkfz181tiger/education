@@ -54,14 +54,8 @@ scene.add(plane);
 let controls = new THREE.TrackballControls(camera);
 controls.target.set(0, 1, 0);
 
-let vrmCharacters = [
-	"./models/vrm/Alicia/AliciaSolid.vrm",
-	//"./models/vrm/PronamaChan/PronamaChan.vrm"
-];
-
 // Init
-let index = Math.floor(Math.random() * vrmCharacters.length);
-initVRMCharacter(vrmCharacters[index]);
+initVRMCharacter("./models/vrm/Alicia/AliciaSolid.vrm");
 
 // Loop
 loop();
