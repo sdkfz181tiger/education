@@ -77,8 +77,10 @@ class ThreeManager{
 		// Renderer
 		this._renderer = new THREE.WebGLRenderer({antialias: true});
 		this._renderer.setSize(window.innerWidth, window.innerHeight);
-		this._renderer.setClearColor(0x666666);
 		this._renderer.setPixelRatio(window.devicePixelRatio);
+		this._renderer.setClearColor(0x666666);
+		this._renderer.gammaOutput = true;
+		this._renderer.gammaFactor = 2.2;
 		this._renderer.vr.enabled = this._modeVR;// Important(for VR)
 		document.body.appendChild(this._renderer.domElement);
 
@@ -221,7 +223,7 @@ class ThreeManager{
 		return label;
 	}
 
-	createText(str="***", font, size=8, x=0, y=8, z=-10){
+	createText(str="***", font, size=4, x=0, y=4, z=-0){
 		let textGeo = new THREE.TextGeometry(str, {
 			font: font, size: size, height: 2, curveSegments: 4,
 			bevelThickness: 2, bevelSize: 0.2, bevelEnabled: false

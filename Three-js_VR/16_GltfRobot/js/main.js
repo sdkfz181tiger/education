@@ -4,8 +4,8 @@
 
 console.log("Hello Three.js!!");
 
-const STATES = ["Idle", "Walking", "Running", "Dance", "Death", "Sitting", "Standing"];
-const EMOTES = ["Jump", "Yes", "No", "Wave", "Punch", "ThumbsUp"];
+const ACT_STATES = ["Idle", "Walking", "Running", "Dance", "Death", "Sitting", "Standing"];
+const ACT_EMOTES = ["Jump", "Yes", "No", "Wave", "Punch", "ThumbsUp"];
 
 // Data
 const models = {data:[
@@ -32,7 +32,7 @@ window.onload = function(){
 	// ThreeManager
 	// 	Camera position(PC): pcX, pcY, pcZ
 	// 	Camera position(VR): vrX, vrY, vrZ
-	tm = new ThreeManager(0, 10, 45, 0, 0, 0);
+	tm = new ThreeManager(0, 10, 25, 0, 10, 25);
 	tm._renderer.setAnimationLoop(animate);
 	tm.loadModels(models, onReadyModels, onError);
 	tm.loadSounds(sounds, onReadySounds, onError);
@@ -65,7 +65,9 @@ window.onload = function(){
 
 		// Robot
 		robot.setupRobot();
-		robot.wanderRobot();
+		setTimeout(()=>{
+			robot.greeting();
+		}, 500);
 
 		// Cubes / Wireframe
 		let pad  = 2;
@@ -93,7 +95,7 @@ window.onload = function(){
 		console.log("You are ready to use fonts!!");
 		// Test
 		let font = tm.findFonts("MisakiGothic");
-		let text = tm.createText("Robot!", font, 8, 0, 5, 0);
+		let text = tm.createText("Robot!", font, 4, 0, 10, 0);
 		tm.addGroup(text);
 	}
 
@@ -125,7 +127,7 @@ class Robot{
 		this._model = tm.findModels("RobotExpressive.glb");
 		// GLTF
 		this._gltf = this._model.scene;
-		this._gltf.scale.set(3.0, 3.0, 3.0);
+		this._gltf.scale.set(2.0, 2.0, 2.0);
 		this._gltf.position.set(0, 0, 0);
 		this._gltf.rotation.set(0, 0, 0);
 		this._group.add(this._gltf);// Add to group!!
@@ -137,31 +139,47 @@ class Robot{
 	readyAnimationMixer(gltf, animations){
 		// AnimationMixer
 		this._animationMixer = new THREE.AnimationMixer(gltf);
-		let actions = {};
+		this._actions = {};
 		for(let i=0; i<animations.length; i++){
 			let clip   = animations[i];
 			let action = this._animationMixer.clipAction(clip);
-			console.log(clip.name);
-			actions[clip.name] = action;
-			if(0 <= EMOTES.indexOf(clip.name) || 4 <= STATES.indexOf(clip.name)){
+			this._actions[clip.name] = action;
+			if(4 <= ACT_STATES.indexOf(clip.name) || 0 <= ACT_EMOTES.indexOf(clip.name)){
 				action.clampWhenFinished = true;
 				action.loop = THREE.LoopOnce;
 			}
 		}
 		// Active
-		this._activeAction = actions[STATES[0]];
+		this._previousAction = null;
+		this._activeAction   = this._actions[ACT_STATES[0]];
 		this._activeAction.play();
 	}
 
-	wanderRobot(){
-		let tl = new TimelineMax({repeat: -1, yoyo: false});
-		tl.to(this._group.position, 1.0, {x: "+=4.0"});
-		tl.to(this._group.position, 1.0, {x: "-=4.0"});
-		tl.to(this._group.position, 1.0, {x: "-=4.0"});
-		tl.to(this._group.position, 1.0, {x: "+=4.0"});
-		tl.addCallback(()=>{
-			this.stepRobot();
-		});
+	actionRobot(name){
+		if(ACT_STATES.indexOf(name) < 0 && ACT_EMOTES.indexOf(name) < 0) return;
+
+		this._previousAction = this._activeAction;
+		this._activeAction   = this._actions[name];
+		if(this._activeAction !== this._previousAction){
+			this._previousAction.fadeOut(0.5);
+		}
+
+		this._activeAction.reset()
+						.setEffectiveTimeScale(1)
+						.setEffectiveWeight(1)
+						.fadeIn(0.5)
+						.play();
+	}
+
+	greeting(){
+		let tl = new TimelineMax({repeat: 0, yoyo: false});
+		tl.addCallback(()=>{this.actionRobot("Jump");});
+		tl.to(this._group.position, 0.0, {delay: 1.2});
+		tl.addCallback(()=>{this.actionRobot("Walking");});
+		tl.to(this._group.position, 4.0, {z: "+=15.0"});
+		tl.addCallback(()=>{this.actionRobot("Wave");});
+		tl.to(this._group.position, 0.0, {delay: 1.2});
+		tl.addCallback(()=>{this.actionRobot("Idle");});
 	}
 
 	stepRobot(){
