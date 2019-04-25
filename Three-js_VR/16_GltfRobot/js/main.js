@@ -4,9 +4,11 @@
 
 console.log("Hello Three.js!!");
 
+const STATES = ["Idle", "Walking", "Running", "Dance", "Death", "Sitting", "Standing"];
+const EMOTES = ["Jump", "Yes", "No", "Wave", "Punch", "ThumbsUp"];
+
 // Data
 const models = {data:[
-	{dir:"./models/gltf/RobotExpressive/", glb:"RobotExpressive.glb"},
 	{dir:"./models/gltf/RobotExpressive/", glb:"RobotExpressive.glb"}
 ]};
 
@@ -47,20 +49,23 @@ window.onload = function(){
 		}, 
 		()=>{console.log("onReleased!!");});
 
+	// Robot
+	let robot = new Robot(0, 0, 0);
+
 	// Ready
 	function onReadyModels(){
 		console.log("You are ready to use models!!");
-
-		// Camera
-		let cContainer = tm.getCameraContainer();
-		//let tl = new TimelineMax({repeat: -1, yoyo: true});
-		//tl.to(cContainer.position, 10, {y: 50});
 
 		// Skybox
 		let skybox = tm.createSkybox("./textures/skybox_space.png", 6, 300);
 		tm.addScene(skybox);
 
-		let robo = new Robot(0, 0, 0);
+		// Camera
+		let cContainer = tm.getCameraContainer();
+
+		// Robot
+		robot.setupRobot();
+		robot.wanderRobot();
 
 		// Cubes / Wireframe
 		let pad  = 2;
@@ -73,8 +78,6 @@ window.onload = function(){
 				let x = startX + c * pad;
 				let y = 0;
 				let z = startZ + r * pad;
-				//helloCube(x, y, z);// Cube
-				//helloWire(x, y, z);// Wireframe
 			}
 		}
 	}
@@ -103,6 +106,7 @@ window.onload = function(){
 	function animate(){
 		tm.update();   // Manager
 		ctlVR.update();// Controller
+		robot.update();// Robot
 	};
 }
 
@@ -110,80 +114,68 @@ class Robot{
 
 	constructor(cX, cY, cZ){
 		this._cX = cX; this._cY = cY; this._cZ = cZ;
+		this._clock = new THREE.Clock();
 		this._group = new THREE.Group();
 		this._group.position.set(cX, cY, cZ);
 		tm.addGroup(this._group);
-		this.setupRobot();
 	}
 
 	setupRobot(){
-		
-		this._robo = tm.findModels("RobotExpressive.glb");
-		this._robo.scale.set(1.0, 1.0, 1.0);
-		this._robo.position.set(0, 0, 0);
-		this._robo.rotation.set(0, 0, 0);
-		this._group.add(this._robo);// Add to group!!
-	}
-}
-
-class Invaders{
-
-	constructor(cX, cY, cZ){
-		this._cX = cX; this._cY = cY; this._cZ = cZ;
-		this._invaders = [];
-		this._group = new THREE.Group();
-		this._group.position.set(cX, cY, cZ);
-		tm.addGroup(this._group);
-		this.setupInvaders();
-		this.wonderInvaders();
+		// Model
+		this._model = tm.findModels("RobotExpressive.glb");
+		// GLTF
+		this._gltf = this._model.scene;
+		this._gltf.scale.set(3.0, 3.0, 3.0);
+		this._gltf.position.set(0, 0, 0);
+		this._gltf.rotation.set(0, 0, 0);
+		this._group.add(this._gltf);// Add to group!!
+		// Animations
+		this._animations = this._model.animations;
+		this.readyAnimationMixer(this._gltf, this._animations);
 	}
 
-	setupInvaders(){
-		let padding = 4;
-		let rows = 7;
-		let cols = 13;
-		let sX = (cols-1) * padding * -0.5;
-		let sY = 0;
-		let sZ = 0;
-		for(let r=0; r<rows; r++){
-			for(let c=0; c<cols; c++){
-				let num = r % 4 + 1;
-				let name = "inv_" + num + ".obj";
-				let x = sX + c * padding;
-				let y = sY + r * padding;
-				let z = 0;
-				let clone = tm.findModels(name);
-				clone.scale.set(0.3, 0.3, 0.3);
-				clone.position.set(x, y, z);
-				clone.rotation.set(0, Math.PI, 0);
-				this._invaders.push(clone);
-				this._group.add(clone);// Add to group!!
+	readyAnimationMixer(gltf, animations){
+		// AnimationMixer
+		this._animationMixer = new THREE.AnimationMixer(gltf);
+		let actions = {};
+		for(let i=0; i<animations.length; i++){
+			let clip   = animations[i];
+			let action = this._animationMixer.clipAction(clip);
+			console.log(clip.name);
+			actions[clip.name] = action;
+			if(0 <= EMOTES.indexOf(clip.name) || 4 <= STATES.indexOf(clip.name)){
+				action.clampWhenFinished = true;
+				action.loop = THREE.LoopOnce;
 			}
 		}
+		// Active
+		this._activeAction = actions[STATES[0]];
+		this._activeAction.play();
 	}
 
-	wonderInvaders(){
+	wanderRobot(){
 		let tl = new TimelineMax({repeat: -1, yoyo: false});
 		tl.to(this._group.position, 1.0, {x: "+=4.0"});
 		tl.to(this._group.position, 1.0, {x: "-=4.0"});
 		tl.to(this._group.position, 1.0, {x: "-=4.0"});
 		tl.to(this._group.position, 1.0, {x: "+=4.0"});
 		tl.addCallback(()=>{
-			this.stepInvader();
+			this.stepRobot();
 		});
 	}
 
-	stepInvader(){
-		let area = 100;
-		for(let i=0; i<this._invaders.length; i++){
-			if(i%2 == 0){
-				let rdmX = 100 * Math.random() - area * 0.5;
-				let rdmY = 100 * Math.random() - area * 0.5;
-				let rdmZ = 100 * Math.random() - area * 0.5;
-				let tl = new TimelineMax({repeat: 1, yoyo: true});
-				tl.to(this._invaders[i].position, 2.0, 
-					{x: rdmX, y: rdmY, x: rdmX, z: rdmZ});
-			}
-		}
+	stepRobot(){
+		let area = 30;
+		let rdmX = area * Math.random() - area * 0.5;
+		let rdmY = 0.0;
+		let rdmZ = area * Math.random() - area * 0.5;
+		let tl = new TimelineMax({repeat: 1, yoyo: true});
+		tl.to(this._group.position, 2.0, 
+			{x: rdmX, y: rdmY, x: rdmX, z: rdmZ});
+	}
+
+	update(){
+		let dt = this._clock.getDelta();
+		if(this._animationMixer) this._animationMixer.update(dt);
 	}
 }

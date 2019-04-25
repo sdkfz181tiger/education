@@ -296,10 +296,8 @@ class ThreeManager{
 			let path = dir + glb;
 			let loader = new THREE.GLTFLoader();
 			loader.load(path, (model)=>{
-				let gltf = model.scene;
-				let animations = model.animations;
-				gltf.dir = dir; gltf.glb = glb;
-				resolve(gltf);// Resolve
+				model.dir = dir; model.glb = glb;
+				resolve(model);// Resolve
 			}, undefined, (error)=>{
 				console.log("onError:" + error);
 				reject(error);// Reject
