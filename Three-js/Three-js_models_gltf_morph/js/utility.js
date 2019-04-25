@@ -22,13 +22,13 @@ function initGLTFCharacter(modelFile){
 		let gltf       = model.scene;
 		let animations = model.animations;
 		scene.add(gltf);
-		reaady(gltf, animations);
+		ready(gltf, animations);
 	}, undefined, (e)=>{
 		console.log(e);
 	});
 }
 
-function reaady(gltf, animations){
+function ready(gltf, animations){
 	console.log("createScene");
 	// AnimationMixer
 	animationMixer = new THREE.AnimationMixer(gltf);

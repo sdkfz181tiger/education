@@ -9,30 +9,48 @@
 		background-color: #333333;
 	}
 	button{
-		width: 60px; height: auto;
+		width: auto; height: auto;
 		margin: 2px; padding: 5px;
 		font-size: 0.5em;
+	}
+	#area{
+		width: 480px; height: 320px;
+		margin: 0px; padding: 0px;
+		position: absolute;
+	}
+	#stage{
+		width: 480px; height: 320px;
+		margin: 0px; padding: 0px;
+		position: absolute;
+	}
+	#ui{
+		width: auto; height: auto;
+		bottom: 0px; right: 0px;
+		position: absolute;
 	}
 	</style>
 </head>
 <body>
-	<div id="stage"></div>
-
-	<button class="btnStates" index=0>Btn</button>
-	<br/>
-	<button class="btnStates" index=1>Btn</button>
-	<button class="btnStates" index=2>Btn</button>
-	<button class="btnStates" index=3>Btn</button>
-	<button class="btnStates" index=4>Btn</button>
-	<button class="btnStates" index=5>Btn</button>
-	<button class="btnStates" index=6>Btn</button>
-	<br/>
-	<button class="btnEmotes" index=0>Btn</button>
-	<button class="btnEmotes" index=1>Btn</button>
-	<button class="btnEmotes" index=2>Btn</button>
-	<button class="btnEmotes" index=3>Btn</button>
-	<button class="btnEmotes" index=4>Btn</button>
-	<button class="btnEmotes" index=5>Btn</button>
+	<div id="area">
+		<div id="stage"></div>
+		<div id="ui">
+			<button class="btnStates" index=0>Btn</button>
+			<br/>
+			<button class="btnStates" index=1>Btn</button>
+			<button class="btnStates" index=2>Btn</button>
+			<button class="btnStates" index=3>Btn</button>
+			<button class="btnStates" index=4>Btn</button>
+			<button class="btnStates" index=5>Btn</button>
+			<button class="btnStates" index=6>Btn</button>
+			<br/>
+			<button class="btnEmotes" index=0>Btn</button>
+			<button class="btnEmotes" index=1>Btn</button>
+			<button class="btnEmotes" index=2>Btn</button>
+			<button class="btnEmotes" index=3>Btn</button>
+			<button class="btnEmotes" index=4>Btn</button>
+			<button class="btnEmotes" index=5>Btn</button>
+		</div>
+	</div>
 
 	<!-- Three.js -->
 	<script src="./libs/three-js/three.min.js" defer></script>

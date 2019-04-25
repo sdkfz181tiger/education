@@ -81,4 +81,4 @@ function loop(){
 	if(controls) controls.update();
 	if(renderer) renderer.render(scene, camera);
 	window.requestAnimationFrame(loop);
-};
+}
