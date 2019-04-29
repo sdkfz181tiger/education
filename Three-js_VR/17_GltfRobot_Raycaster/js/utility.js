@@ -13,7 +13,7 @@ class ThreeManager{
 		//   false: PC mode(default)
 		//   true:  VR mode
 		this._modeVR = false;
-		if(0 < navigator.activeVRDisplays.length){
+		if(navigator.activeVRDisplays != null && 0 < navigator.activeVRDisplays.length){
 			this._modeVR = true;
 		}
 
