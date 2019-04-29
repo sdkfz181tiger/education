@@ -42,9 +42,19 @@ window.onload = function(){
 		tm.setRaycasterListener((intersects)=>{
 			for(let target of intersects){
 				console.log("distance:" + target.distance + "_" + target.object.name);
+				// Reticle
+				if(target.object.name == NAME_RETICLE){
+					// Cube
+					let geometry = new THREE.BoxGeometry(0.03, 0.03, 0.03);
+					let material = new THREE.MeshNormalMaterial();
+					let cube = new THREE.Mesh(geometry, material);
+					cube.geometry.applyMatrix(
+						new THREE.Matrix4().makeRotationX(THREE.Math.degToRad(-90)));
+					cube.visible = true;
+					cube.name = NAME_CUBE;
+					tm.putOnTheReticle(cube);
+				}
 			}
-			// Reticle(Test)
-			tm.putOnReticle();
 		});
 
 		function onReadyModels(){

@@ -1,5 +1,8 @@
 console.log("utility.js!!");
 
+const NAME_RETICLE = "reticle";
+const NAME_CUBE    = "cube";
+
 const DEG_TO_RAD = Math.PI / 180;
 const RAD_TO_DEG = 180 / Math.PI;
 
@@ -35,17 +38,23 @@ class ThreeManager{
 		document.body.appendChild(this._stats.domElement);
 
 		// Axes
-		this._axes = new THREE.AxesHelper(2);
+		this._axes = new THREE.AxesHelper(0.4);
 		this._scene.add(this._axes);
+
+		// Group
+		this._group = new THREE.Group();
+		this._scene.add(this._group);
 
 		// Reticle
 		this._reticle = new THREE.Mesh(
 			new THREE.RingGeometry(0.04, 0.05, 36, 64),
 			new THREE.MeshBasicMaterial({color: "#DDFFDD"})
 		);
-		this._reticle.geometry.applyMatrix(new THREE.Matrix4().makeRotationX(THREE.Math.degToRad(-90)));
+		this._reticle.geometry.applyMatrix(
+			new THREE.Matrix4().makeRotationX(THREE.Math.degToRad(-90)));
 		this._reticle.visible = false;
-		this._scene.add(this._reticle);
+		this._reticle.name = NAME_RETICLE;
+		this._group.add(this._reticle);
 
 		// Window resize
 		window.addEventListener("resize", this.resetWindow, false);
@@ -62,7 +71,7 @@ class ThreeManager{
 			let y = - (e.layerY/window.innerHeight)*2+1;
 			mouseVector.set(x, y, 0.5);
 			raycaster.setFromCamera(mouseVector, this._camera);
-			let intersects = raycaster.intersectObject(this._scene, true);
+			let intersects = raycaster.intersectObject(this._group, true);
 			if(this._raycasterListener != null && 0 < intersects.length){
 				this._raycasterListener(intersects);// Callback
 			}
@@ -89,28 +98,14 @@ class ThreeManager{
 		this._raycasterListener = callback;
 	}
 
-	putOnReticle(){
+	putOnTheReticle(mesh){
 		console.log("putOnReticle");
 		if(this._reticle == null && this._reticle.visible == false) return;
-		// Reticle
-		let reticle = new THREE.Mesh(
-			new THREE.RingGeometry(0.04, 0.05, 36, 64),
-			new THREE.MeshBasicMaterial({color: "#FFAABB"})
-		);
-		reticle.geometry.applyMatrix(new THREE.Matrix4().makeRotationX(THREE.Math.degToRad(-90)));
-		reticle.visible = true;
-		reticle.position.copy(this._reticle.position);
-		reticle.quaternion.copy(this._reticle.quaternion);
-		this._scene.add(reticle);
-		// Box
-		let geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
-		let material = new THREE.MeshNormalMaterial();
-		let cube = new THREE.Mesh(geometry, material);
-		cube.geometry.applyMatrix(new THREE.Matrix4().makeRotationX(THREE.Math.degToRad(-90)));
-		cube.visible = true;
-		cube.position.copy(this._reticle.position);
-		cube.quaternion.copy(this._reticle.quaternion);
-		this._scene.add(cube);
+		// Mesh
+		mesh.visible = true;
+		mesh.position.copy(this._reticle.position);
+		mesh.quaternion.copy(this._reticle.quaternion);
+		this._group.add(mesh);
 	}
 
 	update(frame){
