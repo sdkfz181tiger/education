@@ -28,7 +28,8 @@ window.onload = function(){
 	console.log("OnLoad");
 
 	// ThreeManager
-	let tm = null;
+	let tm    = null;
+	let robot = null;
 
 	// XRUtils
 	THREE.WebXRUtils.getDisplays().then((displays)=>{
@@ -49,7 +50,8 @@ window.onload = function(){
 
 			// Model
 			let model = gltfLoader.findModels("RobotExpressive.glb");
-			let gltf = model.scene;
+			robot = new Robot(model);
+			let gltf = robot.getGLTF();
 			gltf.scale.set(0.05, 0.05, 0.05);
 			tm.moveToReticle(gltf);// Add to group!!
 		});
@@ -58,7 +60,7 @@ window.onload = function(){
 		gltfLoader.loadModels(modelsGLTF, onReadyModels, onError);
 
 		let fontLoader = new FontLoader();
-		fontLoader.loadFonts(fonts,   onReadyFonts,  onError);
+		fontLoader.loadFonts(fonts, onReadyFonts, onError);
 
 		function onReadyModels(){
 			console.log("onReadyModels");
@@ -74,4 +76,16 @@ window.onload = function(){
 			console.log(error);
 		}
 	});
+}
+
+class Robot{
+
+	constructor(model){
+		this._model = model;
+		this._gltf = model.scene;
+	}
+
+	getGLTF(){
+		return this._gltf;
+	}
 }
