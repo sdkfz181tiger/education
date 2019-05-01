@@ -245,38 +245,6 @@ class ThreeManager{
 	}
 
 	//==========
-	// Label, Text
-	createLabel(str="***", className="label"){
-		let div = document.createElement("div");
-		div.textContent = str;
-		div.className = className;
-		let label = new THREE.CSS2DObject(div);
-		label.position.set(0, 0, 0);
-		return label;
-	}
-
-	createText(str="***", font, size=4, x=0, y=4, z=-0){
-		let textGeo = new THREE.TextGeometry(str, {
-			font: font, size: size, height: 2, curveSegments: 4,
-			bevelThickness: 2, bevelSize: 0.2, bevelEnabled: false
-		});
-		textGeo.computeBoundingBox();
-		textGeo.computeVertexNormals();
-		let materials = [
-			new THREE.MeshPhongMaterial({color: 0xffffff, flatShading: true}),
-			new THREE.MeshPhongMaterial({color: 0xffffff })
-		];
-		let centerOffset = (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x) * 0.5;
-		let textMesh = new THREE.Mesh(textGeo, materials);
-		textMesh.position.x = x - centerOffset;
-		textMesh.position.y = y;
-		textMesh.position.z = z;
-		textMesh.rotation.x = 0;
-		textMesh.rotation.y = Math.PI * 2;
-		return textMesh;
-	}
-
-	//==========
 	// Wire
 	createWire(rows, cols, p, color){
 
@@ -297,9 +265,15 @@ class ThreeManager{
 			this._scene.add(new THREE.Line(v, material));
 		}
 	}
+}
 
-	//==========
-	// Models
+// GLTFLoader
+class GLTFLoader{
+
+	constructor(){
+		console.log("GLTFLoader");
+	}
+
 	loadModels(models, onSuccess, onError){
 		let promises = [];
 		for(let i=0; i<models.data.length; i++){
@@ -312,7 +286,7 @@ class ThreeManager{
 			onSuccess();
 		}, (error)=>{
 			console.log(error);
-			onError();
+			onError(error);
 		});
 	}
 
@@ -338,9 +312,15 @@ class ThreeManager{
 			});
 		});
 	}
+}
 
-	//==========
-	// Sounds
+class SoundLoader{
+
+	constructor(camera){
+		console.log("FontLoader");
+		this._camera = camera;
+	}
+
 	loadSounds(sounds, onSuccess, onError){
 		let promises = [];
 		for(let i=0; i<sounds.data.length; i++){
@@ -386,9 +366,14 @@ class ThreeManager{
 			});
 		});
 	}
+}
 
-	//==========
-	// Fonts
+class FontLoader{
+
+	constructor(){
+		console.log("FontLoader");
+	}
+
 	loadFonts(fonts, onSuccess, onError){
 		let promises = [];
 		for(let i=0; i<fonts.data.length; i++){
@@ -427,6 +412,38 @@ class ThreeManager{
 				reject(error);// Reject
 			});
 		});
+	}
+
+	//==========
+	// Label, Text
+	createLabel(str="***", className="label"){
+		let div = document.createElement("div");
+		div.textContent = str;
+		div.className = className;
+		let label = new THREE.CSS2DObject(div);
+		label.position.set(0, 0, 0);
+		return label;
+	}
+
+	createText(str="***", font, size=4, x=0, y=4, z=-0){
+		let textGeo = new THREE.TextGeometry(str, {
+			font: font, size: size, height: 2, curveSegments: 4,
+			bevelThickness: 2, bevelSize: 0.2, bevelEnabled: false
+		});
+		textGeo.computeBoundingBox();
+		textGeo.computeVertexNormals();
+		let materials = [
+			new THREE.MeshPhongMaterial({color: 0xffffff, flatShading: true}),
+			new THREE.MeshPhongMaterial({color: 0xffffff })
+		];
+		let centerOffset = (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x) * 0.5;
+		let textMesh = new THREE.Mesh(textGeo, materials);
+		textMesh.position.x = x - centerOffset;
+		textMesh.position.y = y;
+		textMesh.position.z = z;
+		textMesh.rotation.x = 0;
+		textMesh.rotation.y = Math.PI * 2;
+		return textMesh;
 	}
 }
 

@@ -25,6 +25,9 @@ const fonts = {data:[
 ]};
 
 let tm = null;
+let gltfLoader  = null;
+let soundLoader = null;
+let fontLoader  = null;
 
 window.onload = function(){
 	console.log("OnLoad");
@@ -34,9 +37,15 @@ window.onload = function(){
 	// 	Camera position(VR): vrX, vrY, vrZ
 	tm = new ThreeManager(0, 10, 25, 0, 10, 25);
 	tm._renderer.setAnimationLoop(animate);
-	tm.loadModels(models, onReadyModels, onError);
-	tm.loadSounds(sounds, onReadySounds, onError);
-	tm.loadFonts(fonts,   onReadyFonts,  onError);
+
+	gltfLoader = new GLTFLoader();
+	gltfLoader.loadModels(models, onReadyModels, onError);
+
+	soundLoader = new SoundLoader(tm.getCamera());
+	soundLoader.loadSounds(sounds, onReadySounds, onError);
+
+	fontLoader = new FontLoader();
+	fontLoader.loadFonts(fonts, onReadyFonts, onError);
 
 	// Controller
 	let ctlVR = new CtlVR();
@@ -76,14 +85,14 @@ window.onload = function(){
 		let startS = p * ACT_STATES.length * 0.5 - p*0.5;
 		for(let i=0; i<ACT_STATES.length; i++){
 			let cube = new THREE.Mesh(geometry, material);
-			cube.position.set(p*i-startS, 1, 14);
+			cube.position.set(p*i-startS, 0.5, 14);
 			cube.name = ACT_STATES[i];
 			tm.addGroup(cube);
 		}
 		let startE = p * ACT_EMOTES.length * 0.5 - p*0.5;
 		for(let i=0; i<ACT_EMOTES.length; i++){
 			let cube = new THREE.Mesh(geometry, material);
-			cube.position.set(p*i-startE, 1, 14+p);
+			cube.position.set(p*i-startE, 0.5, 14+p);
 			cube.name = ACT_EMOTES[i];
 			tm.addGroup(cube);
 		}
@@ -114,15 +123,15 @@ window.onload = function(){
 	function onReadySounds(){
 		console.log("You are ready to use sounds!!");
 		// Test
-		let sound = tm.findSounds("test_1.mp3");
+		let sound = soundLoader.findSounds("test_1.mp3");
 		sound.play();
 	}
 
 	function onReadyFonts(){
 		console.log("You are ready to use fonts!!");
 		// Test
-		let font = tm.findFonts("MisakiGothic");
-		let text = tm.createText("Robot!", font, 4, 0, 10, 0);
+		let font = fontLoader.findFonts("MisakiGothic");
+		let text = fontLoader.createText("Robot!", font, 4, 0, 10, 0);
 		tm.addGroup(text);
 	}
 
@@ -151,7 +160,7 @@ class Robot{
 
 	setupRobot(){
 		// Model
-		this._model = tm.findModels("RobotExpressive.glb");
+		this._model = gltfLoader.findModels("RobotExpressive.glb");
 		// GLTF
 		this._gltf = this._model.scene;
 		this._gltf.scale.set(1.5, 1.5, 1.5);
@@ -172,6 +181,7 @@ class Robot{
 			let action = this._animationMixer.clipAction(clip);
 			this._actions[clip.name] = action;
 			if(4 <= ACT_STATES.indexOf(clip.name) || 0 <= ACT_EMOTES.indexOf(clip.name)){
+				console.log(clip.name);
 				action.clampWhenFinished = true;
 				action.loop = THREE.LoopOnce;
 			}
