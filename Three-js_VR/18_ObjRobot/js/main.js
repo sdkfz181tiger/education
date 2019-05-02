@@ -4,17 +4,21 @@
 
 console.log("Hello Three.js!!");
 
-const ACT_STATES = ["SMILE", "ANGRY", "SAD"];
-const ACT_EMOTES = ["Jump", "Yes", "No"];
+const stateTanuki = {
+	base: ["tanuki_talk_1.obj"],
+	talk: ["tanuki_talk_1.obj", "tanuki_talk_2.obj", "tanuki_talk_1.obj", "tanuki_talk_2.obj"],
+	sad:  ["tanuki_sad_1.obj", "tanuki_sad_2.obj", "tanuki_sad_1.obj", "tanuki_sad_2.obj"]
+}
 
 // Data
 const models = {data:[
 	{dir:"./models/obj/", mtl:"city_1.mtl", obj:"city_1.obj"},
 	{dir:"./models/obj/", mtl:"city_2.mtl", obj:"city_2.obj"},
-	{dir:"./models/obj/", mtl:"inv_1.mtl",  obj:"inv_1.obj"},
-	{dir:"./models/obj/", mtl:"inv_2.mtl",  obj:"inv_2.obj"},
-	{dir:"./models/obj/", mtl:"inv_3.mtl",  obj:"inv_3.obj"},
-	{dir:"./models/obj/", mtl:"inv_4.mtl",  obj:"inv_4.obj"},
+	{dir:"./models/obj/", mtl:"tanuki_talk_1.mtl", obj:"tanuki_talk_1.obj"},
+	{dir:"./models/obj/", mtl:"tanuki_talk_2.mtl", obj:"tanuki_talk_2.obj"},
+	{dir:"./models/obj/", mtl:"tanuki_sad_1.mtl",  obj:"tanuki_sad_1.obj"},
+	{dir:"./models/obj/", mtl:"tanuki_sad_2.mtl",  obj:"tanuki_sad_2.obj"},
+	{dir:"./models/obj/", mtl:"chr_old.mtl",obj:"chr_old.obj"},
 ]};
 
 const sounds = {data:[
@@ -40,7 +44,7 @@ window.onload = function(){
 	// ThreeManager
 	// 	Camera position(PC): pcX, pcY, pcZ
 	// 	Camera position(VR): vrX, vrY, vrZ
-	tm = new ThreeManager(0, 10, 25, 0, 10, 25);
+	tm = new ThreeManager(0, 20, 35, 0, 10, 25);
 	tm._renderer.setAnimationLoop(animate);
 
 	objLoader = new ObjLoader();
@@ -74,38 +78,36 @@ window.onload = function(){
 		// Camera
 		let cContainer = tm.getCameraContainer();
 
-		let num = 1;
-		let name = "inv_" + num + ".obj";
-		let clone = objLoader.findModels(name);
-		clone.scale.set(0.3, 0.3, 0.3);
-		clone.position.set(0, 0, 0);
-		clone.rotation.set(0, Math.PI, 0);
-		tm.addGroup(clone);// Add to group!!
+		// City, Tanuki
+		let city = new City("city_2.obj", 0, 0, 0);
+		let tanu = new Tanuki("tanuki_talk_1.obj", 0, 3, 12);
+		tanu.startAnimation("base");
 
 		// Cube
-		let geometry = new THREE.BoxGeometry(1.0, 1.0, 1.0);
+		let geometry = new THREE.BoxGeometry(3, 3, 3);
 		let material = new THREE.MeshNormalMaterial();
-		let p = 1.5;
-		let startS = p * ACT_STATES.length * 0.5 - p*0.5;
-		for(let i=0; i<ACT_STATES.length; i++){
-			let cube = new THREE.Mesh(geometry, material);
-			cube.position.set(p*i-startS, 0.5, 14);
-			cube.name = ACT_STATES[i];
-			tm.addGroup(cube);
-		}
-		let startE = p * ACT_EMOTES.length * 0.5 - p*0.5;
-		for(let i=0; i<ACT_EMOTES.length; i++){
-			let cube = new THREE.Mesh(geometry, material);
-			cube.position.set(p*i-startE, 0.5, 14+p);
-			cube.name = ACT_EMOTES[i];
-			tm.addGroup(cube);
-		}
+		let cube1 = new THREE.Mesh(geometry, material);
+		cube1.position.set(-4, 5, 25);
+		cube1.name = "talk";
+		tm.addGroup(cube1);
+
+		let cube2 = new THREE.Mesh(geometry, material);
+		cube2.position.set(0, 5, 25);
+		cube2.name = "sad";
+		tm.addGroup(cube2);
+
+		let cube3 = new THREE.Mesh(geometry, material);
+		cube3.position.set(+4, 5, 25);
+		cube3.name = "stop";
+		tm.addGroup(cube3);
 
 		// Raycaster
 		tm.setRaycasterListener((intersects)=>{
 			for(let target of intersects){
 				console.log("distance:" + target.distance + "_" + target.object.name);
 				let name = target.object.name;
+				if(name in stateTanuki) tanu.startAnimation(name);
+				if(name == "stop") tanu.stopAnimation();
 			}
 		});
 	}
@@ -121,7 +123,7 @@ window.onload = function(){
 		console.log("You are ready to use fonts!!");
 		// Test
 		let font = fontLoader.findFonts("MisakiGothic");
-		let text = fontLoader.createText("CROSSY!!", font, 4, 0, 10, 0);
+		let text = fontLoader.createText("CROSSY!!", font, 4, 0, 20, 0);
 		tm.addGroup(text);
 	}
 
@@ -135,4 +137,103 @@ window.onload = function(){
 		tm.update();   // Manager
 		ctlVR.update();// Controller
 	};
+}
+
+class Tanuki{
+
+	constructor(name, x, y, z){
+		console.log("Tanuki");
+		this._x = x; this._y = y; this._z = z;
+		this.init();
+	}
+
+	init(){
+		this._stateKey   = "base";
+		this._stateIndex = 0;
+		this._stateAnimation = {};
+		for(let key in stateTanuki){
+			this._stateAnimation[key] = [];
+			for(let path of stateTanuki[key]){
+				let clone = this.createClone(path);
+				this._stateAnimation[key].push(clone);
+			}
+		}
+		this._tickFlg = false;
+		this._tickId  = null;
+	}
+
+	startAnimation(key){
+		this._stateKey   = key;
+		this._stateIndex = 0;
+		for(let key in this._stateAnimation){
+			let animation = this._stateAnimation[key];
+			for(let animate of animation){
+				animate.visible = false;
+			}
+		}
+		this._tickFlg = true;
+		this.tickAnimation();
+	}
+
+	stopAnimation(){
+		this._tickFlg = false;
+		if(this._tickId) clearTimeout(this._tickId);
+	}
+
+	tickAnimation(){
+		//console.log("tick:" + this._stateKey + ", " + this._stateIndex);
+		this._stateIndex++;
+		let total = this._stateAnimation[this._stateKey].length;
+		if(total <= 1) this._tickFlg = false;
+		if(total <= this._stateIndex){
+			this._stateIndex = 0;
+		}
+		for(let i=0; i<total; i++){
+			if(i === this._stateIndex){
+				this._stateAnimation[this._stateKey][i].visible = true;
+			}else{
+				this._stateAnimation[this._stateKey][i].visible = false;
+			}
+		}
+		if(this._tickFlg == false) return;
+		if(this._tickId) clearTimeout(this._tickId);
+		this._tickId = setTimeout(()=>{this.tickAnimation();}, 200);
+	}
+
+	createClone(name, visible=false){
+		console.log("createClone:" + name);
+		let clone = objLoader.findModels(name);
+		clone.scale.set(0.5, 0.5, 0.5);
+		clone.position.set(this._x, this._y, this._z);
+		clone.rotation.set(0, 0, 0);
+		clone.visible = visible;
+		tm.addGroup(clone);// Add to group!!
+		return clone;
+	}
+
+	setSprite(){
+		let txLoader = new THREE.TextureLoader();
+		let map = txLoader.load("textures/cocos2d-x.png");
+		let material = new THREE.SpriteMaterial({map:map, color:0xffffff, fog:true});
+		let sprite = new THREE.Sprite(material);
+		tm.addGroup(sprite);
+	}
+}
+
+class City{
+
+	constructor(name, x, y, z){
+		console.log("City");
+		this._name = name;
+		this._x = x; this._y = y; this._z = z;
+		this.init();
+	}
+
+	init(){
+		this._clone = objLoader.findModels(this._name);
+		this._clone.scale.set(0.5, 0.5, 0.5);
+		this._clone.position.set(this._x, this._y, this._z);
+		this._clone.rotation.set(0, Math.PI*-0.5, 0);
+		tm.addGroup(this._clone);// Add to group!!
+	}
 }
