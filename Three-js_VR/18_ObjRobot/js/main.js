@@ -4,6 +4,12 @@
 
 console.log("Hello Three.js!!");
 
+// Emotions
+const EMO_HAPPY    = "happy";
+const EMO_ANGRY    = "angry";
+const EMO_SAD      = "sad";
+const EMO_PLEASANT = "pleasant";
+
 const tanukiFrame = {
 	base: ["tanuki_talk_1.obj"],
 	talk: ["tanuki_talk_1.obj", "tanuki_talk_2.obj", "tanuki_talk_1.obj", "tanuki_talk_2.obj"],
@@ -88,31 +94,34 @@ window.onload = function(){
 		let material = new THREE.MeshNormalMaterial();
 
 		let cube1 = new THREE.Mesh(geometry, material);
-		cube1.position.set(-4, 5, 25);
-		cube1.name = "talk";
+		cube1.position.set(-6, 5, 25);
+		cube1.name = EMO_HAPPY;
 		tm.addGroup(cube1);
 
 		let cube2 = new THREE.Mesh(geometry, material);
-		cube2.position.set(0, 5, 25);
-		cube2.name = "sad";
+		cube2.position.set(-2, 5, 25);
+		cube2.name = EMO_ANGRY;
 		tm.addGroup(cube2);
 
 		let cube3 = new THREE.Mesh(geometry, material);
-		cube3.position.set(+4, 5, 25);
-		cube3.name = "stop";
+		cube3.position.set(+2, 5, 25);
+		cube3.name = EMO_SAD;
 		tm.addGroup(cube3);
+
+		let cube4 = new THREE.Mesh(geometry, material);
+		cube4.position.set(+6, 5, 25);
+		cube4.name = EMO_PLEASANT;
+		tm.addGroup(cube4);
 
 		// Raycaster
 		tm.setRaycasterListener((intersects)=>{
 			for(let target of intersects){
 				console.log("distance:" + target.distance + "_" + target.object.name);
 				let name = target.object.name;
-				if(name in tanukiFrame){
-					tanu.startAnimation(name);
-					//tanu.motionJump();
-					tanu.motionStep(5.0, 2.5);
-				}
-				if(name == "stop") tanu.stopAnimation();
+				if(name == EMO_HAPPY)    tanu.startAnimation("talk").motionStep(2.5, 5.0);
+				if(name == EMO_ANGRY)    tanu.startAnimation("sad").motionJump();
+				if(name == EMO_SAD)      tanu.startAnimation("sad").motionJump();
+				if(name == EMO_PLEASANT) tanu.startAnimation("talk").motionStep(2.5, 5.0);
 			}
 		});
 	}
@@ -185,6 +194,7 @@ class Tanuki{
 		}
 		this._tickFlg = true;
 		this.tickAnimation();
+		return this;
 	}
 
 	stopAnimation(){
@@ -218,6 +228,7 @@ class Tanuki{
 		console.log("motionJump!!");
 		this._motionTl = new TimelineMax({repeat: 0, yoyo: false, onComplete:()=>{
 			this._motionFlg = false;
+			this.stopAnimation();
 		}});
 		this._motionTl.to(this._group.position, 0.3, {y: "+=10.0", ease: Sine.easeOut});
 		this._motionTl.to(this._group.position, 1.0, {y: "-=10.0", ease: Bounce.easeOut});
@@ -229,15 +240,18 @@ class Tanuki{
 		console.log("motionStep!!");
 		this._motionTl = new TimelineMax({repeat: 0, yoyo: false, onComplete:()=>{
 			this._motionFlg = false;
+			this.stopAnimation();
 		}});
-		this._motionTl.to(this._group.position, 0.3, {y: "+="+sY, z: "-="+sZ, ease: Sine.easeOut});
-		this._motionTl.to(this._group.position, 0.5, {y: "-="+sY, z: "-="+sZ, ease: Bounce.easeOut});
-		this._motionTl.to(this._group.position, 0.3, {y: "+="+sY, z: "+="+sZ, ease: Sine.easeOut});
-		this._motionTl.to(this._group.position, 0.5, {y: "-="+sY, z: "+="+sZ, ease: Bounce.easeOut});
-		this._motionTl.to(this._group.position, 0.3, {y: "+="+sY, z: "+="+sZ, ease: Sine.easeOut});
-		this._motionTl.to(this._group.position, 0.5, {y: "-="+sY, z: "+="+sZ, ease: Bounce.easeOut});
-		this._motionTl.to(this._group.position, 0.3, {y: "+="+sY, z: "-="+sZ, ease: Sine.easeOut});
-		this._motionTl.to(this._group.position, 0.5, {y: "-="+sY, z: "-="+sZ, ease: Bounce.easeOut});
+		let timeUp   = 0.2;
+		let timeDown = 0.3;
+		this._motionTl.to(this._group.position, timeUp,   {y: "+="+sY, z: "-="+sZ, ease: Sine.easeOut});
+		this._motionTl.to(this._group.position, timeDown, {y: "-="+sY, z: "-="+sZ, ease: Bounce.easeOut});
+		this._motionTl.to(this._group.position, timeUp,   {y: "+="+sY, z: "+="+sZ, ease: Sine.easeOut});
+		this._motionTl.to(this._group.position, timeDown, {y: "-="+sY, z: "+="+sZ, ease: Bounce.easeOut});
+		this._motionTl.to(this._group.position, timeUp,   {y: "+="+sY, z: "+="+sZ, ease: Sine.easeOut});
+		this._motionTl.to(this._group.position, timeDown, {y: "-="+sY, z: "+="+sZ, ease: Bounce.easeOut});
+		this._motionTl.to(this._group.position, timeUp,   {y: "+="+sY, z: "-="+sZ, ease: Sine.easeOut});
+		this._motionTl.to(this._group.position, timeDown, {y: "-="+sY, z: "-="+sZ, ease: Bounce.easeOut});
 	}
 
 	createClone(name, visible=false){
