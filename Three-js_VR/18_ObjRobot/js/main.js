@@ -4,7 +4,7 @@
 
 console.log("Hello Three.js!!");
 
-const stateTanuki = {
+const tanukiFrame = {
 	base: ["tanuki_talk_1.obj"],
 	talk: ["tanuki_talk_1.obj", "tanuki_talk_2.obj", "tanuki_talk_1.obj", "tanuki_talk_2.obj"],
 	sad:  ["tanuki_sad_1.obj", "tanuki_sad_2.obj", "tanuki_sad_1.obj", "tanuki_sad_2.obj"]
@@ -86,6 +86,7 @@ window.onload = function(){
 		// Cube
 		let geometry = new THREE.BoxGeometry(3, 3, 3);
 		let material = new THREE.MeshNormalMaterial();
+
 		let cube1 = new THREE.Mesh(geometry, material);
 		cube1.position.set(-4, 5, 25);
 		cube1.name = "talk";
@@ -106,7 +107,11 @@ window.onload = function(){
 			for(let target of intersects){
 				console.log("distance:" + target.distance + "_" + target.object.name);
 				let name = target.object.name;
-				if(name in stateTanuki) tanu.startAnimation(name);
+				if(name in tanukiFrame){
+					tanu.startAnimation(name);
+					//tanu.motionJump();
+					tanu.motionStep(5.0, 2.5);
+				}
 				if(name == "stop") tanu.stopAnimation();
 			}
 		});
@@ -148,25 +153,32 @@ class Tanuki{
 	}
 
 	init(){
-		this._stateKey   = "base";
-		this._stateIndex = 0;
-		this._stateAnimation = {};
-		for(let key in stateTanuki){
-			this._stateAnimation[key] = [];
-			for(let path of stateTanuki[key]){
+		// Group
+		this._group = new THREE.Group();
+		tm.addGroup(this._group);// Add to group!!
+		// Frame
+		this._frameKey   = "base";
+		this._frameIndex = 0;
+		this._frameAnimation = {};
+		for(let key in tanukiFrame){
+			this._frameAnimation[key] = [];
+			for(let path of tanukiFrame[key]){
 				let clone = this.createClone(path);
-				this._stateAnimation[key].push(clone);
+				this._frameAnimation[key].push(clone);
 			}
 		}
 		this._tickFlg = false;
 		this._tickId  = null;
+		// Motion
+		this._motionFlg = false;
+		this._motionTl  = null;
 	}
 
 	startAnimation(key){
-		this._stateKey   = key;
-		this._stateIndex = 0;
-		for(let key in this._stateAnimation){
-			let animation = this._stateAnimation[key];
+		this._frameKey   = key;
+		this._frameIndex = 0;
+		for(let key in this._frameAnimation){
+			let animation = this._frameAnimation[key];
 			for(let animate of animation){
 				animate.visible = false;
 			}
@@ -181,23 +193,51 @@ class Tanuki{
 	}
 
 	tickAnimation(){
-		//console.log("tick:" + this._stateKey + ", " + this._stateIndex);
-		this._stateIndex++;
-		let total = this._stateAnimation[this._stateKey].length;
+		//console.log("tick:" + this._frameKey + ", " + this._frameIndex);
+		this._frameIndex++;
+		let total = this._frameAnimation[this._frameKey].length;
 		if(total <= 1) this._tickFlg = false;
-		if(total <= this._stateIndex){
-			this._stateIndex = 0;
+		if(total <= this._frameIndex){
+			this._frameIndex = 0;
 		}
 		for(let i=0; i<total; i++){
-			if(i === this._stateIndex){
-				this._stateAnimation[this._stateKey][i].visible = true;
+			if(i === this._frameIndex){
+				this._frameAnimation[this._frameKey][i].visible = true;
 			}else{
-				this._stateAnimation[this._stateKey][i].visible = false;
+				this._frameAnimation[this._frameKey][i].visible = false;
 			}
 		}
 		if(this._tickFlg == false) return;
 		if(this._tickId) clearTimeout(this._tickId);
 		this._tickId = setTimeout(()=>{this.tickAnimation();}, 200);
+	}
+
+	motionJump(){
+		if(this._motionFlg == true) return;
+		this._motionFlg = true;
+		console.log("motionJump!!");
+		this._motionTl = new TimelineMax({repeat: 0, yoyo: false, onComplete:()=>{
+			this._motionFlg = false;
+		}});
+		this._motionTl.to(this._group.position, 0.3, {y: "+=10.0", ease: Sine.easeOut});
+		this._motionTl.to(this._group.position, 1.0, {y: "-=10.0", ease: Bounce.easeOut});
+	}
+
+	motionStep(sY, sZ){
+		if(this._motionFlg == true) return;
+		this._motionFlg = true;
+		console.log("motionStep!!");
+		this._motionTl = new TimelineMax({repeat: 0, yoyo: false, onComplete:()=>{
+			this._motionFlg = false;
+		}});
+		this._motionTl.to(this._group.position, 0.3, {y: "+="+sY, z: "-="+sZ, ease: Sine.easeOut});
+		this._motionTl.to(this._group.position, 0.5, {y: "-="+sY, z: "-="+sZ, ease: Bounce.easeOut});
+		this._motionTl.to(this._group.position, 0.3, {y: "+="+sY, z: "+="+sZ, ease: Sine.easeOut});
+		this._motionTl.to(this._group.position, 0.5, {y: "-="+sY, z: "+="+sZ, ease: Bounce.easeOut});
+		this._motionTl.to(this._group.position, 0.3, {y: "+="+sY, z: "+="+sZ, ease: Sine.easeOut});
+		this._motionTl.to(this._group.position, 0.5, {y: "-="+sY, z: "+="+sZ, ease: Bounce.easeOut});
+		this._motionTl.to(this._group.position, 0.3, {y: "+="+sY, z: "-="+sZ, ease: Sine.easeOut});
+		this._motionTl.to(this._group.position, 0.5, {y: "-="+sY, z: "-="+sZ, ease: Bounce.easeOut});
 	}
 
 	createClone(name, visible=false){
@@ -207,16 +247,8 @@ class Tanuki{
 		clone.position.set(this._x, this._y, this._z);
 		clone.rotation.set(0, 0, 0);
 		clone.visible = visible;
-		tm.addGroup(clone);// Add to group!!
+		this._group.add(clone);// Add to group!!
 		return clone;
-	}
-
-	setSprite(){
-		let txLoader = new THREE.TextureLoader();
-		let map = txLoader.load("textures/cocos2d-x.png");
-		let material = new THREE.SpriteMaterial({map:map, color:0xffffff, fog:true});
-		let sprite = new THREE.Sprite(material);
-		tm.addGroup(sprite);
 	}
 }
 
