@@ -4,6 +4,9 @@
 
 console.log("Hello Three.js!!");
 
+// MARKER
+const MARKER = "marker";
+
 // Emotions
 const EMO_HAPPY    = "happy";
 const EMO_ANGRY    = "angry";
@@ -13,7 +16,8 @@ const EMO_PLEASANT = "pleasant";
 const tanukiFrame = {
 	base: ["tanuki_talk_1.obj"],
 	talk: ["tanuki_talk_1.obj", "tanuki_talk_2.obj", "tanuki_talk_1.obj", "tanuki_talk_2.obj"],
-	sad:  ["tanuki_sad_1.obj", "tanuki_sad_2.obj", "tanuki_sad_1.obj", "tanuki_sad_2.obj"]
+	sad:  ["tanuki_sad_1.obj", "tanuki_sad_2.obj", "tanuki_sad_1.obj", "tanuki_sad_2.obj"],
+	run:  ["tanuki_run_1.obj", "tanuki_run_2.obj", "tanuki_run_1.obj", "tanuki_run_3.obj"]
 }
 
 // Data
@@ -24,6 +28,9 @@ const models = {data:[
 	{dir:"./models/obj/", mtl:"tanuki_talk_2.mtl", obj:"tanuki_talk_2.obj"},
 	{dir:"./models/obj/", mtl:"tanuki_sad_1.mtl",  obj:"tanuki_sad_1.obj"},
 	{dir:"./models/obj/", mtl:"tanuki_sad_2.mtl",  obj:"tanuki_sad_2.obj"},
+	{dir:"./models/obj/", mtl:"tanuki_run_1.mtl",  obj:"tanuki_run_1.obj"},
+	{dir:"./models/obj/", mtl:"tanuki_run_2.mtl",  obj:"tanuki_run_2.obj"},
+	{dir:"./models/obj/", mtl:"tanuki_run_3.mtl",  obj:"tanuki_run_3.obj"},
 	{dir:"./models/obj/", mtl:"chr_old.mtl",obj:"chr_old.obj"},
 ]};
 
@@ -85,13 +92,18 @@ window.onload = function(){
 		let cContainer = tm.getCameraContainer();
 
 		// City, Tanuki
-		let city = new City("city_2.obj", 0, 0, 0);
-		let tanu = new Tanuki("tanuki_talk_1.obj", 0, 3, 12);
-		tanu.startAnimation("base");
+		let city = new City("city_1.obj", 0, -5, 0);
+		let tanu = new Tanuki("tanuki_talk_1.obj", 0, 0, 0);
+		tanu.startAnimation("talk");
 
 		// Cube
-		let geometry = new THREE.BoxGeometry(3, 3, 3);
+		let geometry = new THREE.BoxGeometry(2, 2, 2);
 		let material = new THREE.MeshNormalMaterial();
+
+		let marker = new THREE.Mesh(geometry, material);
+		marker.position.set(0, 10, 0);
+		marker.name = MARKER;
+		tm.addGroup(marker);
 
 		let cube1 = new THREE.Mesh(geometry, material);
 		cube1.position.set(-6, 5, 25);
@@ -117,11 +129,15 @@ window.onload = function(){
 		tm.setRaycasterListener((intersects)=>{
 			for(let target of intersects){
 				console.log("distance:" + target.distance + "_" + target.object.name);
+				console.log(target);
 				let name = target.object.name;
-				if(name == EMO_HAPPY)    tanu.startAnimation("talk").motionStep(2.5, 5.0);
+				// Marker
+				marker.position.set(target.point.x, target.point.y, target.point.z);
+				// Tanuki
+				if(name == EMO_HAPPY)    tanu.startAnimation("talk").motionStep();
 				if(name == EMO_ANGRY)    tanu.startAnimation("sad").motionJump();
-				if(name == EMO_SAD)      tanu.startAnimation("sad").motionJump();
-				if(name == EMO_PLEASANT) tanu.startAnimation("talk").motionStep(2.5, 5.0);
+				if(name == EMO_SAD)      tanu.startAnimation("run").motionStep();
+				if(name == EMO_PLEASANT) tanu.startAnimation("run");
 			}
 		});
 	}
@@ -219,7 +235,7 @@ class Tanuki{
 		}
 		if(this._tickFlg == false) return;
 		if(this._tickId) clearTimeout(this._tickId);
-		this._tickId = setTimeout(()=>{this.tickAnimation();}, 200);
+		this._tickId = setTimeout(()=>{this.tickAnimation();}, 150);
 	}
 
 	motionJump(){
@@ -234,7 +250,7 @@ class Tanuki{
 		this._motionTl.to(this._group.position, 1.0, {y: "-=10.0", ease: Bounce.easeOut});
 	}
 
-	motionStep(sY, sZ){
+	motionStep(sY=2.5, sZ=5.0){
 		if(this._motionFlg == true) return;
 		this._motionFlg = true;
 		console.log("motionStep!!");
@@ -257,7 +273,7 @@ class Tanuki{
 	createClone(name, visible=false){
 		console.log("createClone:" + name);
 		let clone = objLoader.findModels(name);
-		clone.scale.set(0.5, 0.5, 0.5);
+		clone.scale.set(1, 1, 1);
 		clone.position.set(this._x, this._y, this._z);
 		clone.rotation.set(0, 0, 0);
 		clone.visible = visible;
@@ -277,7 +293,7 @@ class City{
 
 	init(){
 		this._clone = objLoader.findModels(this._name);
-		this._clone.scale.set(0.5, 0.5, 0.5);
+		this._clone.scale.set(1, 1, 1);
 		this._clone.position.set(this._x, this._y, this._z);
 		this._clone.rotation.set(0, Math.PI*-0.5, 0);
 		tm.addGroup(this._clone);// Add to group!!
