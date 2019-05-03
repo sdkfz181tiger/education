@@ -16,7 +16,7 @@
 
 function setup(){
 	createCanvas(480, 320);
-	background(33, 33, 33);
+	background(100, 100, 100);
 
 	// 繰り返し処理
 	// for(初期化; 繰り返し条件; 後処理){処理}
