@@ -10,12 +10,6 @@ const STEP_BACK    = "back";
 const STEP_LEFT    = "left";
 const STEP_RIGHT   = "right";
 
-// TYPE
-const TYPE_MARKER  = "marker";
-const TYPE_PLAYER  = "player";
-const TYPE_WALL    = "wall";
-const TYPE_ENEMY   = "enemy";
-
 const playerFrame = {
 	base: ["tanuki_talk_1.obj"],
 	talk: ["tanuki_talk_1.obj", "tanuki_talk_2.obj", "tanuki_talk_1.obj", "tanuki_talk_2.obj"],
@@ -42,10 +36,8 @@ const models = {data:[
 ]};
 
 const sounds = {data:[
-	{dir:"./sounds/", mp3:"test_1.mp3"},
-	{dir:"./sounds/", mp3:"test_2.mp3"},
-	{dir:"./sounds/", mp3:"test_3.mp3"},
-	{dir:"./sounds/", mp3:"test_4.mp3"},
+	{dir:"./sounds/", mp3:"step_ok.mp3"},
+	{dir:"./sounds/", mp3:"step_ng.mp3"}
 ]};
 
 const fonts = {data:[
@@ -53,11 +45,13 @@ const fonts = {data:[
 	{dir:"./fonts/", font:"MisakiMincho_Regular.json"},
 ]};
 
-let tm = null;
+let tm          = null;
 let rootGroup   = null;
 let objLoader   = null;
 let soundLoader = null;
 let fontLoader  = null;
+
+let walls = null;
 
 window.onload = function(){
 	console.log("OnLoad");
@@ -85,9 +79,7 @@ window.onload = function(){
 		(axes)=>{console.log("onPressed:"  + axes[0] + ", " + axes[1]);}, 
 		(axes)=>{console.log("onReleased:" + axes[0] + ", " + axes[1]);});
 	ctlVR.setTriggerListener(
-		()=>{
-			console.log("onPressed!!");
-		}, 
+		()=>{console.log("onPressed!!");}, 
 		()=>{console.log("onReleased!!");});
 
 	// Ready
@@ -105,9 +97,14 @@ window.onload = function(){
 		let player = new Player(0, 0, 3);
 		player.startAnimation("base");
 
-		let wallR  = new Wall(-1, 0, -3, "obj_red.obj");
-		let wallG  = new Wall(+0, 0, -3,  "obj_green.obj");
-		let wallB  = new Wall(+1, 0, -3, "obj_blue.obj");
+		// Walls
+		walls = [];
+		let wallR = new Wall(+0, +0, +0, "obj_red.obj");
+		walls.push(wallR);
+		let wallG = new Wall(-1, +0, -1, "obj_green.obj");
+		walls.push(wallG);
+		let wallB = new Wall(+1, +0, +1, "obj_blue.obj");
+		walls.push(wallB);
 
 		// Cube
 		let geometry = new THREE.BoxGeometry(3, 3, 3);
@@ -118,12 +115,12 @@ window.onload = function(){
 		rootGroup.add(ctlGroup);
 
 		let ctlForward = new THREE.Mesh(geometry, material);
-		ctlForward.position.set(0, 0, +4);
+		ctlForward.position.set(0, 0, -4);
 		ctlForward.name = STEP_FORWARD;
 		ctlGroup.add(ctlForward);
 
 		let ctlBack = new THREE.Mesh(geometry, material);
-		ctlBack.position.set(0, 0, -4);
+		ctlBack.position.set(0, 0, +4);
 		ctlBack.name = STEP_BACK;
 		ctlGroup.add(ctlBack);
 
@@ -140,30 +137,74 @@ window.onload = function(){
 		// Raycaster
 		tm.setRaycasterListener((intersects)=>{
 			for(let target of intersects){
-				console.log("distance:" + target.distance + "_" + target.object.name);
-				console.log(target);
 				let name = target.object.name;
+				if(name === "") continue;
+
 				// Player
-				if(name == STEP_FORWARD) player.startAnimation("run").stepOut(0.0, 2.5, +5.0);
-				if(name == STEP_BACK)    player.startAnimation("run").stepOut(0.0, 2.5, -5.0);
-				if(name == STEP_LEFT)    player.startAnimation("run").stepOut(-5.0, 2.5, 0.0);
-				if(name == STEP_RIGHT)   player.startAnimation("run").stepOut(+5.0, 2.5, 0.0);
+				if(name == STEP_FORWARD){
+					let flg = true;
+					for(let wall of walls){
+						let dist = player.calcDistance(wall.getPosition(), 0, -1);
+						if(dist < SIZE_GRID*0.5) flg = false;
+					}
+					if(flg){
+						player.startAnimation("run").stepOut(0.0, 2.5, -5.0);
+					}else{
+						player.startAnimation("run").stepOut(0.0, 2.5, 0.0);
+					}
+				}
+
+				if(name == STEP_BACK){
+					let flg = true;
+					for(let wall of walls){
+						let dist = player.calcDistance(wall.getPosition(), 0, +1);
+						if(dist < SIZE_GRID*0.5) flg = false;
+					}
+					if(flg){
+						player.startAnimation("run").stepOut(0.0, 2.5, +5.0);
+					}else{
+						player.startAnimation("run").stepOut(0.0, 2.5, 0.0);
+					}
+				}
+
+				if(name == STEP_LEFT){
+					let flg = true;
+					for(let wall of walls){
+						let dist = player.calcDistance(wall.getPosition(), -1, 0);
+						if(dist < SIZE_GRID*0.5) flg = false;
+					}
+					if(flg){
+						player.startAnimation("run").stepOut(-5.0, 2.5, 0.0);
+					}else{
+						player.startAnimation("run").stepOut(0.0, 2.5, 0.0);
+					}
+				}
+
+				if(name == STEP_RIGHT){
+					let flg = true;
+					for(let wall of walls){
+						let dist = player.calcDistance(wall.getPosition(), +1, 0);
+						if(dist < SIZE_GRID*0.5) flg = false;
+					}
+					if(flg){
+						player.startAnimation("run").stepOut(+5.0, 2.5, 0.0);
+					}else{
+						player.startAnimation("run").stepOut(0.0, 2.5, 0.0);
+					}
+				}
 			}
 		});
 	}
 
 	function onReadySounds(){
 		console.log("You are ready to use sounds!!");
-		// Test
-		//let sound = soundLoader.findSounds("test_1.mp3");
-		//sound.play();
 	}
 
 	function onReadyFonts(){
 		console.log("You are ready to use fonts!!");
 		// Test
 		let font = fontLoader.findFonts("MisakiGothic");
-		let text = fontLoader.createText("CROSSY!!", font, 4, 0, 20, 0);
+		let text = fontLoader.createText("CROSSY!!", font, 4, 0, 20, -50);
 		rootGroup.add(text);
 	}
 
@@ -176,8 +217,6 @@ window.onload = function(){
 	function animate(){
 		tm.update();   // Manager
 		ctlVR.update();// Controller
-
-		// Collision
 	};
 
 	function createCube(w=3, h=3, d=3, x=0, y=0, z=0){
@@ -193,7 +232,6 @@ class Player{
 
 	constructor(gX, gY, gZ){
 		console.log("Player");
-		this._type = TYPE_PLAYER;
 		this._x = SIZE_GRID*gX; 
 		this._y = SIZE_GRID*gY; 
 		this._z = SIZE_GRID*gZ;
@@ -205,15 +243,6 @@ class Player{
 		this._group = new THREE.Group();
 		this._group.position.set(this._x, this._y, this._z);
 		rootGroup.add(this._group);// Add to group!!
-		// Marker
-		this._mFront = this.createMarker(0, 0, -SIZE_GRID);
-		this._group.add(this._mFront);
-		this._mBack = this.createMarker(0, 0, +SIZE_GRID);
-		this._group.add(this._mBack);
-		this._mLeft = this.createMarker(-SIZE_GRID, 0, 0);
-		this._group.add(this._mLeft);
-		this._mRight = this.createMarker(+SIZE_GRID, 0, 0);
-		this._group.add(this._mRight);
 		// Frame
 		this._frameAnimation = {};
 		for(let key in playerFrame){
@@ -230,13 +259,23 @@ class Player{
 		this._motionTl  = null;
 	}
 
-	createMarker(x=0, y=0, z=0, w=2, h=2, d=2){
+	getPosition(){
+		return this._group.position;
+	}
+
+	calcDistance(position, offX=0, offZ=0){
+		let difX = position.x - (this._group.position.x + offX*SIZE_GRID);
+		let difZ = position.z - (this._group.position.z + offZ*SIZE_GRID);
+		let dist = Math.floor(Math.sqrt(difX*difX + difZ*difZ));
+		return dist;
+	}
+
+	createSensor(x=0, y=0, z=0, w=2, h=2, d=2){
 		let geometry = new THREE.BoxGeometry(w, h, d);
 		let material = new THREE.MeshNormalMaterial();
-		let marker = new THREE.Mesh(geometry, material);
-		marker.name = TYPE_MARKER;
-		marker.position.set(x, y+h*0.5, z);
-		return marker;
+		let sensor = new THREE.Mesh(geometry, material);
+		sensor.position.set(x, y+h*0.5, z);
+		return sensor;
 	}
 
 	startAnimation(key){
@@ -284,7 +323,6 @@ class Player{
 		console.log("stepOut!!");
 		let timeUp   = 0.2;
 		let timeDown = 0.3;
-
 		this._motionTl = new TimelineMax({repeat: 0, yoyo: false, onComplete:()=>{
 			this._motionFlg = false;
 			this.stopAnimation();
@@ -293,10 +331,16 @@ class Player{
 			{x: "+="+sX, y: "+="+sY, z: "+="+sZ, ease: Sine.easeOut});
 		this._motionTl.to(this._group.position, timeDown, 
 			{x: "+="+sX, y: "-="+sY, z: "+="+sZ, ease: Bounce.easeOut});
+		// Sound
+		if(sX != 0.0 || sZ != 0.0){
+			soundLoader.playSound("step_ok.mp3");
+		}else{
+			soundLoader.playSound("step_ng.mp3");	
+		}
 	}
 
 	createClone(name, visible=false){
-		console.log("createClone:" + name);
+		//console.log("createClone:" + name);
 		let clone = objLoader.findModels(name);
 		clone.scale.set(0.5, 0.5, 0.5);
 		clone.position.set(0, 0, 0);
@@ -311,7 +355,6 @@ class Wall{
 
 	constructor(gX, gY, gZ, name){
 		console.log("Wall");
-		this._type = TYPE_WALL;
 		this._x = SIZE_GRID*gX; 
 		this._y = SIZE_GRID*gY; 
 		this._z = SIZE_GRID*gZ;
@@ -320,11 +363,19 @@ class Wall{
 	}
 
 	init(){
+		// Group
+		this._group = new THREE.Group();
+		this._group.position.set(this._x, this._y, this._z);
+		rootGroup.add(this._group);// Add to group!!
 		// Clone
 		let clone = objLoader.findModels(this._name);
 		clone.scale.set(0.6, 0.6, 0.6);
-		clone.position.set(this._x, this._y, this._z);
+		clone.position.set(0, 0, 0);
 		clone.rotation.set(0, Math.PI, 0);
-		rootGroup.add(clone);// Add to group!!
+		this._group.add(clone);// Add to group!!
+	}
+
+	getPosition(){
+		return this._group.position;
 	}
 }

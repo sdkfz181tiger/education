@@ -352,12 +352,12 @@ class SoundLoader{
 		});
 	}
 
-	findSounds(name){
+	playSound(name){
 		for(let i=0; i<this._sounds.length; i++){
 			if(this._sounds[i].name != name) continue;
-			return this._sounds[i];
+			if(this._sounds[i].isPlaying) this._sounds[i].stop();
+			this._sounds[i].play();
 		}
-		return null;
 	}
 
 	asyncSound(dir, mp3){
