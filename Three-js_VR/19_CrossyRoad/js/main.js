@@ -93,17 +93,25 @@ window.onload = function(){
 		// Camera
 		let cContainer = tm.getCameraContainer();
 
+		// City
+		let city1 = new City(+0.0, -0.25, +0.0, "city_2.obj");
+		let city2 = new City(-6.3, -0.25, +0.0, "city_1.obj");
+		let city3 = new City(+6.3, -0.25, +0.0, "city_1.obj");
+		let city4 = new City(+0.0, -0.25, -6.3, "city_2.obj");
+		let city5 = new City(-6.3, -0.25, -6.3, "city_1.obj");
+		let city6 = new City(+6.3, -0.25, -6.3, "city_1.obj");
+
 		// Player
 		let player = new Player(0, 0, 3);
 		player.startAnimation("base");
 
 		// Walls
 		walls = [];
-		let wallR = new Wall(+0, +0, +0, "obj_red.obj");
+		let wallR = new Wall(+0, +0, -5, "obj_red.obj");
 		walls.push(wallR);
-		let wallG = new Wall(-1, +0, -1, "obj_green.obj");
+		let wallG = new Wall(-1, +0, -5, "obj_green.obj");
 		walls.push(wallG);
-		let wallB = new Wall(+1, +0, +1, "obj_blue.obj");
+		let wallB = new Wall(+1, +0, -5, "obj_blue.obj");
 		walls.push(wallB);
 
 		// Cube
@@ -225,6 +233,37 @@ window.onload = function(){
 		let mesh = new THREE.Mesh(geometry, material);
 		mesh.position.set(x, y, z);
 		return mesh;
+	}
+}
+
+class City{
+
+	constructor(gX, gY, gZ, name){
+		console.log("Wall");
+		this._x = SIZE_GRID*gX; 
+		this._y = SIZE_GRID*gY; 
+		this._z = SIZE_GRID*gZ;
+		this._name = name;
+		this.init();
+	}
+
+	init(){
+		// Group
+		this._group = new THREE.Group();
+		this._group.position.set(this._x, this._y, this._z);
+		rootGroup.add(this._group);// Add to group!!
+		// Random
+		let rdm = Math.floor(Math.random() * 2);
+		// Clone
+		let clone = objLoader.findModels(this._name);
+		clone.scale.set(0.5, 0.5, 0.5);
+		clone.position.set(0, 0, 0);
+		clone.rotation.set(0, Math.PI*rdm, 0);
+		this._group.add(clone);// Add to group!!
+	}
+
+	getPosition(){
+		return this._group.position;
 	}
 }
 
