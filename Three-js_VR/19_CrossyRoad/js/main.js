@@ -4,21 +4,19 @@
 
 console.log("Hello Three.js!!");
 
-// MARKER
-const MARKER = "marker";
-
 // Emotions
-const EMO_HAPPY    = "happy";
-const EMO_ANGRY    = "angry";
-const EMO_SAD      = "sad";
-const EMO_PLEASANT = "pleasant";
-
 const STEP_FORWARD = "forward";
 const STEP_BACK    = "back";
 const STEP_LEFT    = "left";
 const STEP_RIGHT   = "right";
 
-const tanukiFrame = {
+// TYPE
+const TYPE_MARKER  = "marker";
+const TYPE_PLAYER  = "player";
+const TYPE_WALL    = "wall";
+const TYPE_ENEMY   = "enemy";
+
+const playerFrame = {
 	base: ["tanuki_talk_1.obj"],
 	talk: ["tanuki_talk_1.obj", "tanuki_talk_2.obj", "tanuki_talk_1.obj", "tanuki_talk_2.obj"],
 	sad:  ["tanuki_sad_1.obj", "tanuki_sad_2.obj", "tanuki_sad_1.obj", "tanuki_sad_2.obj"],
@@ -27,8 +25,13 @@ const tanukiFrame = {
 
 // Data
 const models = {data:[
-	{dir:"./models/obj/", mtl:"city_1.mtl", obj:"city_1.obj"},
-	{dir:"./models/obj/", mtl:"city_2.mtl", obj:"city_2.obj"},
+	{dir:"./models/obj/", mtl:"city_1.mtl",        obj:"city_1.obj"},
+	{dir:"./models/obj/", mtl:"city_2.mtl",        obj:"city_2.obj"},
+	{dir:"./models/obj/", mtl:"obj_red.mtl",       obj:"obj_red.obj"},
+	{dir:"./models/obj/", mtl:"obj_green.mtl",     obj:"obj_green.obj"},
+	{dir:"./models/obj/", mtl:"obj_blue.mtl",      obj:"obj_blue.obj"},
+	{dir:"./models/obj/", mtl:"tanuki_talk_1.mtl", obj:"tanuki_talk_1.obj"},
+	{dir:"./models/obj/", mtl:"tanuki_talk_1.mtl", obj:"tanuki_talk_1.obj"},
 	{dir:"./models/obj/", mtl:"tanuki_talk_1.mtl", obj:"tanuki_talk_1.obj"},
 	{dir:"./models/obj/", mtl:"tanuki_talk_2.mtl", obj:"tanuki_talk_2.obj"},
 	{dir:"./models/obj/", mtl:"tanuki_sad_1.mtl",  obj:"tanuki_sad_1.obj"},
@@ -36,7 +39,6 @@ const models = {data:[
 	{dir:"./models/obj/", mtl:"tanuki_run_1.mtl",  obj:"tanuki_run_1.obj"},
 	{dir:"./models/obj/", mtl:"tanuki_run_2.mtl",  obj:"tanuki_run_2.obj"},
 	{dir:"./models/obj/", mtl:"tanuki_run_3.mtl",  obj:"tanuki_run_3.obj"},
-	{dir:"./models/obj/", mtl:"chr_old.mtl",obj:"chr_old.obj"},
 ]};
 
 const sounds = {data:[
@@ -52,6 +54,7 @@ const fonts = {data:[
 ]};
 
 let tm = null;
+let rootGroup   = null;
 let objLoader   = null;
 let soundLoader = null;
 let fontLoader  = null;
@@ -64,6 +67,8 @@ window.onload = function(){
 	// 	Camera position(VR): vrX, vrY, vrZ
 	tm = new ThreeManager(0, 60, 90, 0, 10, 25);
 	tm._renderer.setAnimationLoop(animate);
+
+	rootGroup = tm.getGroup();
 
 	objLoader = new ObjLoader();
 	objLoader.loadModels(models, onReadyModels, onError);
@@ -91,15 +96,18 @@ window.onload = function(){
 
 		// Skybox
 		let skybox = tm.createSkybox("./textures/skybox_space.png", 6, 300);
-		tm.addScene(skybox);
+		rootGroup.add(skybox);
 
 		// Camera
 		let cContainer = tm.getCameraContainer();
 
-		// City, Tanuki
-		//let city = new City("city_1.obj", 0, -5, 0);
-		let tanu = new Tanuki("tanuki_talk_1.obj", 0, 0, 0);
-		tanu.startAnimation("talk");
+		// Player
+		let player = new Player(0, 0, 3);
+		player.startAnimation("base");
+
+		let wallR  = new Wall(-1, 0, -3, "obj_red.obj");
+		let wallG  = new Wall(+0, 0, -3,  "obj_green.obj");
+		let wallB  = new Wall(+1, 0, -3, "obj_blue.obj");
 
 		// Cube
 		let geometry = new THREE.BoxGeometry(3, 3, 3);
@@ -107,7 +115,7 @@ window.onload = function(){
 
 		let ctlGroup = new THREE.Group();
 		ctlGroup.position.set(0, 0, 50);
-		tm.addGroup(ctlGroup);
+		rootGroup.add(ctlGroup);
 
 		let ctlForward = new THREE.Mesh(geometry, material);
 		ctlForward.position.set(0, 0, +4);
@@ -135,11 +143,11 @@ window.onload = function(){
 				console.log("distance:" + target.distance + "_" + target.object.name);
 				console.log(target);
 				let name = target.object.name;
-				// Tanuki
-				if(name == STEP_FORWARD) tanu.startAnimation("run").stepOut(0.0, 2.5, +5.0);
-				if(name == STEP_BACK)    tanu.startAnimation("run").stepOut(0.0, 2.5, -5.0);
-				if(name == STEP_LEFT)    tanu.startAnimation("run").stepOut(-5.0, 2.5, 0.0);
-				if(name == STEP_RIGHT)   tanu.startAnimation("run").stepOut(+5.0, 2.5, 0.0);
+				// Player
+				if(name == STEP_FORWARD) player.startAnimation("run").stepOut(0.0, 2.5, +5.0);
+				if(name == STEP_BACK)    player.startAnimation("run").stepOut(0.0, 2.5, -5.0);
+				if(name == STEP_LEFT)    player.startAnimation("run").stepOut(-5.0, 2.5, 0.0);
+				if(name == STEP_RIGHT)   player.startAnimation("run").stepOut(+5.0, 2.5, 0.0);
 			}
 		});
 	}
@@ -156,7 +164,7 @@ window.onload = function(){
 		// Test
 		let font = fontLoader.findFonts("MisakiGothic");
 		let text = fontLoader.createText("CROSSY!!", font, 4, 0, 20, 0);
-		tm.addGroup(text);
+		rootGroup.add(text);
 	}
 
 	// Error
@@ -168,28 +176,49 @@ window.onload = function(){
 	function animate(){
 		tm.update();   // Manager
 		ctlVR.update();// Controller
+
+		// Collision
 	};
+
+	function createCube(w=3, h=3, d=3, x=0, y=0, z=0){
+		let geometry = new THREE.BoxGeometry(w, h, d);
+		let material = new THREE.MeshNormalMaterial();
+		let mesh = new THREE.Mesh(geometry, material);
+		mesh.position.set(x, y, z);
+		return mesh;
+	}
 }
 
-class Tanuki{
+class Player{
 
-	constructor(name, x, y, z){
-		console.log("Tanuki");
-		this._x = x; this._y = y; this._z = z;
+	constructor(gX, gY, gZ){
+		console.log("Player");
+		this._type = TYPE_PLAYER;
+		this._x = SIZE_GRID*gX; 
+		this._y = SIZE_GRID*gY; 
+		this._z = SIZE_GRID*gZ;
 		this.init();
 	}
 
 	init(){
 		// Group
 		this._group = new THREE.Group();
-		tm.addGroup(this._group);// Add to group!!
+		this._group.position.set(this._x, this._y, this._z);
+		rootGroup.add(this._group);// Add to group!!
+		// Marker
+		this._mFront = this.createMarker(0, 0, -SIZE_GRID);
+		this._group.add(this._mFront);
+		this._mBack = this.createMarker(0, 0, +SIZE_GRID);
+		this._group.add(this._mBack);
+		this._mLeft = this.createMarker(-SIZE_GRID, 0, 0);
+		this._group.add(this._mLeft);
+		this._mRight = this.createMarker(+SIZE_GRID, 0, 0);
+		this._group.add(this._mRight);
 		// Frame
-		this._frameKey   = "base";
-		this._frameIndex = 0;
 		this._frameAnimation = {};
-		for(let key in tanukiFrame){
+		for(let key in playerFrame){
 			this._frameAnimation[key] = [];
-			for(let path of tanukiFrame[key]){
+			for(let path of playerFrame[key]){
 				let clone = this.createClone(path);
 				this._frameAnimation[key].push(clone);
 			}
@@ -199,6 +228,15 @@ class Tanuki{
 		// Motion
 		this._motionFlg = false;
 		this._motionTl  = null;
+	}
+
+	createMarker(x=0, y=0, z=0, w=2, h=2, d=2){
+		let geometry = new THREE.BoxGeometry(w, h, d);
+		let material = new THREE.MeshNormalMaterial();
+		let marker = new THREE.Mesh(geometry, material);
+		marker.name = TYPE_MARKER;
+		marker.position.set(x, y+h*0.5, z);
+		return marker;
 	}
 
 	startAnimation(key){
@@ -240,58 +278,53 @@ class Tanuki{
 		this._tickId = setTimeout(()=>{this.tickAnimation();}, 150);
 	}
 
-	motionJump(){
-		if(this._motionFlg == true) return;
-		this._motionFlg = true;
-		console.log("motionJump!!");
-		this._motionTl = new TimelineMax({repeat: 0, yoyo: false, onComplete:()=>{
-			this._motionFlg = false;
-			this.stopAnimation();
-		}});
-		this._motionTl.to(this._group.position, 0.3, {y: "+=10.0", ease: Sine.easeOut});
-		this._motionTl.to(this._group.position, 1.0, {y: "-=10.0", ease: Bounce.easeOut});
-	}
-
 	stepOut(sX=0.0, sY=2.5, sZ=0.0){
 		if(this._motionFlg == true) return;
 		this._motionFlg = true;
-		console.log("stepZ!!");
+		console.log("stepOut!!");
+		let timeUp   = 0.2;
+		let timeDown = 0.3;
+
 		this._motionTl = new TimelineMax({repeat: 0, yoyo: false, onComplete:()=>{
 			this._motionFlg = false;
 			this.stopAnimation();
 		}});
-		let timeUp   = 0.2;
-		let timeDown = 0.3;
-		this._motionTl.to(this._group.position, timeUp,   {x: "+="+sX, y: "+="+sY, z: "+="+sZ, ease: Sine.easeOut});
-		this._motionTl.to(this._group.position, timeDown, {x: "+="+sX, y: "-="+sY, z: "+="+sZ, ease: Bounce.easeOut});
+		this._motionTl.to(this._group.position, timeUp,   
+			{x: "+="+sX, y: "+="+sY, z: "+="+sZ, ease: Sine.easeOut});
+		this._motionTl.to(this._group.position, timeDown, 
+			{x: "+="+sX, y: "-="+sY, z: "+="+sZ, ease: Bounce.easeOut});
 	}
 
 	createClone(name, visible=false){
 		console.log("createClone:" + name);
 		let clone = objLoader.findModels(name);
-		clone.scale.set(1, 1, 1);
-		clone.position.set(this._x, this._y, this._z);
-		clone.rotation.set(0, 0, 0);
+		clone.scale.set(0.5, 0.5, 0.5);
+		clone.position.set(0, 0, 0);
+		clone.rotation.set(0, Math.PI, 0);
 		clone.visible = visible;
 		this._group.add(clone);// Add to group!!
 		return clone;
 	}
 }
 
-class City{
+class Wall{
 
-	constructor(name, x, y, z){
-		console.log("City");
+	constructor(gX, gY, gZ, name){
+		console.log("Wall");
+		this._type = TYPE_WALL;
+		this._x = SIZE_GRID*gX; 
+		this._y = SIZE_GRID*gY; 
+		this._z = SIZE_GRID*gZ;
 		this._name = name;
-		this._x = x; this._y = y; this._z = z;
 		this.init();
 	}
 
 	init(){
-		this._clone = objLoader.findModels(this._name);
-		this._clone.scale.set(1, 1, 1);
-		this._clone.position.set(this._x, this._y, this._z);
-		this._clone.rotation.set(0, Math.PI*-0.5, 0);
-		tm.addGroup(this._clone);// Add to group!!
+		// Clone
+		let clone = objLoader.findModels(this._name);
+		clone.scale.set(0.6, 0.6, 0.6);
+		clone.position.set(this._x, this._y, this._z);
+		clone.rotation.set(0, Math.PI, 0);
+		rootGroup.add(clone);// Add to group!!
 	}
 }

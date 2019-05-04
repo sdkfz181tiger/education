@@ -2,6 +2,7 @@ console.log("utility.js!!");
 
 const DEG_TO_RAD = Math.PI / 180;
 const RAD_TO_DEG = 180 / Math.PI;
+const SIZE_GRID  = 10;
 
 // Three.js
 class ThreeManager{
@@ -23,6 +24,14 @@ class ThreeManager{
 		// Scene
 		this._scene = new THREE.Scene();
 
+		// Group
+		this._group = new THREE.Group();
+		this._scene.add(this._group);
+
+		// Axes
+		this._axes = new THREE.AxesHelper(5);
+		this._group.add(this._axes);
+
 		// Stats
 		this._stats = new Stats();
 		this._stats.setMode(0);
@@ -30,10 +39,6 @@ class ThreeManager{
 		this._stats.domElement.style.left     = "0px";
 		this._stats.domElement.style.top      = "0px";
 		document.body.appendChild(this._stats.domElement);
-
-		// Axes
-		this._axes = new THREE.AxesHelper(5);
-		this._scene.add(this._axes);
 
 		// Camera
 		this._camera = new THREE.PerspectiveCamera(
@@ -96,11 +101,7 @@ class ThreeManager{
 		document.body.appendChild(WEBVR.createButton(this._renderer));
 
 		// Wire
-		this.createWire(14, 14, 10, {color: 0x999999});
-
-		// Group
-		this._group = new THREE.Group();
-		this._scene.add(this._group);
+		this.createWire(14, 14, SIZE_GRID, {color: 0x999999});
 
 		// Raycaster(for PC)
 		let mouseVector = new THREE.Vector3();
@@ -189,20 +190,20 @@ class ThreeManager{
 		this._cssRenderer.render(this._scene, this._camera);
 	}
 
+	getScene(){
+		return this._scene;
+	}
+
+	getGroup(){
+		return this._group;
+	}
+
 	getCamera(){
 		return this._camera;
 	}
 
 	getCameraContainer(){
 		return this._cameraContainer;
-	}
-
-	addScene(mesh){
-		this._scene.add(mesh);
-	}
-
-	addGroup(mesh){
-		this._group.add(mesh);
 	}
 
 	//==========
@@ -315,9 +316,6 @@ class ObjLoader{
 						mesh.geometry.computeFaceNormals();
 						mesh.geometry.computeVertexNormals();
 					});
-					meshes.scale.set(1, 1, 1);
-					meshes.rotation.set(0, Math.PI, 0);
-					meshes.position.set(0, 0, 0);
 					meshes.name = obj;// Name
 					resolve(meshes);  // Resolve
 				});
