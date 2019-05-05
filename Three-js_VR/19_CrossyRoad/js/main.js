@@ -24,6 +24,9 @@ const models = {data:[
 	{dir:"./models/obj/", mtl:"obj_red.mtl",       obj:"obj_red.obj"},
 	{dir:"./models/obj/", mtl:"obj_green.mtl",     obj:"obj_green.obj"},
 	{dir:"./models/obj/", mtl:"obj_blue.mtl",      obj:"obj_blue.obj"},
+	{dir:"./models/obj/", mtl:"tree_1.mtl",        obj:"tree_1.obj"},
+	{dir:"./models/obj/", mtl:"tree_2.mtl",        obj:"tree_2.obj"},
+	{dir:"./models/obj/", mtl:"car_1.mtl",         obj:"car_1.obj"},
 	{dir:"./models/obj/", mtl:"tanuki_talk_1.mtl", obj:"tanuki_talk_1.obj"},
 	{dir:"./models/obj/", mtl:"tanuki_talk_1.mtl", obj:"tanuki_talk_1.obj"},
 	{dir:"./models/obj/", mtl:"tanuki_talk_1.mtl", obj:"tanuki_talk_1.obj"},
@@ -94,12 +97,12 @@ window.onload = function(){
 		let cContainer = tm.getCameraContainer();
 
 		// City
-		let city1 = new City(+0.0, -0.25, +0.0, "city_2.obj");
-		let city2 = new City(-6.3, -0.25, +0.0, "city_1.obj");
-		let city3 = new City(+6.3, -0.25, +0.0, "city_1.obj");
-		let city4 = new City(+0.0, -0.25, -6.3, "city_2.obj");
-		let city5 = new City(-6.3, -0.25, -6.3, "city_1.obj");
-		let city6 = new City(+6.3, -0.25, -6.3, "city_1.obj");
+		// let city1 = new City(+0.0, -0.25, +0.0, "city_2.obj");
+		// let city2 = new City(-6.3, -0.25, +0.0, "city_1.obj");
+		// let city3 = new City(+6.3, -0.25, +0.0, "city_1.obj");
+		// let city4 = new City(+0.0, -0.25, -6.3, "city_2.obj");
+		// let city5 = new City(-6.3, -0.25, -6.3, "city_1.obj");
+		// let city6 = new City(+6.3, -0.25, -6.3, "city_1.obj");
 
 		// Player
 		let player = new Player(0, 0, 3);
@@ -107,11 +110,11 @@ window.onload = function(){
 
 		// Walls
 		walls = [];
-		let wallR = new Wall(+0, +0, -5, "obj_red.obj");
+		let wallR = new Wall(+0, +0, +0, "tree_1.obj");
 		walls.push(wallR);
-		let wallG = new Wall(-1, +0, -5, "obj_green.obj");
+		let wallG = new Wall(-1, +0, +0, "tree_2.obj");
 		walls.push(wallG);
-		let wallB = new Wall(+1, +0, -5, "obj_blue.obj");
+		let wallB = new Wall(+1, +0, +0, "car_1.obj");
 		walls.push(wallB);
 
 		// Cube
@@ -359,13 +362,23 @@ class Player{
 	stepOut(sX=0.0, sY=2.5, sZ=0.0){
 		if(this._motionFlg == true) return;
 		this._motionFlg = true;
-		console.log("stepOut!!");
+		console.log("stepOut:" + sX + ", " + sZ);
 		let timeUp   = 0.2;
 		let timeDown = 0.3;
 		this._motionTl = new TimelineMax({repeat: 0, yoyo: false, onComplete:()=>{
 			this._motionFlg = false;
 			this.stopAnimation();
 		}});
+		if(sX != 0.0){
+			let flg = (0.0 < sX)?-1:+1;
+			this._motionTl.to(this._group.rotation, 0.1, 
+				{y: Math.PI*flg*0.5, ease: Sine.easeOut});
+		}
+		if(sZ != 0.0){
+			let flg = (0.0 < sZ)?1:+0;
+			this._motionTl.to(this._group.rotation, 0.1, 
+				{y: Math.PI*flg, ease: Sine.easeOut});
+		}
 		this._motionTl.to(this._group.position, timeUp,   
 			{x: "+="+sX, y: "+="+sY, z: "+="+sZ, ease: Sine.easeOut});
 		this._motionTl.to(this._group.position, timeDown, 
