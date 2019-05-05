@@ -98,7 +98,7 @@ window.onload = function(){
 		let cContainer = tm.getCameraContainer();
 
 		// Player
-		let player = new Player(0, 0, 3);
+		let player = new Player(0, 0, 0);
 		player.startAnimation("base");
 
 		// Tile
@@ -371,12 +371,12 @@ class Player{
 			this.stopAnimation();
 		}});
 		if(sX != 0.0){
-			let flg = (0.0 < sX)?-1:+1;
+			let flg = (0.0 < sX)?+1:-1;
 			this._motionTl.to(this._group.rotation, 0.1, 
 				{y: Math.PI*flg*0.5, ease: Sine.easeOut});
 		}
 		if(sZ != 0.0){
-			let flg = (0.0 < sZ)?1:+0;
+			let flg = (0.0 < sZ)?0:1;
 			this._motionTl.to(this._group.rotation, 0.1, 
 				{y: Math.PI*flg, ease: Sine.easeOut});
 		}
@@ -397,7 +397,7 @@ class Player{
 		let clone = objLoader.findModels(name);
 		clone.scale.set(0.5, 0.5, 0.5);
 		clone.position.set(0, 0, 0);
-		clone.rotation.set(0, Math.PI, 0);
+		clone.rotation.set(0, 0, 0);
 		clone.visible = visible;
 		this._group.add(clone);// Add to group!!
 		return clone;
