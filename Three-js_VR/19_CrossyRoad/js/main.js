@@ -27,6 +27,7 @@ const models = {data:[
 	{dir:"./models/obj/", mtl:"tree_1.mtl",        obj:"tree_1.obj"},
 	{dir:"./models/obj/", mtl:"tree_2.mtl",        obj:"tree_2.obj"},
 	{dir:"./models/obj/", mtl:"car_1.mtl",         obj:"car_1.obj"},
+	{dir:"./models/obj/", mtl:"road_1.mtl",        obj:"road_1.obj"},
 	{dir:"./models/obj/", mtl:"tanuki_talk_1.mtl", obj:"tanuki_talk_1.obj"},
 	{dir:"./models/obj/", mtl:"tanuki_talk_1.mtl", obj:"tanuki_talk_1.obj"},
 	{dir:"./models/obj/", mtl:"tanuki_talk_1.mtl", obj:"tanuki_talk_1.obj"},
@@ -96,25 +97,25 @@ window.onload = function(){
 		// Camera
 		let cContainer = tm.getCameraContainer();
 
-		// City
-		// let city1 = new City(+0.0, -0.25, +0.0, "city_2.obj");
-		// let city2 = new City(-6.3, -0.25, +0.0, "city_1.obj");
-		// let city3 = new City(+6.3, -0.25, +0.0, "city_1.obj");
-		// let city4 = new City(+0.0, -0.25, -6.3, "city_2.obj");
-		// let city5 = new City(-6.3, -0.25, -6.3, "city_1.obj");
-		// let city6 = new City(+6.3, -0.25, -6.3, "city_1.obj");
-
 		// Player
 		let player = new Player(0, 0, 3);
 		player.startAnimation("base");
 
+		// Tile
+		let tile1 = new MyModel(-4, +0, +0, "road_1.obj");
+		tile1.getPosition().y = -0.5;
+		let tile2 = new MyModel(+0, +0, +0, "road_1.obj");
+		tile2.getPosition().y = -0.5;
+		let tile3 = new MyModel(+4, +0, +0, "road_1.obj");
+		tile3.getPosition().y = -0.5;
+
 		// Walls
 		walls = [];
-		let wallR = new Wall(+0, +0, +0, "tree_1.obj");
+		let wallR = new MyModel(+3, +0, -1, "tree_1.obj");
 		walls.push(wallR);
-		let wallG = new Wall(-1, +0, +0, "tree_2.obj");
+		let wallG = new MyModel(-1, +0, -1, "tree_2.obj");
 		walls.push(wallG);
-		let wallB = new Wall(+1, +0, +0, "car_1.obj");
+		let wallB = new MyModel(+1, +0, +0, "car_1.obj");
 		walls.push(wallB);
 
 		// Cube
@@ -362,7 +363,7 @@ class Player{
 	stepOut(sX=0.0, sY=2.5, sZ=0.0){
 		if(this._motionFlg == true) return;
 		this._motionFlg = true;
-		console.log("stepOut:" + sX + ", " + sZ);
+		//console.log("stepOut:" + sX + ", " + sZ);
 		let timeUp   = 0.2;
 		let timeDown = 0.3;
 		this._motionTl = new TimelineMax({repeat: 0, yoyo: false, onComplete:()=>{
@@ -403,7 +404,7 @@ class Player{
 	}
 }
 
-class Wall{
+class MyModel{
 
 	constructor(gX, gY, gZ, name){
 		console.log("Wall");
@@ -421,9 +422,9 @@ class Wall{
 		rootGroup.add(this._group);// Add to group!!
 		// Clone
 		let clone = objLoader.findModels(this._name);
-		clone.scale.set(0.6, 0.6, 0.6);
+		clone.scale.set(0.625, 0.625, 0.625);
 		clone.position.set(0, 0, 0);
-		clone.rotation.set(0, Math.PI, 0);
+		clone.rotation.set(0, 0, 0);
 		this._group.add(clone);// Add to group!!
 	}
 
