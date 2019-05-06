@@ -52,7 +52,7 @@ window.onload = function(){
 			let model = gltfLoader.findModels("RobotExpressive.glb");
 			robot = new Robot(model);
 			let gltf = robot.getGLTF();
-			gltf.scale.set(0.05, 0.05, 0.05);
+			gltf.scale.set(0.02, 0.02, 0.02);
 			tm.moveToReticle(gltf);// Add to group!!
 		});
 
