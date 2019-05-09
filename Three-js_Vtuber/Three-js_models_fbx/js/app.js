@@ -10,16 +10,6 @@ const near   = 0.1;
 const far    = 10.0;
 
 let pathes = [
-	// "./models/fbx/tanuki/computer/sitting.fbx",
-	// "./models/fbx/tanuki/computer/sittotype.fbx",
-	// "./models/fbx/tanuki/computer/typetosit.fbx",
-	// "./models/fbx/tanuki/computer/typing.fbx",
-
-	"./models/fbx/tanuki/dance/breakdance.fbx",
-	"./models/fbx/tanuki/dance/dancing.fbx",
-	"./models/fbx/tanuki/dance/rumba.fbx",
-	"./models/fbx/tanuki/dance/salsa.fbx",
-	"./models/fbx/tanuki/dance/twist.fbx",
 
 	// "./models/fbx/tanuki/motion/angry.fbx",
 	// "./models/fbx/tanuki/motion/bow_1.fbx",
@@ -47,11 +37,20 @@ const SIZE_FBX = 0.05;
 
 // Data
 const models = {data:[
+	{dir:"./models/fbx/tanuki/computer/", fbx:"sitting.fbx"},
+	{dir:"./models/fbx/tanuki/computer/", fbx:"sittotype.fbx"},
+	{dir:"./models/fbx/tanuki/computer/", fbx:"typetosit.fbx"},
+	{dir:"./models/fbx/tanuki/computer/", fbx:"typing.fbx"},
+
 	{dir:"./models/fbx/tanuki/dance/", fbx:"breakdance.fbx"},
 	{dir:"./models/fbx/tanuki/dance/", fbx:"dancing.fbx"},
 	{dir:"./models/fbx/tanuki/dance/", fbx:"rumba.fbx"},
 	{dir:"./models/fbx/tanuki/dance/", fbx:"salsa.fbx"},
 	{dir:"./models/fbx/tanuki/dance/", fbx:"twist.fbx"},
+
+	{dir:"./models/fbx/tanuki/motion/", fbx:"angry.fbx"},
+	{dir:"./models/fbx/tanuki/motion/", fbx:"bow_1.fbx"},
+	{dir:"./models/fbx/tanuki/motion/", fbx:"bow_2.fbx"},
 ]};
 
 window.onload = function(){
@@ -75,7 +74,7 @@ window.onload = function(){
 
 	// Camera
 	let camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-	camera.position.set(0, 0.4, -1.0);
+	camera.position.set(0, 0.4, -1.2);
 	camera.lookAt({x:0, y:0, z:0});
 
 	// HemiLight
@@ -117,14 +116,16 @@ window.onload = function(){
 	// FbxLoader
 	let fbxLoader = new FbxLoader();
 	fbxLoader.loadModels(models, onReadyModels, onError);
+	let fbxModels = [];
 
 	// Ready
 	function onReadyModels(){
 		console.log("You are ready to use models!!");
-
-		let model = fbxLoader.findModels("twist.fbx");
-		scene.add(model);
-		console.log(model);
+		fbxModels = fbxLoader.getAllModels();
+		for(let i=0; i<fbxModels.length; i++){
+			if(0 < i) fbxModels[i].visible = false;// Default
+			scene.add(fbxModels[i]);
+		}
 	}
 
 	// Error
@@ -142,11 +143,32 @@ window.onload = function(){
 		controls.update();
 		renderer.render(scene, camera);
 
-		// Clock, AnimationMixer
-		if(clock){
-			// TODO
+		// Clock
+		let delta = clock.getDelta();
+
+		// AnimationMixer
+		for(let fbxModel of fbxModels){
+			fbxModel.animationMixer.update(delta);
 		}
 
 		window.requestAnimationFrame(loop);
 	};
+
+	// Testing
+	$(".bShow").click((e)=>{
+		let name = $(e.target).attr("name");
+		fbxLoader.showModel(name);
+	});
+
+	$("#bPlay").click(()=>{
+		for(let fbxModel of fbxModels) fbxModel.action.play();
+	});
+
+	$("#bStop").click(()=>{
+		for(let fbxModel of fbxModels) fbxModel.action.stop();
+	});
+
+	$("#bPause").click(()=>{
+		
+	});
 }

@@ -27,12 +27,18 @@ class FbxLoader{
 		});
 	}
 
-	findModels(name){
+	showModel(name){
 		for(let i=0; i<this._models.length; i++){
-			if(this._models[i].name != name) continue;
-			return this._models[i];
+			if(this._models[i].name == name){
+				this._models[i].visible = true;
+			}else{
+				this._models[i].visible = false;
+			}
 		}
-		return null;
+	}
+
+	getAllModels(){
+		return this._models;
 	}
 
 	asyncModel(dir, fbx){
@@ -54,7 +60,9 @@ class FbxLoader{
 				meshes.scale.set(SIZE_FBX, SIZE_FBX, SIZE_FBX);
 				meshes.rotation.set(0, Math.PI, 0);
 				meshes.name = fbx;// Name
-				resolve(meshes);   // Resolve
+				meshes.animationMixer = animationMixer;// AnimationMixer
+				meshes.action = action;// Action
+				resolve(meshes);       // Resolve
 			}, (progress)=>{
 				//console.log("onProgress");
 			}, (error)=>{
