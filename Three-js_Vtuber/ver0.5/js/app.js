@@ -48,9 +48,25 @@ const models = {data:[
 	{dir:"./models/fbx/tanuki/dance/", fbx:"salsa.fbx"},
 	{dir:"./models/fbx/tanuki/dance/", fbx:"twist.fbx"},
 
+	{dir:"./models/fbx/tanuki/idle/", fbx:"bored_1.fbx"},
+	{dir:"./models/fbx/tanuki/idle/", fbx:"bored_2.fbx"},
+	{dir:"./models/fbx/tanuki/idle/", fbx:"breathing.fbx"},
+	{dir:"./models/fbx/tanuki/idle/", fbx:"holding.fbx"},
+	{dir:"./models/fbx/tanuki/idle/", fbx:"sad.fbx"},
+	{dir:"./models/fbx/tanuki/idle/", fbx:"standing.fbx"},
+
 	{dir:"./models/fbx/tanuki/motion/", fbx:"angry.fbx"},
 	{dir:"./models/fbx/tanuki/motion/", fbx:"bow_1.fbx"},
 	{dir:"./models/fbx/tanuki/motion/", fbx:"bow_2.fbx"},
+	{dir:"./models/fbx/tanuki/motion/", fbx:"button.fbx"},
+	{dir:"./models/fbx/tanuki/motion/", fbx:"happy.fbx"},
+	{dir:"./models/fbx/tanuki/motion/", fbx:"jump.fbx"},
+	{dir:"./models/fbx/tanuki/motion/", fbx:"lookingaround.fbx"},
+	{dir:"./models/fbx/tanuki/motion/", fbx:"shocking.fbx"},
+	{dir:"./models/fbx/tanuki/motion/", fbx:"standup.fbx"},
+	{dir:"./models/fbx/tanuki/motion/", fbx:"terrible_1.fbx"},
+	{dir:"./models/fbx/tanuki/motion/", fbx:"terrible_2.fbx"},
+	{dir:"./models/fbx/tanuki/motion/", fbx:"yelling.fbx"},
 ]};
 
 window.onload = function(){
