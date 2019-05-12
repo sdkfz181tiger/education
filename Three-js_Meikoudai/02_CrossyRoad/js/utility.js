@@ -59,6 +59,7 @@ class ThreeManager{
 			console.log("This is PC!!");
 			// Camera
 			this._camera.position.set(pcX, pcY, pcZ);// PCでポジションを移動させる場合
+			this._cameraContainer.rotation.set(0*DEG_TO_RAD, 0*DEG_TO_RAD, 0*DEG_TO_RAD);
 			// Controls
 			this._controls = new THREE.TrackballControls(this._camera);// Cameraのみ対応
 			this._controls.target.set(0, 0, 0);
@@ -140,10 +141,8 @@ class ThreeManager{
 		// Stats
 		this._stats.update();
 
-		// Controls(for PC)
-		if(this._modeAndroid == true || this._modeiOS == true){
-			this._controls.update();
-		}
+		// Controls(for PC and Devices)
+		this._controls.update();
 
 		// Render
 		this._renderer.render(this._scene, this._camera);
