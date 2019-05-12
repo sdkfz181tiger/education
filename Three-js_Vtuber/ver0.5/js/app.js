@@ -9,29 +9,6 @@ const aspect = width / height;
 const near   = 0.1;
 const far    = 10.0;
 
-let pathes = [
-
-	// "./models/fbx/tanuki/motion/angry.fbx",
-	// "./models/fbx/tanuki/motion/bow_1.fbx",
-	// "./models/fbx/tanuki/motion/bow_2.fbx",
-	// "./models/fbx/tanuki/motion/elect.fbx",
-	// "./models/fbx/tanuki/motion/happy.fbx",
-	// "./models/fbx/tanuki/motion/jump.fbx",
-	// "./models/fbx/tanuki/motion/lookingaround.fbx",
-	// "./models/fbx/tanuki/motion/standup.fbx",
-	// "./models/fbx/tanuki/motion/walkbackwards_1.fbx",
-	// "./models/fbx/tanuki/motion/walkbackwards_2.fbx",
-	// "./models/fbx/tanuki/motion/yelling.fbx",
-
-	// "./models/fbx/tanuki/idle/bored.fbx",
-	// "./models/fbx/tanuki/idle/breathing.fbx",
-	// "./models/fbx/tanuki/idle/button.fbx",
-	// "./models/fbx/tanuki/idle/happy.fbx",
-	// "./models/fbx/tanuki/idle/holding.fbx",
-	// "./models/fbx/tanuki/idle/sad.fbx",
-	// "./models/fbx/tanuki/idle/standing.fbx",
-];
-
 // Size
 const SIZE_FBX = 0.05;
 

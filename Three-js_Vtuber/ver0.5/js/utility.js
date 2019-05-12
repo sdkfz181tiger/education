@@ -31,8 +31,10 @@ class FbxLoader{
 		for(let i=0; i<this._models.length; i++){
 			if(this._models[i].name == name){
 				this._models[i].visible = true;
+				this._models[i].action.play();// Play
 			}else{
 				this._models[i].visible = false;
+				this._models[i].action.stop();// Stop
 			}
 		}
 	}
@@ -49,7 +51,7 @@ class FbxLoader{
 			loader.load(path, (meshes)=>{
 				let animationMixer = new THREE.AnimationMixer(meshes);
 				let action = animationMixer.clipAction(meshes.animations[0]);
-				action.play();
+				//action.play();// Default
 				meshes.traverse((child)=>{
 					if(child.isMesh){
 						child.castShadow = true;

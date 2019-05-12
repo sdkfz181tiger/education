@@ -68,7 +68,6 @@ class ThreeManager{
 		this._scene.add(this._hemiLightHelper);
 
 		// Light
-		//this._dirLight = new THREE.DirectionalLight(0x00ff00);
 		this._dirLight = new THREE.DirectionalLight(0xffffff);
 		this._dirLight.position.set(-15.0, 30.0, 15.0);
 		this._scene.add(this._dirLight);
