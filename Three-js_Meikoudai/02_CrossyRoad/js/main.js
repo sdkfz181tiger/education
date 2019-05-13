@@ -27,6 +27,10 @@ const models = {data:[
 	{dir:"./models/obj/", mtl:"tree_1.mtl",        obj:"tree_1.obj"},
 	{dir:"./models/obj/", mtl:"tree_2.mtl",        obj:"tree_2.obj"},
 	{dir:"./models/obj/", mtl:"car_1.mtl",         obj:"car_1.obj"},
+	{dir:"./models/obj/", mtl:"car_2.mtl",         obj:"car_2.obj"},
+	{dir:"./models/obj/", mtl:"car_3.mtl",         obj:"car_3.obj"},
+	{dir:"./models/obj/", mtl:"truck_1.mtl",       obj:"truck_1.obj"},
+	{dir:"./models/obj/", mtl:"truck_2.mtl",       obj:"truck_2.obj"},
 	{dir:"./models/obj/", mtl:"road_1.mtl",        obj:"road_1.obj"},
 	{dir:"./models/obj/", mtl:"tanuki_talk_1.mtl", obj:"tanuki_talk_1.obj"},
 	{dir:"./models/obj/", mtl:"tanuki_talk_1.mtl", obj:"tanuki_talk_1.obj"},
@@ -97,7 +101,7 @@ window.onload = function(){
 		let cContainer = tm.getCameraContainer();
 
 		// Player
-		let player = new Player(0, 0, 0);
+		let player = new Player(0, 0, +2);
 		player.startAnimation("base");
 
 		// Tile
@@ -110,12 +114,18 @@ window.onload = function(){
 
 		// Walls
 		walls = [];
-		let wallR = new MyModel(+3, +0, -1, "tree_1.obj");
-		walls.push(wallR);
-		let wallG = new MyModel(-1, +0, -1, "tree_2.obj");
-		walls.push(wallG);
-		let wallB = new MyModel(+1, +0, +0, "car_1.obj");
-		walls.push(wallB);
+		let tree1 = new MyModel(+3, +0, -1, "tree_1.obj");
+		walls.push(tree1);
+		let tree2 = new MyModel(-1, +0, -1, "tree_2.obj");
+		walls.push(tree2);
+
+		let car1 = new MyModel(+4, +0, +0, "car_1.obj");
+		walls.push(car1);
+		let car2 = new MyModel(-5, +0, +1, "car_2.obj");
+		walls.push(car2);
+
+		let truck1 = new MyModel(-1, +0, +1, "truck_1.obj");
+		walls.push(truck1);
 
 		// Cube
 		let geometry = new THREE.BoxGeometry(3, 3, 3);
@@ -155,8 +165,7 @@ window.onload = function(){
 				if(name == STEP_FORWARD){
 					let flg = true;
 					for(let wall of walls){
-						let dist = player.calcDistance(wall.getPosition(), 0, -1);
-						if(dist < SIZE_GRID*0.5) flg = false;
+						if(player.containsPoint(wall, 0, 0, -1)) flg = false;
 					}
 					if(flg){
 						player.startAnimation("run").stepOut(0.0, 2.5, -5.0);
@@ -168,8 +177,7 @@ window.onload = function(){
 				if(name == STEP_BACK){
 					let flg = true;
 					for(let wall of walls){
-						let dist = player.calcDistance(wall.getPosition(), 0, +1);
-						if(dist < SIZE_GRID*0.5) flg = false;
+						if(player.containsPoint(wall, 0, 0, +1)) flg = false;
 					}
 					if(flg){
 						player.startAnimation("run").stepOut(0.0, 2.5, +5.0);
@@ -181,8 +189,7 @@ window.onload = function(){
 				if(name == STEP_LEFT){
 					let flg = true;
 					for(let wall of walls){
-						let dist = player.calcDistance(wall.getPosition(), -1, 0);
-						if(dist < SIZE_GRID*0.5) flg = false;
+						if(player.containsPoint(wall, -1, 0, 0)) flg = false;
 					}
 					if(flg){
 						player.startAnimation("run").stepOut(-5.0, 2.5, 0.0);
@@ -194,8 +201,7 @@ window.onload = function(){
 				if(name == STEP_RIGHT){
 					let flg = true;
 					for(let wall of walls){
-						let dist = player.calcDistance(wall.getPosition(), +1, 0);
-						if(dist < SIZE_GRID*0.5) flg = false;
+						if(player.containsPoint(wall, +1, 0, 0)) flg = false;
 					}
 					if(flg){
 						player.startAnimation("run").stepOut(+5.0, 2.5, 0.0);
@@ -305,11 +311,13 @@ class Player{
 		return this._group.position;
 	}
 
-	calcDistance(position, offX=0, offZ=0){
-		let difX = position.x - (this._group.position.x + offX*SIZE_GRID);
-		let difZ = position.z - (this._group.position.z + offZ*SIZE_GRID);
-		let dist = Math.floor(Math.sqrt(difX*difX + difZ*difZ));
-		return dist;
+	containsPoint(target, offX=0, offY=0, offZ=0){
+		let pX = this._group.position.x + offX*SIZE_GRID;
+		let pY = this._group.position.y + offY*SIZE_GRID;
+		let pZ = this._group.position.z + offZ*SIZE_GRID;
+		let point = new THREE.Vector3(pX, pY, pZ);
+		let box3 = new THREE.Box3().setFromObject(target._group);
+		return box3.containsPoint(point);
 	}
 
 	createSensor(x=0, y=0, z=0, w=2, h=2, d=2){
