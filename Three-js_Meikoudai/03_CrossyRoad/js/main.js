@@ -10,13 +10,6 @@ const STEP_BACK    = "back";
 const STEP_LEFT    = "left";
 const STEP_RIGHT   = "right";
 
-const playerFrame = {
-	base: ["tanuki_talk_1.obj"],
-	talk: ["tanuki_talk_1.obj", "tanuki_talk_2.obj", "tanuki_talk_1.obj", "tanuki_talk_2.obj"],
-	sad:  ["tanuki_sad_1.obj", "tanuki_sad_2.obj", "tanuki_sad_1.obj", "tanuki_sad_2.obj"],
-	run:  ["tanuki_run_1.obj", "tanuki_run_2.obj", "tanuki_run_1.obj", "tanuki_run_3.obj"]
-}
-
 // Data
 const models = {data:[
 	{dir:"./models/obj/", mtl:"city_1.mtl",        obj:"city_1.obj"},
@@ -103,8 +96,7 @@ window.onload = function(){
 		let cContainer = tm.getCameraContainer();
 
 		// Player
-		let player = new Player(0, 0, +2);
-		player.startAnimation("base");
+		let player = new Player(0, 0, +2, "tanuki_run_1.obj");
 
 		// Tile
 		let tile1 = new MyModel(-4, +0, +0, "road_1.obj");
@@ -178,7 +170,7 @@ window.onload = function(){
 						if(wall._boardFlg == true) continue;// Board or not
 						if(player.containsPoint(wall, 0, 0, -1)) flg = false;
 					}
-					player.startAnimation("run").stepOut(0.0, 2.5, -5.0, !flg);
+					player.stepOut(0.0, 2.5, -5.0, !flg);
 				}
 
 				if(name == STEP_BACK){
@@ -187,7 +179,7 @@ window.onload = function(){
 						if(wall._boardFlg == true) continue;// Board or not
 						if(player.containsPoint(wall, 0, 0, +1)) flg = false;
 					}
-					player.startAnimation("run").stepOut(0.0, 2.5, +5.0, !flg);
+					player.stepOut(0.0, 2.5, +5.0, !flg);
 				}
 
 				if(name == STEP_LEFT){
@@ -196,7 +188,7 @@ window.onload = function(){
 						if(wall._boardFlg == true) continue;// Board or not
 						if(player.containsPoint(wall, -1, 0, 0)) flg = false;
 					}
-					player.startAnimation("run").stepOut(-5.0, 2.5, 0.0, !flg);
+					player.stepOut(-5.0, 2.5, 0.0, !flg);
 				}
 
 				if(name == STEP_RIGHT){
@@ -205,7 +197,7 @@ window.onload = function(){
 						if(wall._boardFlg == true) continue;// Board or not
 						if(player.containsPoint(wall, +1, 0, 0)) flg = false;
 					}
-					player.startAnimation("run").stepOut(+5.0, 2.5, 0.0, !flg);
+					player.stepOut(+5.0, 2.5, 0.0, !flg);
 				}
 			}
 		});
@@ -276,11 +268,12 @@ class City{
 
 class Player{
 
-	constructor(gX, gY, gZ){
+	constructor(gX, gY, gZ, name){
 		console.log("Player");
 		this._x = SIZE_GRID*gX; 
 		this._y = SIZE_GRID*gY; 
 		this._z = SIZE_GRID*gZ;
+		this._name = name;
 		this.init();
 	}
 
@@ -289,17 +282,12 @@ class Player{
 		this._group = new THREE.Group();
 		this._group.position.set(this._x, this._y, this._z);
 		rootGroup.add(this._group);// Add to group!!
-		// Frame
-		this._frameAnimation = {};
-		for(let key in playerFrame){
-			this._frameAnimation[key] = [];
-			for(let path of playerFrame[key]){
-				let clone = this.createClone(path);
-				this._frameAnimation[key].push(clone);
-			}
-		}
-		this._tickFlg = false;
-		this._tickId  = null;
+		// Clone
+		let clone = objLoader.findModels(this._name);
+		clone.scale.set(0.625, 0.625, 0.625);
+		clone.position.set(0, 0, 0);
+		clone.rotation.set(0, 0, 0);
+		this._group.add(clone);// Add to group!!
 		// Motion
 		this._motionFlg = false;
 		this._motionTl  = null;
@@ -318,54 +306,14 @@ class Player{
 		return box3.containsPoint(point);
 	}
 
-	startAnimation(key){
-		this._frameKey   = key;
-		this._frameIndex = 0;
-		for(let key in this._frameAnimation){
-			let animation = this._frameAnimation[key];
-			for(let animate of animation){
-				animate.visible = false;
-			}
-		}
-		this._tickFlg = true;
-		this.tickAnimation();
-		return this;
-	}
-
-	stopAnimation(){
-		this._tickFlg = false;
-		if(this._tickId) clearTimeout(this._tickId);
-	}
-
-	tickAnimation(){
-		//console.log("tick:" + this._frameKey + ", " + this._frameIndex);
-		this._frameIndex++;
-		let total = this._frameAnimation[this._frameKey].length;
-		if(total <= 1) this._tickFlg = false;
-		if(total <= this._frameIndex){
-			this._frameIndex = 0;
-		}
-		for(let i=0; i<total; i++){
-			if(i === this._frameIndex){
-				this._frameAnimation[this._frameKey][i].visible = true;
-			}else{
-				this._frameAnimation[this._frameKey][i].visible = false;
-			}
-		}
-		if(this._tickFlg == false) return;
-		if(this._tickId) clearTimeout(this._tickId);
-		this._tickId = setTimeout(()=>{this.tickAnimation();}, 150);
-	}
-
 	stepOut(sX=0.0, sY=2.5, sZ=0.0, skipFlg=false){
 		if(this._motionFlg == true) return;
 		this._motionFlg = true;
-		console.log("stepOut:" + sX + ", " + sY + ", " + sZ);
+		//console.log("stepOut:" + sX + ", " + sY + ", " + sZ);
 		let timeUp   = 0.05;
 		let timeDown = 0.1;
 		this._motionTl = new TimelineMax({repeat: 0, yoyo: false, onComplete:()=>{
 			this._motionFlg = false;
-			this.stopAnimation();
 			this.checkBoard();// Checking boards
 		}});
 		if(sX != 0.0){
