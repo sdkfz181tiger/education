@@ -49,12 +49,13 @@ const fonts = {data:[
 ]};
 
 let tm          = null;
-let rootGroup   = null;
 let objLoader   = null;
 let soundLoader = null;
 let fontLoader  = null;
 
-let walls = null;
+let rootGroup   = null;
+let player      = null;
+let actors      = null;
 
 window.onload = function(){
 	console.log("OnLoad");
@@ -62,16 +63,12 @@ window.onload = function(){
 	// ThreeManager
 	// 	Camera position(PC): pcX, pcY, pcZ
 	tm = new ThreeManager(0, 60, 90);
-	tm._renderer.setAnimationLoop(animate);
 
-	rootGroup = tm.getGroup();
-
+	// Loader
 	objLoader = new ObjLoader();
 	objLoader.loadModels(models, onReadyModels, onError);
-
 	soundLoader = new SoundLoader(tm.getCamera());
 	soundLoader.loadSounds(sounds, onReadySounds, onError);
-
 	fontLoader = new FontLoader();
 	fontLoader.loadFonts(fonts, onReadyFonts, onError);
 
@@ -88,46 +85,52 @@ window.onload = function(){
 	function onReadyModels(){
 		console.log("You are ready to use models!!");
 
-		// Skybox
-		let skybox = tm.createSkybox("./textures/skybox_space.png", 6, 300);
-		rootGroup.add(skybox);
+		// ThreeManager
+		tm._renderer.setAnimationLoop(animate);
+
+		// RootGroup
+		rootGroup = tm.getGroup();
+
+		// Player
+		player = new Player(0, 0, +2, "tanuki_run_1.obj");
 
 		// Camera
 		let cContainer = tm.getCameraContainer();
 
-		// Player
-		let player = new Player(0, 0, +2, "tanuki_run_1.obj");
+		// Skybox
+		let skybox = tm.createSkybox("./textures/skybox_space.png", 6, 300);
+		rootGroup.add(skybox);
 
 		// Tile
-		let tile1 = new MyModel(-4, +0, +0, "road_1.obj");
+		let tile1 = new MyActor(-4, +0, +0, "road_1.obj");
 		tile1.getPosition().y = -0.5;
-		let tile2 = new MyModel(+0, +0, +0, "road_1.obj");
+		let tile2 = new MyActor(+0, +0, +0, "road_1.obj");
 		tile2.getPosition().y = -0.5;
-		let tile3 = new MyModel(+4, +0, +0, "road_1.obj");
+		let tile3 = new MyActor(+4, +0, +0, "road_1.obj");
 		tile3.getPosition().y = -0.5;
 
-		// Walls
-		walls = [];
-		let tree1 = new MyModel(+3, +0, -1, "tree_1.obj");
-		walls.push(tree1);
-		let tree2 = new MyModel(-1, +0, -1, "tree_2.obj");
-		walls.push(tree2);
+		// Actors
+		actors = [];
+		let tree1 = new MyActor(+3, +0, -1, "tree_1.obj");
+		actors.push(tree1);
+		let tree2 = new MyActor(-1, +0, -1, "tree_2.obj");
+		actors.push(tree2);
 
-		let car1 = new MyModel(+4, +0, +0, "car_1.obj");
-		walls.push(car1);
-		let car2 = new MyModel(-5, +0, +1, "car_2.obj");
-		walls.push(car2);
+		let car1 = new MyActor(+4, +0, +0, "car_1.obj");
+		actors.push(car1);
+		let car2 = new MyActor(-5, +0, +1, "car_2.obj");
+		actors.push(car2);
 
-		let truck1 = new MyModel(-4, +0, +0, "truck_1.obj");
-		walls.push(truck1);
+		let truck1 = new MyActor(-4, +0, +0, "truck_1.obj");
+		actors.push(truck1);
 
-		let wood1 = new MyModel(+6, +0, +1, "wood_1.obj", true);
-		walls.push(wood1);
-		let wood2 = new MyModel(+0, +0, +0, "wood_2.obj", true);
-		walls.push(wood2);
+		let wood1 = new MyActor(+6, +0, +1, "wood_1.obj", true);
+		actors.push(wood1);
+		let wood2 = new MyActor(+0, +0, +0, "wood_2.obj", true);
+		actors.push(wood2);
 
-		// let mWood1 = new TimelineMax({repeat: -1, yoyo: true});
-		// mWood1.to(wood1._group.position, 10.0, {x: "-="+120.0});
+		let mWood1 = new TimelineMax({repeat: -1, yoyo: true});
+		mWood1.to(wood1._group.position, 10.0, {x: "-="+120.0});
 
 		// Cube
 		let geometry = new THREE.BoxGeometry(3, 3, 3);
@@ -166,36 +169,36 @@ window.onload = function(){
 				// Player
 				if(name == STEP_FORWARD){
 					let flg = true;
-					for(let wall of walls){
-						if(wall._boardFlg == true) continue;// Board or not
-						if(player.containsPoint(wall, 0, 0, -1)) flg = false;
+					for(let actor of actors){
+						if(actor._boardFlg == true) continue;// Board or not
+						if(player.containsPoint(actor, 0, 0, -1)) flg = false;
 					}
 					player.stepOut(0.0, 2.5, -5.0, !flg);
 				}
 
 				if(name == STEP_BACK){
 					let flg = true;
-					for(let wall of walls){
-						if(wall._boardFlg == true) continue;// Board or not
-						if(player.containsPoint(wall, 0, 0, +1)) flg = false;
+					for(let actor of actors){
+						if(actor._boardFlg == true) continue;// Board or not
+						if(player.containsPoint(actor, 0, 0, +1)) flg = false;
 					}
 					player.stepOut(0.0, 2.5, +5.0, !flg);
 				}
 
 				if(name == STEP_LEFT){
 					let flg = true;
-					for(let wall of walls){
-						if(wall._boardFlg == true) continue;// Board or not
-						if(player.containsPoint(wall, -1, 0, 0)) flg = false;
+					for(let actor of actors){
+						if(actor._boardFlg == true) continue;// Board or not
+						if(player.containsPoint(actor, -1, 0, 0)) flg = false;
 					}
 					player.stepOut(-5.0, 2.5, 0.0, !flg);
 				}
 
 				if(name == STEP_RIGHT){
 					let flg = true;
-					for(let wall of walls){
-						if(wall._boardFlg == true) continue;// Board or not
-						if(player.containsPoint(wall, +1, 0, 0)) flg = false;
+					for(let actor of actors){
+						if(actor._boardFlg == true) continue;// Board or not
+						if(player.containsPoint(actor, +1, 0, 0)) flg = false;
 					}
 					player.stepOut(+5.0, 2.5, 0.0, !flg);
 				}
@@ -224,6 +227,7 @@ window.onload = function(){
 	function animate(){
 		tm.update();   // Manager
 		ctlVR.update();// Controller
+		if(player != null) player.surfBoard();// Surfing
 	};
 
 	function createCube(w=3, h=3, d=3, x=0, y=0, z=0){
@@ -232,37 +236,6 @@ window.onload = function(){
 		let mesh = new THREE.Mesh(geometry, material);
 		mesh.position.set(x, y, z);
 		return mesh;
-	}
-}
-
-class City{
-
-	constructor(gX, gY, gZ, name){
-		console.log("Wall");
-		this._x = SIZE_GRID*gX; 
-		this._y = SIZE_GRID*gY; 
-		this._z = SIZE_GRID*gZ;
-		this._name = name;
-		this.init();
-	}
-
-	init(){
-		// Group
-		this._group = new THREE.Group();
-		this._group.position.set(this._x, this._y, this._z);
-		rootGroup.add(this._group);// Add to group!!
-		// Random
-		let rdm = Math.floor(Math.random() * 2);
-		// Clone
-		let clone = objLoader.findModels(this._name);
-		clone.scale.set(0.5, 0.5, 0.5);
-		clone.position.set(0, 0, 0);
-		clone.rotation.set(0, Math.PI*rdm, 0);
-		this._group.add(clone);// Add to group!!
-	}
-
-	getPosition(){
-		return this._group.position;
 	}
 }
 
@@ -312,6 +285,7 @@ class Player{
 		//console.log("stepOut:" + sX + ", " + sY + ", " + sZ);
 		let timeUp   = 0.05;
 		let timeDown = 0.1;
+		this.ridingOff();// Riding off
 		this._motionTl = new TimelineMax({repeat: 0, yoyo: false, onComplete:()=>{
 			this._motionFlg = false;
 			this.checkBoard();// Checking boards
@@ -343,23 +317,40 @@ class Player{
 
 	checkBoard(){
 		console.log("checkBoard");
-		for(let wall of walls){
-			if(wall._boardFlg == false) continue;
-			if(this.containsPoint(wall)){
-				console.log("Let's riding board!!");
-				this.ridingOn(wall);
+		for(let actor of actors){
+			if(actor._boardFlg == false) continue;
+			if(this.containsPoint(actor)){
+				this.ridingOn(actor);// Riding on
 			}
 		}
 	}
 
 	ridingOn(board){
-		console.log("ridingOn");
-		this._board = board;
+		if(this._board == null){
+			console.log("ridingOn!!");
+			this._board = board;
+			this._surfX = this._group.position.x - board._group.position.x;
+			this._surfY = this._group.position.y - board._group.position.y;
+			this._surfZ = this._group.position.z - board._group.position.z;
+		}
 	}
 
 	ridingOff(board){
-		console.log("ridingOff");
-		this._board = null;
+		if(this._board != null){
+			console.log("ridingOff!!");
+			this._board = null;
+			this._surfX = 0;
+			this._surfY = 0;
+			this._surfZ = 0;
+		}
+	}
+
+	surfBoard(){
+		if(this._board == null) return;
+		let x = this._board._group.position.x + this._surfX;
+		let y = this._board._group.position.y + this._surfY;
+		let z = this._board._group.position.z + this._surfZ;
+		this._group.position.set(x, y, z);
 	}
 
 	createClone(name, visible=false){
@@ -374,10 +365,10 @@ class Player{
 	}
 }
 
-class MyModel{
+class MyActor{
 
 	constructor(gX, gY, gZ, name, boardFlg=false){
-		console.log("Wall");
+		console.log("Actor");
 		this._x = SIZE_GRID*gX; 
 		this._y = SIZE_GRID*gY; 
 		this._z = SIZE_GRID*gZ;
