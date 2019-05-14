@@ -1,5 +1,10 @@
 console.log("utility.js!!");
 
+const OS_Android = "Android";
+const OS_iPhone  = "iPhone";
+const OS_iPad    = "iPad";
+const OS_iPod    = "iPod";
+
 const DEG_TO_RAD = Math.PI / 180;
 const RAD_TO_DEG = 180 / Math.PI;
 const SIZE_GRID  = 10;
@@ -7,19 +12,19 @@ const SIZE_GRID  = 10;
 // Three.js
 class ThreeManager{
 
-	constructor(pcX=0, pcY=0, pcZ=0, vrX=0, vrY=0, vrZ=0){
+	constructor(pcX=0, pcY=0, pcZ=0){
 		console.log("ThreeManager");
 
-		// PC or VR
-		//   false: PC mode(default)
-		//   true:  VR mode
-		this._modeVR = false;
-		if(navigator.activeVRDisplays != null && 0 < navigator.activeVRDisplays.length){
-			this._modeVR = true;
-		}
+		// PC or Smartphone
+		this._modeAndroid = false;
+		this._modeiOS     = false;
+		if(navigator.userAgent.indexOf(OS_Android) > 0) this._modeAndroid = true;
+		if(navigator.userAgent.indexOf(OS_iPhone)  > 0) this._modeiOS = true;
+		if(navigator.userAgent.indexOf(OS_iPad)    > 0) this._modeiOS = true;
+		if(navigator.userAgent.indexOf(OS_iPod)    > 0) this._modeiOS = true;
 
-		// Polyfill(for VR)
-		this._polyfill = new WebVRPolyfill();
+		console.log("_modeAndroid:" + this._modeAndroid);
+		console.log("_modeiOS:" + this._modeiOS);
 
 		// Scene
 		this._scene = new THREE.Scene();
@@ -49,8 +54,9 @@ class ThreeManager{
 		this._cameraContainer.add(this._camera);
 		this._scene.add(this._cameraContainer);
 
-		// PC or VR
-		if(this._modeVR == false){
+		// PC or DeviceOrientation
+		if(this._modeAndroid == false && this._modeiOS == false){
+			console.log("This is PC!!");
 			// Camera
 			this._camera.position.set(pcX, pcY, pcZ);// PCでポジションを移動させる場合
 			this._cameraContainer.rotation.set(0*DEG_TO_RAD, 0*DEG_TO_RAD, 0*DEG_TO_RAD);
@@ -58,9 +64,12 @@ class ThreeManager{
 			this._controls = new THREE.TrackballControls(this._camera);// Cameraのみ対応
 			this._controls.target.set(0, 0, 0);
 		}else{
-			// CameraContainer
-			this._cameraContainer.position.set(vrX, vrY, vrZ);// VRでポジションを移動させる場合
+			console.log("This is Smartphone!!");
+			// Camera
+			this._cameraContainer.position.set(pcX, pcY, pcZ);
 			this._cameraContainer.rotation.set(0*DEG_TO_RAD, 0*DEG_TO_RAD, 0*DEG_TO_RAD);
+			// Controls(DeviceOrientation)
+			this._controls = new THREE.DeviceOrientationControls(this._camera);
 		}
 
 		// HemiLight
@@ -86,7 +95,6 @@ class ThreeManager{
 		this._renderer.setClearColor(0x666666);
 		this._renderer.gammaOutput = false;
 		this._renderer.gammaFactor = 1.2;
-		this._renderer.vr.enabled = this._modeVR;// Important(for VR)
 		document.body.appendChild(this._renderer.domElement);
 
 		// CSS2DRenderer
@@ -95,9 +103,6 @@ class ThreeManager{
 		this._cssRenderer.domElement.style.position = "absolute";
 		this._cssRenderer.domElement.style.top = 0;
 		document.body.appendChild(this._cssRenderer.domElement);
-
-		// Button
-		document.body.appendChild(WEBVR.createButton(this._renderer));
 
 		// Wire
 		this.createWire(14, 14, SIZE_GRID, {color: 0x999999});
@@ -116,71 +121,28 @@ class ThreeManager{
 		}, false);
 
 		// Click
-		window.addEventListener("click", (e)=>{
+		let type = "click";
+		if(this._modeAndroid == true) type = "click";
+		if(this._modeiOS == true)     type = "touchstart";
+		window.addEventListener(type, (e)=>{
 			event.preventDefault();
 			let x = (e.layerX/window.innerWidth)*2-1;
 			let y = - (e.layerY/window.innerHeight)*2+1;
-			mouseVector.set(x, y, 0.5);
+			mouseVector.set(x, y, 0.0);
 			raycaster.setFromCamera(mouseVector, this._camera);
 			let intersects = raycaster.intersectObject(this._group, true);
 			if(this._raycasterListener != null && 0 < intersects.length){
 				this._raycasterListener(intersects);// Callback
 			}
 		}, false);
-
-		/*
-		// Raycaster(for VR)
-		let tempMatrix = new THREE.Matrix4();
-		let raycaster  = new THREE.Raycaster();
-		let targets    = this._group;
-
-		this._ctl1 = this._renderer.vr.getController(0);
-		this._ctl1.addEventListener("selectstart", onSelectStart);
-		this._ctl1.addEventListener("selectend",   onSelectEnd);
-		this._cameraContainer.add(this._ctl1);
-		this._ctl2 = this._renderer.vr.getController(1);
-		this._ctl2.addEventListener("selectstart", onSelectStart);
-		this._ctl2.addEventListener("selectend",   onSelectEnd);
-		this._cameraContainer.add(this._ctl2);
-
-		// Line
-		let geometry = new THREE.BufferGeometry().setFromPoints(
-			[new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, -1)]);
-		let line = new THREE.Line(geometry);
-		line.name = "line";
-		line.scale.z = 20;// Length of line
-		this._ctl1.add(line.clone());
-		this._ctl2.add(line.clone());
-
-		// Models, Sounds, Fonts
-		this._models = [];
-		this._sounds = [];
-		this._fonts  = [];
-
-		function onSelectStart(event){
-			console.log("onSelectStart");
-			let target = event.target;
-			tempMatrix.identity().extractRotation(target.matrixWorld);
-			raycaster.ray.origin.setFromMatrixPosition(target.matrixWorld);
-			raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
-			let intersections = raycaster.intersectObjects(targets.children, true);
-			if(this._raycasterListener != null && 0 < intersects.length){
-				this._raycasterListener(intersects);// Callback
-			}
-		}
-
-		function onSelectEnd(event){
-			console.log("onSelectEnd");
-		}
-		*/
 	}
 
 	update(){
 		// Stats
 		this._stats.update();
 
-		// Controls(for PC)
-		if(this._modeVR == false) this._controls.update();
+		// Controls(for PC and Devices)
+		this._controls.update();
 
 		// Render
 		this._renderer.render(this._scene, this._camera);
