@@ -4,7 +4,7 @@
 
 console.log("Hello Three.js!!");
 
-// Emotions
+// Steps
 const STEP_FORWARD = "forward";
 const STEP_BACK    = "back";
 const STEP_LEFT    = "left";
@@ -28,9 +28,11 @@ const models = {data:[
 	{dir:"./models/obj/", mtl:"tree_2.mtl",        obj:"tree_2.obj"},
 	{dir:"./models/obj/", mtl:"car_1.mtl",         obj:"car_1.obj"},
 	{dir:"./models/obj/", mtl:"car_2.mtl",         obj:"car_2.obj"},
-	{dir:"./models/obj/", mtl:"car_3.mtl",         obj:"car_3.obj"},
+	{dir:"./models/obj/", mtl:"car_3.mtl",         obj:"car_3.obj"}, 
 	{dir:"./models/obj/", mtl:"truck_1.mtl",       obj:"truck_1.obj"},
 	{dir:"./models/obj/", mtl:"truck_2.mtl",       obj:"truck_2.obj"},
+	{dir:"./models/obj/", mtl:"wood_1.mtl",        obj:"wood_1.obj"},
+	{dir:"./models/obj/", mtl:"wood_2.mtl",        obj:"wood_2.obj"},
 	{dir:"./models/obj/", mtl:"road_1.mtl",        obj:"road_1.obj"},
 	{dir:"./models/obj/", mtl:"tanuki_talk_1.mtl", obj:"tanuki_talk_1.obj"},
 	{dir:"./models/obj/", mtl:"tanuki_talk_1.mtl", obj:"tanuki_talk_1.obj"},
@@ -124,8 +126,16 @@ window.onload = function(){
 		let car2 = new MyModel(-5, +0, +1, "car_2.obj");
 		walls.push(car2);
 
-		let truck1 = new MyModel(-1, +0, +1, "truck_1.obj");
+		let truck1 = new MyModel(-4, +0, +0, "truck_1.obj");
 		walls.push(truck1);
+
+		let wood1 = new MyModel(+6, +0, +1, "wood_1.obj", true);
+		walls.push(wood1);
+		let wood2 = new MyModel(+0, +0, +0, "wood_2.obj", true);
+		walls.push(wood2);
+
+		// let mWood1 = new TimelineMax({repeat: -1, yoyo: true});
+		// mWood1.to(wood1._group.position, 10.0, {x: "-="+120.0});
 
 		// Cube
 		let geometry = new THREE.BoxGeometry(3, 3, 3);
@@ -165,6 +175,7 @@ window.onload = function(){
 				if(name == STEP_FORWARD){
 					let flg = true;
 					for(let wall of walls){
+						if(wall._boardFlg == true) continue;// Board or not
 						if(player.containsPoint(wall, 0, 0, -1)) flg = false;
 					}
 					player.startAnimation("run").stepOut(0.0, 2.5, -5.0, !flg);
@@ -173,6 +184,7 @@ window.onload = function(){
 				if(name == STEP_BACK){
 					let flg = true;
 					for(let wall of walls){
+						if(wall._boardFlg == true) continue;// Board or not
 						if(player.containsPoint(wall, 0, 0, +1)) flg = false;
 					}
 					player.startAnimation("run").stepOut(0.0, 2.5, +5.0, !flg);
@@ -181,6 +193,7 @@ window.onload = function(){
 				if(name == STEP_LEFT){
 					let flg = true;
 					for(let wall of walls){
+						if(wall._boardFlg == true) continue;// Board or not
 						if(player.containsPoint(wall, -1, 0, 0)) flg = false;
 					}
 					player.startAnimation("run").stepOut(-5.0, 2.5, 0.0, !flg);
@@ -189,6 +202,7 @@ window.onload = function(){
 				if(name == STEP_RIGHT){
 					let flg = true;
 					for(let wall of walls){
+						if(wall._boardFlg == true) continue;// Board or not
 						if(player.containsPoint(wall, +1, 0, 0)) flg = false;
 					}
 					player.startAnimation("run").stepOut(+5.0, 2.5, 0.0, !flg);
@@ -304,14 +318,6 @@ class Player{
 		return box3.containsPoint(point);
 	}
 
-	createSensor(x=0, y=0, z=0, w=2, h=2, d=2){
-		let geometry = new THREE.BoxGeometry(w, h, d);
-		let material = new THREE.MeshNormalMaterial();
-		let sensor = new THREE.Mesh(geometry, material);
-		sensor.position.set(x, y+h*0.5, z);
-		return sensor;
-	}
-
 	startAnimation(key){
 		this._frameKey   = key;
 		this._frameIndex = 0;
@@ -354,12 +360,13 @@ class Player{
 	stepOut(sX=0.0, sY=2.5, sZ=0.0, skipFlg=false){
 		if(this._motionFlg == true) return;
 		this._motionFlg = true;
-		//console.log("stepOut:" + sX + ", " + sZ);
+		console.log("stepOut:" + sX + ", " + sY + ", " + sZ);
 		let timeUp   = 0.05;
 		let timeDown = 0.1;
 		this._motionTl = new TimelineMax({repeat: 0, yoyo: false, onComplete:()=>{
 			this._motionFlg = false;
 			this.stopAnimation();
+			this.checkBoard();// Checking boards
 		}});
 		if(sX != 0.0){
 			let flg = (0.0 < sX)?+1:-1;
@@ -371,12 +378,12 @@ class Player{
 			this._motionTl.to(this._group.rotation, 0.1, 
 				{y: Math.PI*flg, ease: Sine.easeOut});
 		}
-		if(skipFlg == true){
-			sX = 0.0;
-			sZ = 0.0;
+		if(skipFlg == false){
 			// Sound
 			soundLoader.playSound("step_ok.mp3");
 		}else{
+			sX = 0.0;
+			sZ = 0.0;
 			// Sound
 			soundLoader.playSound("step_ng.mp3");
 		}
@@ -384,6 +391,27 @@ class Player{
 			{x: "+="+sX, y: "+="+sY, z: "+="+sZ, ease: Sine.easeOut});
 		this._motionTl.to(this._group.position, timeDown, 
 			{x: "+="+sX, y: "-="+sY, z: "+="+sZ, ease: Bounce.easeOut});
+	}
+
+	checkBoard(){
+		console.log("checkBoard");
+		for(let wall of walls){
+			if(wall._boardFlg == false) continue;
+			if(this.containsPoint(wall)){
+				console.log("Let's riding board!!");
+				this.ridingOn(wall);
+			}
+		}
+	}
+
+	ridingOn(board){
+		console.log("ridingOn");
+		this._board = board;
+	}
+
+	ridingOff(board){
+		console.log("ridingOff");
+		this._board = null;
 	}
 
 	createClone(name, visible=false){
@@ -400,12 +428,13 @@ class Player{
 
 class MyModel{
 
-	constructor(gX, gY, gZ, name){
+	constructor(gX, gY, gZ, name, boardFlg=false){
 		console.log("Wall");
 		this._x = SIZE_GRID*gX; 
 		this._y = SIZE_GRID*gY; 
 		this._z = SIZE_GRID*gZ;
 		this._name = name;
+		this._boardFlg = boardFlg;
 		this.init();
 	}
 
