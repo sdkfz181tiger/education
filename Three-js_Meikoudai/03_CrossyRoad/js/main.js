@@ -111,6 +111,7 @@ window.onload = function(){
 
 		// Actors
 		actors = [];
+
 		let tree1 = new MyActor(+3, +0, -1, "tree_1.obj");
 		actors.push(tree1);
 		let tree2 = new MyActor(-1, +0, -1, "tree_2.obj");
@@ -126,11 +127,13 @@ window.onload = function(){
 
 		let wood1 = new MyActor(+6, +0, +1, "wood_1.obj", true);
 		actors.push(wood1);
-		let wood2 = new MyActor(+0, +0, +0, "wood_2.obj", true);
-		actors.push(wood2);
-
 		let mWood1 = new TimelineMax({repeat: -1, yoyo: true});
-		mWood1.to(wood1._group.position, 10.0, {x: "-="+120.0});
+		mWood1.to(wood1._group.position, 6.0, {x: "-="+120.0});
+
+		let wood2 = new MyActor(-6, +0, +0, "wood_2.obj", true);
+		actors.push(wood2);
+		let mWood2 = new TimelineMax({repeat: -1, yoyo: true});
+		mWood2.to(wood2._group.position, 10.0, {x: "+="+120.0});
 
 		// Cube
 		let geometry = new THREE.BoxGeometry(3, 3, 3);
@@ -257,7 +260,7 @@ class Player{
 		rootGroup.add(this._group);// Add to group!!
 		// Clone
 		let clone = objLoader.findModels(this._name);
-		clone.scale.set(0.625, 0.625, 0.625);
+		clone.scale.set(0.5, 0.5, 0.5);
 		clone.position.set(0, 0, 0);
 		clone.rotation.set(0, 0, 0);
 		this._group.add(clone);// Add to group!!
@@ -290,6 +293,19 @@ class Player{
 			this._motionFlg = false;
 			this.checkBoard();// Checking boards
 		}});
+
+		// Fit to grid
+		let disX = this._group.position.x % SIZE_GRID;
+		let cntX = Math.floor(this._group.position.x / SIZE_GRID);
+		if(0 < disX){
+			if(SIZE_GRID*0.5 < disX) cntX++;
+			this._group.position.x = cntX * SIZE_GRID;
+		}
+		if(disX < 0){
+			if(SIZE_GRID*-0.5 < disX) cntX++;
+			this._group.position.x = cntX * SIZE_GRID;
+		}
+
 		if(sX != 0.0){
 			let flg = (0.0 < sX)?+1:-1;
 			this._motionTl.to(this._group.rotation, 0.1, 
