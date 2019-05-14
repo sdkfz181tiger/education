@@ -27,6 +27,7 @@ const models = {data:[
 	{dir:"./models/obj/", mtl:"wood_1.mtl",        obj:"wood_1.obj"},
 	{dir:"./models/obj/", mtl:"wood_2.mtl",        obj:"wood_2.obj"},
 	{dir:"./models/obj/", mtl:"road_1.mtl",        obj:"road_1.obj"},
+	{dir:"./models/obj/", mtl:"river_1.mtl",       obj:"river_1.obj"},
 	{dir:"./models/obj/", mtl:"tanuki_talk_1.mtl", obj:"tanuki_talk_1.obj"},
 	{dir:"./models/obj/", mtl:"tanuki_talk_1.mtl", obj:"tanuki_talk_1.obj"},
 	{dir:"./models/obj/", mtl:"tanuki_talk_1.mtl", obj:"tanuki_talk_1.obj"},
@@ -49,11 +50,12 @@ const fonts = {data:[
 ]};
 
 let tm          = null;
+let rootGroup   = null;
+
 let objLoader   = null;
 let soundLoader = null;
 let fontLoader  = null;
 
-let rootGroup   = null;
 let player      = null;
 let actors      = null;
 
@@ -63,6 +65,9 @@ window.onload = function(){
 	// ThreeManager
 	// 	Camera position(PC): pcX, pcY, pcZ
 	tm = new ThreeManager(0, 60, 90);
+
+	// RootGroup
+	rootGroup = tm.getGroup();
 
 	// Loader
 	objLoader = new ObjLoader();
@@ -85,12 +90,6 @@ window.onload = function(){
 	function onReadyModels(){
 		console.log("You are ready to use models!!");
 
-		// ThreeManager
-		tm._renderer.setAnimationLoop(animate);
-
-		// RootGroup
-		rootGroup = tm.getGroup();
-
 		// Player
 		player = new Player(0, 0, +2, "tanuki_run_1.obj");
 
@@ -102,38 +101,49 @@ window.onload = function(){
 		rootGroup.add(skybox);
 
 		// Tile
-		let tile1 = new MyActor(-4, +0, +0, "road_1.obj");
-		tile1.getPosition().y = -0.5;
-		let tile2 = new MyActor(+0, +0, +0, "road_1.obj");
-		tile2.getPosition().y = -0.5;
-		let tile3 = new MyActor(+4, +0, +0, "road_1.obj");
-		tile3.getPosition().y = -0.5;
+		let road1 = new MyActor(-4, +0, -4, "road_1.obj");
+		road1.getPosition().y = -0.5;
+		let road2 = new MyActor(+0, +0, -4, "road_1.obj");
+		road2.getPosition().y = -0.5;
+		let road3 = new MyActor(+4, +0, -4, "road_1.obj");
+		road3.getPosition().y = -0.5;
+
+		let river1 = new MyActor(-4, +0, +0, "river_1.obj");
+		river1.getPosition().y = -0.5;
+		let river2 = new MyActor(+0, +0, +0, "river_1.obj");
+		river2.getPosition().y = -0.5;
+		let river3 = new MyActor(+4, +0, +0, "river_1.obj");
+		river3.getPosition().y = -0.5;
 
 		// Actors
 		actors = [];
 
 		let tree1 = new MyActor(+3, +0, -1, "tree_1.obj");
 		actors.push(tree1);
-		let tree2 = new MyActor(-1, +0, -1, "tree_2.obj");
+		let tree2 = new MyActor(+2, +0, -1, "tree_2.obj");
 		actors.push(tree2);
+		let tree3 = new MyActor(-2, +0, -1, "tree_2.obj");
+		actors.push(tree3);
+		let tree4 = new MyActor(-3, +0, -2, "tree_2.obj");
+		actors.push(tree4);
 
-		let car1 = new MyActor(+4, +0, +0, "car_1.obj");
+		let car1 = new MyActor(+4, +0, -4, "car_1.obj");
 		actors.push(car1);
-		let car2 = new MyActor(-5, +0, +1, "car_2.obj");
+		let car2 = new MyActor(-5, +0, -3, "car_2.obj");
 		actors.push(car2);
 
-		let truck1 = new MyActor(-4, +0, +0, "truck_1.obj");
+		let truck1 = new MyActor(-4, +0, -4, "truck_1.obj");
 		actors.push(truck1);
 
-		let wood1 = new MyActor(+6, +0, +1, "wood_1.obj", true);
+		let wood1 = new MyActor(+5, +0, +1, "wood_1.obj", true);
 		actors.push(wood1);
 		let mWood1 = new TimelineMax({repeat: -1, yoyo: true});
-		mWood1.to(wood1._group.position, 6.0, {x: "-="+120.0});
+		mWood1.to(wood1._group.position, 6.0, {x: "-="+100.0});
 
-		let wood2 = new MyActor(-6, +0, +0, "wood_2.obj", true);
+		let wood2 = new MyActor(-3, +0, +0, "wood_2.obj", true);
 		actors.push(wood2);
 		let mWood2 = new TimelineMax({repeat: -1, yoyo: true});
-		mWood2.to(wood2._group.position, 10.0, {x: "+="+120.0});
+		mWood2.to(wood2._group.position, 10.0, {x: "+="+60.0});
 
 		// Cube
 		let geometry = new THREE.BoxGeometry(3, 3, 3);
@@ -207,6 +217,9 @@ window.onload = function(){
 				}
 			}
 		});
+
+		// Animation
+		tm._renderer.setAnimationLoop(animate);
 	}
 
 	function onReadySounds(){
