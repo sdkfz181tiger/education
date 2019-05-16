@@ -119,8 +119,11 @@ window.onload = function(){
 			if(0 < i) fbxModels[i].visible = false;// Default
 			scene.add(fbxModels[i]);
 		}
-		// Auto
+		// Default
 		fbxLoader.showModel("sitting.fbx");
+
+		// WebSccket
+		connectWebSocket();
 	}
 
 	// Error
@@ -149,21 +152,37 @@ window.onload = function(){
 		window.requestAnimationFrame(loop);
 	};
 
-	// Testing
-	$(".bShow").click((e)=>{
-		let name = $(e.target).attr("name");
-		fbxLoader.showModel(name);
-	});
+	//==========
+	// WebSocket
+	let ws = null;
+	function connectWebSocket(){
+		console.log("connectWebSocket");
 
-	$("#bPlay").click(()=>{
-		for(let fbxModel of fbxModels) fbxModel.action.play();
-	});
+		// Initialize
+		ws = new WebSocket("ws://localhost:4040");
+		ws.onopen = (e)=>{
+			console.log("onOpen");
+			// Bored
+			fbxLoader.showModel("bored_1.fbx");
+		}
+		ws.onmessage = (e)=>{
+			console.log("onMessage:" + e.data);
+			// Test
+			fbxLoader.showModel(e.data);
+		}
+		ws.onclose = (e)=>{
+			console.log("onClose");
+			// Sitting
+			fbxLoader.showModel("sitting.fbx");
+		}
+		ws.onerror = (e)=>{
+			console.log("onError");
+			// Sitting
+			fbxLoader.showModel("sitting.fbx");
+		}
+	}
 
-	$("#bStop").click(()=>{
-		for(let fbxModel of fbxModels) fbxModel.action.stop();
-	});
-
-	$("#bPause").click(()=>{
-		
-	});
+	function sendMessage(msg){
+		if(ws != null) ws.send(msg);
+	}
 }

@@ -82,6 +82,7 @@ let server = http.createServer((req, res)=>{
 	console.log("Server: created " + getClientDate());
 	res.writeHead(404); res.end();
 });
+
 server.listen(PORT_SOCKET, ()=>{
 	console.log("Server: listening");
 });
@@ -113,18 +114,26 @@ wsServer.on("request", (req)=>{
 		// UTF-8
 		if(msg.type === "utf8"){
 			console.log("Server: received(utf8) " + msg.utf8Data);
-			conn.sendUTF(msg.utf8Data);// Send(Broadcast)
+			conn.sendUTF(msg.utf8Data);
+			wsServer.broadcast(msg.utf8Data);// Send(Broadcast)
 		}
 		// Binary
 		if(msg.type === "binary"){
 			console.log("Server: received(binary) " + message.binaryData.length + "bytes");
-			conn.sendBytes(msg.binaryData);// Send(Broadcast)
+			conn.sendBytes(msg.binaryData);
 		}
 	});
 
 	conn.on("close", (reason, desc)=>{
 		console.log("Server: closed " + reason + " " + desc);
 	});
+
+	// Broadcast
+	setInterval(()=>{
+		//let msg = "It is " + getClientDate();
+		//console.log("Server: broadcast " + reason + " " + desc);
+		//wsServer.broadcast(msg);// Send(Broadcast)
+	}, 5000);
 });
 
 function originIsAllowed(origin){
