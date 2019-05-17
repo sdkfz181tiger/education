@@ -9,6 +9,15 @@ const DEG_TO_RAD = Math.PI / 180;
 const RAD_TO_DEG = 180 / Math.PI;
 const SIZE_GRID  = 10;
 
+// Cube
+function createCube(w=3, h=3, d=3, x=0, y=0, z=0){
+	let geometry = new THREE.BoxGeometry(w, h, d);
+	let material = new THREE.MeshNormalMaterial();
+	let mesh = new THREE.Mesh(geometry, material);
+	mesh.position.set(x, y, z);
+	return mesh;
+}
+
 // Three.js
 class ThreeManager{
 
@@ -480,5 +489,186 @@ class CtlVR{
 				if(this._onTriggerReleased) this._onTriggerReleased();
 			}
 		}
+	}
+}
+
+class Player{
+
+	constructor(gX, gY, gZ, name){
+		console.log("Player");
+		this._x = SIZE_GRID*gX; 
+		this._y = SIZE_GRID*gY; 
+		this._z = SIZE_GRID*gZ;
+		this._name = name;
+		this.init();
+	}
+
+	init(){
+		// Group
+		this._group = new THREE.Group();
+		this._group.position.set(this._x, this._y, this._z);
+		rootGroup.add(this._group);// Add to group!!
+		// Clone
+		this._clone = objLoader.findModels(this._name);
+		this._clone.scale.set(0.5, 0.5, 0.5);
+		this._clone.position.set(0, 0, 0);
+		this._clone.rotation.set(0, 0, 0);
+		this._group.add(this._clone);// Add to group!!
+		// Sensor
+		this._sensor = createCube(5, 5, 5, 0, 3, -SIZE_GRID);
+		this._group.add(this._sensor);
+		// Motion
+		this._motionFlg = false;
+		this._motionTl  = null;
+	}
+
+	getPosition(){
+		return this._group.position;
+	}
+
+	containsPoint(target, offX=0, offY=0, offZ=0){
+		let pX = this._group.position.x + offX*SIZE_GRID;
+		let pY = this._group.position.y + offY*SIZE_GRID;
+		let pZ = this._group.position.z + offZ*SIZE_GRID;
+		let point = new THREE.Vector3(pX, pY, pZ);
+		let box3Target = new THREE.Box3().setFromObject(target._group);
+		return box3Target.containsPoint(point);
+	}
+
+	intersectsSensor(target){
+		let box3Sensor = new THREE.Box3().setFromObject(this._sensor);
+		let box3Target = new THREE.Box3().setFromObject(target._group);
+		return box3Target.intersectsBox(box3Sensor);
+	}
+
+	stepOut(sX=0.0, sY=2.5, sZ=0.0, skipFlg=false){
+		if(this._motionFlg == true) return;
+		this._motionFlg = true;
+		//console.log("stepOut:" + sX + ", " + sY + ", " + sZ);
+		let timeUp   = 0.05;
+		let timeDown = 0.1;
+		this.ridingOff();// Riding off
+		this._motionTl = new TimelineMax({repeat: 0, yoyo: false, onComplete:()=>{
+			this._motionFlg = false;
+			this.checkBoard();// Checking boards
+		}});
+
+		// Fit to grid
+		if(skipFlg == false){
+			let disX = this._group.position.x % SIZE_GRID;
+			let cntX = Math.floor(this._group.position.x / SIZE_GRID);
+			if(0 < disX){
+				if(SIZE_GRID*0.5 < disX) cntX++;
+				this._group.position.x = cntX * SIZE_GRID;
+			}
+			if(disX < 0){
+				if(SIZE_GRID*-0.5 < disX) cntX++;
+				this._group.position.x = cntX * SIZE_GRID;
+			}
+		}
+
+		if(sX != 0.0){
+			let flg = (0.0 < sX)?+1:-1;
+			this._motionTl.to(this._clone.rotation, 0.1, 
+				{y: Math.PI*flg*0.5, ease: Sine.easeOut});
+		}
+		if(sZ != 0.0){
+			let flg = (0.0 < sZ)?0:1;
+			this._motionTl.to(this._clone.rotation, 0.1, 
+				{y: Math.PI*flg, ease: Sine.easeOut});
+		}
+		
+		if(skipFlg == false){
+			// Sound
+			soundLoader.playSound("step_ok.mp3");
+		}else{
+			sX = 0.0;
+			sZ = 0.0;
+			// Sound
+			soundLoader.playSound("step_ng.mp3");
+		}
+		this._motionTl.to(this._group.position, timeUp,   
+			{x: "+="+sX, y: "+="+sY, z: "+="+sZ, ease: Sine.easeOut});
+		this._motionTl.to(this._group.position, timeDown, 
+			{x: "+="+sX, y: "-="+sY, z: "+="+sZ, ease: Bounce.easeOut});
+	}
+
+	checkBoard(){
+		console.log("checkBoard");
+		for(let actor of actors){
+			if(actor._boardFlg == false) continue;
+			if(this.containsPoint(actor)){
+				this.ridingOn(actor);// Riding on
+			}
+		}
+	}
+
+	ridingOn(board){
+		if(this._board == null){
+			console.log("ridingOn!!");
+			this._board = board;
+			this._surfX = this._group.position.x - board._group.position.x;
+			this._surfY = this._group.position.y - board._group.position.y;
+			this._surfZ = this._group.position.z - board._group.position.z;
+		}
+	}
+
+	ridingOff(board){
+		if(this._board != null){
+			console.log("ridingOff!!");
+			this._board = null;
+			this._surfX = 0;
+			this._surfY = 0;
+			this._surfZ = 0;
+		}
+	}
+
+	surfBoard(){
+		if(this._board == null) return;
+		let x = this._board._group.position.x + this._surfX;
+		let y = this._board._group.position.y + this._surfY;
+		let z = this._board._group.position.z + this._surfZ;
+		this._group.position.set(x, y, z);
+	}
+
+	createClone(name, visible=false){
+		//console.log("createClone:" + name);
+		let clone = objLoader.findModels(name);
+		clone.scale.set(0.5, 0.5, 0.5);
+		clone.position.set(0, 0, 0);
+		clone.rotation.set(0, 0, 0);
+		clone.visible = visible;
+		this._group.add(clone);// Add to group!!
+		return clone;
+	}
+}
+
+class MyActor{
+
+	constructor(gX, gY, gZ, name, boardFlg=false){
+		console.log("Actor");
+		this._x = SIZE_GRID*gX; 
+		this._y = SIZE_GRID*gY; 
+		this._z = SIZE_GRID*gZ;
+		this._name = name;
+		this._boardFlg = boardFlg;
+		this.init();
+	}
+
+	init(){
+		// Group
+		this._group = new THREE.Group();
+		this._group.position.set(this._x, this._y, this._z);
+		rootGroup.add(this._group);// Add to group!!
+		// Clone
+		let clone = objLoader.findModels(this._name);
+		clone.scale.set(0.625, 0.625, 0.625);
+		clone.position.set(0, 0, 0);
+		clone.rotation.set(0, 0, 0);
+		this._group.add(clone);// Add to group!!
+	}
+
+	getPosition(){
+		return this._group.position;
 	}
 }
