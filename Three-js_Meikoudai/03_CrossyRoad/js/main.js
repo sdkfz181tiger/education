@@ -184,7 +184,6 @@ window.onload = function(){
 					let flg = true;
 					for(let actor of actors){
 						if(actor._boardFlg == true) continue;// Board or not
-						//if(player.containsPoint(actor, 0, 0, -1)) flg = false;
 						if(player.intersectsSensor(actor)) flg = false;// Sensor
 					}
 					player.stepOut(0.0, 2.5, -5.0, !flg);

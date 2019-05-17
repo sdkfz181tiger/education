@@ -554,7 +554,7 @@ class Player{
 		}});
 
 		// Fit to grid
-		if(skipFlg == false){
+		if(skipFlg == false && sZ != 0.0){
 			let disX = this._group.position.x % SIZE_GRID;
 			let cntX = Math.floor(this._group.position.x / SIZE_GRID);
 			if(0 < disX){
