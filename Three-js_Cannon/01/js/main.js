@@ -1,138 +1,207 @@
 console.log("Hello Three.js!!");
 
-const width  = 480;
-const height = 320;
-const fov    = 60;
-const aspect = width / height;
-const near   = 1;
-const far    = 1000;
+var world;
+var groundMat;
+var sphereMat1;
+var sphereMat2;
+var phyPlane;
+var phySphere1;
+var phySphere2;
+var scene;
+var camera;
+var viewPlane;
+var viewSphere1;
+var viewSphere2;
+var renderer;
 
-// Scene
-let scene = new THREE.Scene();
+setPhy();
+setView();
+animate();
 
-// Axes
-let axes = new THREE.AxesHelper(20);
-scene.add(axes);
+function setPhy() {
+  // 物理世界を生成
+  world = new CANNON.World();
+  // 重力を設定
+  world.gravity.set(0, -9.82, 0);
+  // ぶつかっている「可能性のある」剛体同士を見つける作業
+  world.broadphase = new CANNON.NaiveBroadphase();
+  // world.broadphase = new CANNON.Broadphase();
+  // 反復計算回数
+  world.solver.iterations = 5;
+  // 許容値
+  world.solver.tolerance = 0.1;
 
-// Stats
-let stats = new Stats();
-stats.setMode(0);
-stats.domElement.style.position = "absolute";
-stats.domElement.style.left = "0px";
-stats.domElement.style.top  = "0px";
-document.getElementById("stage").appendChild(stats.domElement);
+  
+  // Plane Material（地面）
+  groundMat = new CANNON.Material('groundMat');
+  // Plane Materialの質量定義
+  phyPlane = new CANNON.Body({
+	mass: 0,
+	material: groundMat
+  });
+  phyPlane.addShape(new CANNON.Plane());
+  // X軸に90度に回転
+  phyPlane.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
+  // 物理世界に追加
+  world.add(phyPlane);
 
-// Camera
-let camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-camera.position.set(0, 100, 200);
-camera.lookAt(scene.position);
-
-// Controls
-let controls = new THREE.TrackballControls(camera);
-
-// HemiLight
-let hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.7);
-hemiLight.position.set(0, 100, 0);
-hemiLight.color.setHSL(0.7, 0.7, 0.7);
-hemiLight.groundColor.setHSL(1, 1, 1);
-scene.add(hemiLight);
-let hemiLightHelper = new THREE.HemisphereLightHelper(hemiLight, 10);
-scene.add(hemiLightHelper);
-
-// Light
-let directionalLight = new THREE.DirectionalLight(0xffffff);
-directionalLight.position.set(-40.0, 100.0, 40.0);
-directionalLight.castShadow = true;
-scene.add(directionalLight);
-
-//Set up shadow properties for the light
-directionalLight.shadow.mapSize.width  = 256;
-directionalLight.shadow.mapSize.height = 256;
-directionalLight.shadow.camera.near    = 0.5;
-directionalLight.shadow.camera.far     = 180;
-directionalLight.shadow.camera.top     = 130;
-directionalLight.shadow.camera.bottom  = -130;
-directionalLight.shadow.camera.left    = -130;
-directionalLight.shadow.camera.right   = 130;
-
-// Renderer
-let renderer = new THREE.WebGLRenderer({antialias: true});
-renderer.setSize(width, height);
-renderer.setClearColor(0x333333);
-renderer.setPixelRatio(window.devicePixelRatio);
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
-document.getElementById("stage").appendChild(renderer.domElement);
-
-//Create a helper for the shadow camera (optional)
-let helper = new THREE.CameraHelper(directionalLight.shadow.camera);
-scene.add(helper);
-
-// Plane
-let geometry = new THREE.PlaneBufferGeometry(200, 200);
-let material = new THREE.MeshStandardMaterial({color: 0xffffff});
-let plane = new THREE.Mesh(geometry, material);
-plane.position.set(0, 0, 0);
-plane.rotation.set(-90 * Math.PI / 180, 0, 0);
-plane.receiveShadow = true;
-scene.add(plane);
-
-// TextureLoader
-let txLoader = new THREE.TextureLoader();
-
-// Earth
-let earth = null;
-txLoader.load("./textures/earth.jpg", function(texture){
-		let geometry = new THREE.SphereBufferGeometry(30, 30, 30);
-		let material = new THREE.MeshStandardMaterial({map:texture, overdraw:0.5});
-		earth = new THREE.Mesh(geometry, material);
-		earth.position.set(0, 50, 0);
-		earth.castShadow    = true;
-		earth.receiveShadow = false;
-		scene.add(earth);
-});
-
-// Moon
-let moon = null;
-txLoader.load("./textures/moon.jpg", function(texture){
-	let geometry = new THREE.SphereBufferGeometry(10, 10, 10);
-	let material = new THREE.MeshStandardMaterial({map:texture, overdraw:0.5});
-	moon = new THREE.Mesh(geometry, material);
-	moon.position.set(100, 50, 0);
-	moon.castShadow    = true;
-	moon.receiveShadow = false;
-	scene.add(moon);
-});
-
-// Radian
-// 360 = 2 * PI
-// 180 = PI
-let radius = 60;
-let degree = 0;
-
-// Loop
-loop();
-function loop(){
-
-	// Stats
-	stats.update();
-
-	// Earth, Moon
-	degree += 0.5;
-	if(360 <= degree) degree = 0;
-
-	let radian = degree * Math.PI / 180;
-	let x = radius * Math.cos(radian);
-	let y = radius * Math.sin(radian);
-	if(earth != null){
-		earth.rotation.set(0, radian, 0);
+  // Sphere Material
+  sphereMat1 = new CANNON.Material('sphereMat1');
+  // Sphere Materialシェイプの質量定義
+  phySphere1 = new CANNON.Body({
+	mass: 1,
+	material: sphereMat1
+  });
+  phySphere1.addShape(new CANNON.Sphere(1));
+  // 剛体の位置
+  phySphere1.position.set(-10, 10, 0);
+  // Z軸に10の角速度を設定
+  phySphere1.angularVelocity.set(0, 0, 0);
+  // 減衰率
+  phySphere1.angularDamping = 0.1;
+  // 物理世界に追加
+  world.add(phySphere1);
+  
+  // Sphere Material
+  sphereMat2 = new CANNON.Material('sphereMat2');
+  // Sphere Materialシェイプの質量定義
+  phySphere2 = new CANNON.Body({
+	mass: 1,
+	material: sphereMat2
+  });
+  phySphere2.addShape(new CANNON.Sphere(1));
+  // 剛体の位置
+  phySphere2.position.set(10, 10, 0);
+  // Z軸に10の角速度を設定
+  phySphere2.angularVelocity.set(0, 0, 0);
+  // 減衰率
+  phySphere2.angularDamping = 0.1;
+  // 物理世界に追加
+  world.add(phySphere2);
+  
+  /*
+   * Material同士の接触設定
+   */
+  // Sphere1とPlaneが接触した際のContactMaterialを生成  
+  sphere1PlaneCM = new CANNON.ContactMaterial(
+	groundMat,  //ひとつ目のマテリアル
+	sphereMat1, //ふたつ目のマテリアル
+	{
+	  contactEquationRelaxation: 3, // 接触式の緩和性
+	  contactEquationStiffness: 10000000, // 接触式の剛性
+	  friction: 0.3, //摩擦係数
+	  frictionEquationRelaxation: 3, // 摩擦式の剛性
+	  frictionEquationStiffness: 10000000, // 摩擦式の緩和性
+	  restitution: 0.3 // 反発係数
 	}
-	if(moon != null){
-		moon.rotation.set(0, radian, 0);
-		moon.position.set(y, 50, x);
+  );
+  // 生成したContactMaterialをworldに追加
+  world.addContactMaterial(sphere1PlaneCM);
+  
+  //Sphere2とPlaneが接触した際のContactMaterialを生成
+  sphere2PlaneCM = new CANNON.ContactMaterial(
+	groundMat,  //ひとつ目のマテリアル
+	sphereMat2, //ふたつ目のマテリアル
+	{
+	  contactEquationRelaxation: 3, // 接触式の緩和性
+	  contactEquationStiffness: 10000000, // 接触式の剛性
+	  friction: 0.8, //摩擦係数
+	  frictionEquationRelaxation: 3, // 摩擦式の剛性
+	  frictionEquationStiffness: 10000000, // 摩擦式の緩和性
+	  restitution: 0.8 // 反発係数
 	}
+  );
+  //生成したContactMaterialをworldに追加
+  world.addContactMaterial(sphere2PlaneCM);
+}
 
-	controls.update();
-	renderer.render(scene, camera);
-	window.requestAnimationFrame(loop);
+/**
+ * Check if the bounding spheres of two bodies overlap.
+ * @method boundingSphereCheck
+ * @param {Body} bodyA
+ * @param {Body} bodyB
+ * @return {boolean}
+ */
+// console.log(CANNON);
+// console.log(world.broadphase);
+function boundingSphereCheck(bodyA,bodyB){
+	var dist = new CANNON.Vec3();
+	bodyA.position.vsub(bodyB.position,dist);
+	return Math.pow(bodyA.shapes[0].boundingSphereRadius + bodyB.shapes[0].boundingSphereRadius,2) > dist.norm2();
 };
+
+function setView() {
+  scene = new THREE.Scene();
+  scene.fog = new THREE.Fog(0x000000, 1, 100);
+  camera = new THREE.PerspectiveCamera(30, 650 / 400, 1, 10000);
+  camera.position.set(0, 10, 40);
+  camera.lookAt(new THREE.Vector3(0, 2, 0));
+  scene.add(camera);
+  var light = new THREE.DirectionalLight(0xffffff, 2);
+  
+  light.position.set(10, 10, -10);
+  light.castShadow = true;
+  light.shadowMapWidth = 1024;
+  light.shadowMapHeight = 1024;
+  light.shadowCameraLeft = -10;
+  light.shadowCameraRight = 10;
+  light.shadowCameraTop = 10;
+  light.shadowCameraBottom = -10;
+  light.shadowCameraFar = 100;
+  light.shadowCameraNear = 0;
+  light.shadowDarkness = 0.5;
+  scene.add(light);
+  var amb = new THREE.AmbientLight(0x999999);
+  scene.add(amb);
+  viewSphere1 = new THREE.Mesh(
+	new THREE.SphereGeometry(1, 50, 50),
+	new THREE.MeshLambertMaterial(
+	  {
+		color: 0xffffff
+	  }
+	)
+  );
+  viewSphere1.castShadow = true;
+  viewSphere1.receiveShadow = true;
+  scene.add(viewSphere1);
+  
+  viewSphere2 = new THREE.Mesh(
+	new THREE.SphereGeometry(1, 50, 50),
+	new THREE.MeshLambertMaterial(
+	  {
+		color: 0xffffff
+	  }
+	)
+  );
+  viewSphere2.castShadow = true;
+  viewSphere2.receiveShadow = true;
+  scene.add(viewSphere2);
+  
+  viewPlane = new THREE.Mesh(new THREE.PlaneGeometry(300, 300), new THREE.MeshPhongMaterial({
+	color: 0x333333
+  }));
+  viewPlane.rotation.x = -Math.PI / 2;
+  viewPlane.position.y = 0;
+  viewPlane.receiveShadow = true;
+  scene.add(viewPlane);
+  renderer = new THREE.WebGLRenderer({antialias: true});
+  renderer.setSize(650, 400);
+  renderer.setClearColor(0x000000, 1);
+  renderer.shadowMapEnabled = true;
+  document.body.appendChild(renderer.domElement);
+  renderer.render(scene, camera);
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  // 物理エンジンの時間を進める
+  world.step(1 / 60);
+  viewSphere1.position.copy(phySphere1.position);
+  viewSphere1.quaternion.copy(phySphere1.quaternion);
+  viewSphere2.position.copy(phySphere2.position);
+  viewSphere2.quaternion.copy(phySphere2.quaternion);
+  // レンダリング
+  renderer.render(scene, camera);
+
+  // console.log(boundingSphereCheck(phySphere,phyBox));
+}
