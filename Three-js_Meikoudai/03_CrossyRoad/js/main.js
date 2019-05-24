@@ -218,6 +218,9 @@ window.onload = function(){
 			}
 		});
 
+		// Shadow
+		tm._renderer.shadowMap.enabled = true;
+
 		// Animation
 		tm._renderer.setAnimationLoop(animate);
 	}
