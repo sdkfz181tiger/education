@@ -2,8 +2,8 @@ console.log("Hello p5.js!!");
 
 let stgIndex = 0;
 let stgLevel = [
-	//{cols: 2, rows: 2, size: 128, corner: 10},
-	{cols: 4, rows: 4, tileSize: 64, corner: 8}
+	{cols: 8, rows: 5, tileSize: 52, corner: 8},
+	{cols: 8, rows: 4, tileSize: 64, corner: 8}
 ];
 
 let index  = 0;
@@ -13,6 +13,9 @@ let startY = 0;
 let font   = null;
 let sndOK  = null;
 let score  = 0;
+
+let erat   = null;
+let tiles  = [];
 
 function preload(){
 	// Font, Sound
@@ -27,90 +30,111 @@ function setup(){
 
 	score = 0;
 
-	tiles();
+	setTiles();
 }
 
-function tiles(){
+function setTiles(){
 	colorMode(HSB);
 	background(0, 0, 0);
 	noStroke();
 
-	rows     = stgLevel[stgIndex].rows;
-	cols     = stgLevel[stgIndex].cols;
-	tileSize = stgLevel[stgIndex].tileSize;
-	corner   = stgLevel[stgIndex].corner;
+	let rows     = stgLevel[stgIndex].rows;
+	let cols     = stgLevel[stgIndex].cols;
+	let tileSize = stgLevel[stgIndex].tileSize;
+	let corner   = stgLevel[stgIndex].corner;
 
-	let erat = new Eratosthenes(2, rows*cols);
+	erat = new Eratosthenes(2, rows*cols);
 	console.log(erat.isPrime(5));
+
+	tiles = [];
 
 	index = floor(random(0, cols * rows));
 	startX = width * 0.5  - (tileSize*cols) * 0.5;
 	startY = height * 0.5 - (tileSize*rows) * 0.5;
 
-	let rdm     = floor(random(0, 360));
+	let rdm = floor(random(0, 360));
 
 	for(let r=0; r<rows; r++){
 		for(let c=0; c<cols; c++){
+			let x = startX+tileSize*c;
+			let y = startY+tileSize*r;
 			let i = r*cols + c;
-			let tile = new Tile(startX+tileSize*c, startY+tileSize*r, tileSize-2, corner, rdm);
-			tile.init(99);
+			let tile = new Tile(x, y, tileSize-2, corner);
+			tile.init(i, erat.isPrime(i), rdm);
+			tiles.push(tile);
 		}
 	}
 
 	colorMode(RGB);
 	fill(255, 255, 255);
 	textFont(font);
-	textSize(64);
+	textSize(32);
 	textAlign(RIGHT);
-	text(score, width-5, 60);
+	text(score, width-5, 32);
 }
 
 function mousePressed(){
 
-	let x = size * (index%cols) + size*0.5;
-	let y = size * floor(index/cols) + size*0.5;
-	let colorIndex   = get(startX+x, startY+y);
-	let colorPressed = get(mouseX, mouseY);
-
-	let flg = true;
-	for(let i=0; i<colorIndex.length; i++){
-		if(colorIndex[i] != colorPressed[i]){
-			flg = false;
-			break;
+	for(let i=0; i<tiles.length; i++){
+		if(tiles[i].contains(mouseX, mouseY)){
+			if(erat.isPrime(tiles[i].getNum())){
+				console.log("tile:" + tiles[i].getNum());
+				tiles[i].die();
+				tiles.splice(i, 1);
+				sndOK.play();
+			}
 		}
-	}
-	
-	if(flg == true){
-		score++;
-		if(score % 3 == 0) stgIndex++;
-		if(stgLevel.length-1 < stgIndex) stgIndex = 0;
-		sndOK.play();
-		tiles();
 	}
 }
 
 class Tile{
 
-	constructor(x, y, size, corner, sat){
+	constructor(x, y, size, corner){
 		console.log("Tile");
 		this._x = x;
 		this._y = y;
-		this._size = size;
-		// Color
-		colorMode(HSB);
-		fill(sat, 80, 80);
-		square(this._x, this._y, size, corner);
-		this._color = get(this._x + size*0.5, this._y + size*0.5);
+		this._size   = size;
+		this._corner = corner;
 	}
 
-	init(num){
-		this._num = num;
+	init(num, primeFlg, hue, sat=80, bri=80){
+		this._num      = num;
+		this._primeFlg = primeFlg;
+		this._hue      = hue;
+		this._sat      = sat;
+		this._bri      = bri;
+		this.drawSquare(hue, sat, bri);
+	}
+
+	getNum(){
+		return this._num;
+	}
+
+	contains(x, y){
+		if(x < this._x) return false;
+		if(y < this._y) return false;
+		if(this._x + this._size < x) return false;
+		if(this._y + this._size < y) return false;
+		return true;
+	}
+
+	die(){
+		this.drawSquare(this._hue, 33, 33);
+	}
+
+	drawSquare(hue, sat, bri){
+		// Color
+		colorMode(HSB);
+		fill(hue, sat, bri);
+		square(this._x, this._y, this._size, this._corner);
+		this._color = get(this._x + this._size*0.5, this._y + this._size*0.5);
+		// Text
 		colorMode(RGB);
-		fill(255, 255, 255);
+		fill(255);
 		textFont(font);
 		textSize(this._size*0.8);
 		textAlign(CENTER);
-		text(num, this._x + this._size*0.55, this._y + this._size*0.85);
+		text(this._num, this._x + this._size*0.55, this._y + this._size*0.85);
 	}
 }
 
