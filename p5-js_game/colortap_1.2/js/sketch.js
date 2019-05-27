@@ -1,9 +1,12 @@
 console.log("Hello p5.js!!");
 
+const W_NAV = 480;
+const H_NAV = 33;
+
 let stgIndex = 0;
 let stgLevel = [
-	{cols: 8, rows: 5, tileSize: 52, corner: 8},
-	{cols: 8, rows: 4, tileSize: 64, corner: 8}
+	{cols: 3, rows: 3, size: 82, corner: 8},
+	{cols: 8, rows: 4, size: 64, corner: 8}
 ];
 
 let index  = 0;
@@ -25,7 +28,6 @@ function preload(){
 
 function setup(){
 	console.log("setup!!");
-
 	createCanvas(480, 320);
 
 	score = 0;
@@ -38,39 +40,33 @@ function setTiles(){
 	background(0, 0, 0);
 	noStroke();
 
-	let rows     = stgLevel[stgIndex].rows;
-	let cols     = stgLevel[stgIndex].cols;
-	let tileSize = stgLevel[stgIndex].tileSize;
-	let corner   = stgLevel[stgIndex].corner;
+	let rows   = stgLevel[stgIndex].rows;
+	let cols   = stgLevel[stgIndex].cols;
+	let size   = stgLevel[stgIndex].size;
+	let corner = stgLevel[stgIndex].corner;
 
+	// Eratosthenes
 	erat = new Eratosthenes(2, rows*cols);
 	console.log(erat.isPrime(5));
 
-	tiles = [];
-
-	index = floor(random(0, cols * rows));
-	startX = width * 0.5  - (tileSize*cols) * 0.5;
-	startY = height * 0.5 - (tileSize*rows) * 0.5;
+	tiles  = [];
+	index  = floor(random(0, cols * rows));
+	startX = width * 0.5  - (size*cols) * 0.5;
+	startY = (height-H_NAV) * 0.5 - (size*rows) * 0.5 + H_NAV;
 
 	let rdm = floor(random(0, 360));
 
 	for(let r=0; r<rows; r++){
 		for(let c=0; c<cols; c++){
-			let x = startX+tileSize*c;
-			let y = startY+tileSize*r;
+			let x = startX+size*c;
+			let y = startY+size*r;
 			let i = r*cols + c;
-			let tile = new Tile(x, y, tileSize-2, corner);
+			let tile = new Tile(x, y, size-2, corner);
 			tile.init(i, erat.isPrime(i), rdm);
 			tiles.push(tile);
 		}
 	}
-
-	colorMode(RGB);
-	fill(255, 255, 255);
-	textFont(font);
-	textSize(32);
-	textAlign(RIGHT);
-	text(score, width-5, 32);
+	updateNavi();
 }
 
 function mousePressed(){
@@ -81,10 +77,30 @@ function mousePressed(){
 				console.log("tile:" + tiles[i].getNum());
 				tiles[i].die();
 				tiles.splice(i, 1);
+				score++;
+				erat.countDown();
 				sndOK.play();
 			}
 		}
 	}
+	updateNavi();
+}
+
+function updateNavi(){
+	// Score
+	colorMode(RGB);
+	fill(33, 33, 33);
+	rect(0, 0, W_NAV, H_NAV);
+	fill(255, 255, 255);
+	textFont(font);
+	textSize(32);
+	textAlign(RIGHT);
+	text(score, width-5, 32);
+	// Counter
+	textFont(font);
+	textSize(32);
+	textAlign(LEFT);
+	text(erat.getCounter(), 5, 32);
 }
 
 class Tile{
@@ -154,7 +170,7 @@ class Eratosthenes{
 			this._nums = this.clean(this._nums[0], this._nums);
 		}
 		this._results = this._results.concat(this._nums);
-		console.log(this._results);
+		this._counter = this._results.length;
 	}
 
 	clean(num, arr){
@@ -168,6 +184,16 @@ class Eratosthenes{
 		for(let i=0; i<this._results.length; i++){
 			if(this._results[i] == num) return true;
 		}
+		return false;
+	}
+
+	getCounter(){
+		return this._counter;
+	}
+
+	countDown(){
+		this._counter--;
+		if(this._counter <= 0) return true;
 		return false;
 	}
 }
