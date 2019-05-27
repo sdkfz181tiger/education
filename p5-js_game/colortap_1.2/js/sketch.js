@@ -5,11 +5,23 @@ const H_NAV = 33;
 
 let stgIndex = 0;
 let stgLevel = [
-	{cols: 3, rows: 3, size: 82, corner: 8},
-	{cols: 8, rows: 4, size: 64, corner: 8}
+	{cols: 2, rows: 2, size: 92, corner: 8},
+	{cols: 3, rows: 3, size: 92, corner: 8},
+	{cols: 4, rows: 3, size: 92, corner: 8},
+	{cols: 5, rows: 3, size: 92, corner: 8},
+	{cols: 3, rows: 3, size: 66, corner: 8},
+	{cols: 4, rows: 4, size: 66, corner: 8},
+	{cols: 5, rows: 4, size: 66, corner: 8},
+	{cols: 6, rows: 4, size: 66, corner: 8},
+	{cols: 7, rows: 4, size: 66, corner: 8},
+	{cols: 5, rows: 5, size: 52, corner: 8},
+	{cols: 5, rows: 5, size: 52, corner: 8},
+	{cols: 6, rows: 5, size: 52, corner: 8},
+	{cols: 7, rows: 5, size: 52, corner: 8},
+	{cols: 8, rows: 5, size: 52, corner: 8},
+	{cols: 9, rows: 5, size: 52, corner: 8}
 ];
 
-let index  = 0;
 let startX = 0;
 let startY = 0;
 
@@ -45,31 +57,31 @@ function setTiles(){
 	let size   = stgLevel[stgIndex].size;
 	let corner = stgLevel[stgIndex].corner;
 
-	// Eratosthenes
+	// Eratosthenes, Tiles
 	erat = new Eratosthenes(2, rows*cols);
-	console.log(erat.isPrime(5));
-
 	tiles  = [];
-	index  = floor(random(0, cols * rows));
+
 	startX = width * 0.5  - (size*cols) * 0.5;
 	startY = (height-H_NAV) * 0.5 - (size*rows) * 0.5 + H_NAV;
 
-	let rdm = floor(random(0, 360));
+	let numbers = createNumbers(0, rows*cols);
+	let hue = floor(random(0, 360));
 
 	for(let r=0; r<rows; r++){
 		for(let c=0; c<cols; c++){
 			let x = startX+size*c;
 			let y = startY+size*r;
 			let i = r*cols + c;
+			let num = numbers[i];// Number
 			let tile = new Tile(x, y, size-2, corner);
-			tile.init(i, erat.isPrime(i), rdm);
+			tile.init(num, erat.isPrime(num), hue);
 			tiles.push(tile);
 		}
 	}
 	updateNavi();
 }
 
-function mousePressed(){
+function mouseReleased(){
 
 	for(let i=0; i<tiles.length; i++){
 		if(tiles[i].contains(mouseX, mouseY)){
@@ -78,8 +90,14 @@ function mousePressed(){
 				tiles[i].die();
 				tiles.splice(i, 1);
 				score++;
-				erat.countDown();
 				sndOK.play();
+				if(erat.countDown()){
+					setTimeout(()=>{
+						stgIndex++;
+						if(stgLevel.length <= stgIndex) stgIndex = 0;
+						setTiles();
+					}, 200);
+				}
 			}
 		}
 	}
@@ -95,12 +113,26 @@ function updateNavi(){
 	textFont(font);
 	textSize(32);
 	textAlign(RIGHT);
-	text(score, width-5, 32);
+	text(score, width-10, 32);
 	// Counter
 	textFont(font);
 	textSize(32);
 	textAlign(LEFT);
-	text(erat.getCounter(), 5, 32);
+	text(erat.getCounter(), 10, 32);
+}
+
+function createNumbers(min, max){
+	let numbers = [];
+	for(let i=min; i<max; i++){
+		numbers.push(i);
+	}
+	for(let i=numbers.length-1; 0<i; i--){
+		let rdm = Math.floor(Math.random() * i);
+		let tmp = numbers[i];
+		numbers[i]   = numbers[rdm];
+		numbers[rdm] = tmp;
+	}
+	return numbers;
 }
 
 class Tile{
