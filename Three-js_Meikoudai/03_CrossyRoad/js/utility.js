@@ -79,6 +79,14 @@ class ThreeManager{
 			this._cameraContainer.rotation.set(0*DEG_TO_RAD, 0*DEG_TO_RAD, 0*DEG_TO_RAD);
 			// Controls(DeviceOrientation)
 			this._controls = new THREE.DeviceOrientationControls(this._camera);
+			if(this._modeAndroid == true){
+				console.log("This is Android!!");
+				this._controls.alphaOffset = Math.PI * 0.5; // radians
+			}
+			if(this._modeiOS == true){
+				console.log("This is iOS!!");
+				this._controls.alphaOffset = 0; // radians
+			}
 		}
 
 		// HemiLight
