@@ -57,6 +57,10 @@ class CannonManager{
 		this._camera.lookAt(new THREE.Vector3(0, 2, 0));
 		this._scene.add(this._camera);
 
+		// Controls
+		this._controls = new THREE.TrackballControls(this._camera);// Cameraのみ対応
+		this._controls.target.set(0, 0, 0);
+
 		// Renderer
 		this._renderer = new THREE.WebGLRenderer({antialias: true});
 		this._renderer.setSize(480, 320);
@@ -174,6 +178,8 @@ class CannonManager{
 	update(){
 		// Stats
 		this._stats.update();
+		// Controls(for PC and Devices)
+		this._controls.update();
 		// World
 		this._world.step(1 / 60);
 		// Position, Quatanion
