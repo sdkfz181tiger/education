@@ -83,10 +83,9 @@ class CannonManager{
 
 		this._objs = [];
 		let plane  = this.createPlane("myPlane");
-		let box1   = this.createBox("myBox1", 0, 3, 0, 1);
+		let box1   = this.createBox("myBox1", 0, 3, 0, 1, 3, 1);
 		let sph1   = this.createSphere("mySphere1", 0, 6, 0, 1);
 		let sph2   = this.createSphere("mySphere2", 0, 9, 0, 1);
-		
 
 		//this.createContact(plane.mat, box1.mat);
 		//this.createContact(plane.mat, sph1.mat);
@@ -114,19 +113,18 @@ class CannonManager{
 		return obj;
 	}
 
-	createBox(name, x, y, z, size){
+	createBox(name, x, y, z, w, h, d){
 		// Mesh(Sphere)
 		let mesh = new THREE.Mesh(
-			new THREE.BoxGeometry(size, size, size),
+			new THREE.BoxGeometry(w, h, d),
 			new THREE.MeshLambertMaterial({color: 0xffffff}));
 		mesh.castShadow = true;
 		mesh.receiveShadow = true;
 		this._scene.add(mesh);
-
 		// Material(Sphere)
 		let mat = new CANNON.Material(name);
 		let body = new CANNON.Body({mass: 1, material: mat});
-		body.addShape(new CANNON.Box(new CANNON.Vec3(size*0.5,size*0.5,size*0.5)));
+		body.addShape(new CANNON.Box(new CANNON.Vec3(w*0.5,h*0.5,d*0.5)));
 		body.position.set(x, y, z);
 		//body.angularVelocity.set(5, 5, 5);
 		//body.angularDamping = 0.1;
@@ -137,19 +135,18 @@ class CannonManager{
 		return obj;
 	}
 
-	createSphere(name, x, y, z, size){
+	createSphere(name, x, y, z, radius){
 		// Mesh(Sphere)
 		let mesh = new THREE.Mesh(
-			new THREE.SphereGeometry(size*0.9, 50, 50),
+			new THREE.SphereGeometry(radius*0.9, 50, 50),
 			new THREE.MeshLambertMaterial({color: 0xffffff}));
 		mesh.castShadow = true;
 		mesh.receiveShadow = true;
 		this._scene.add(mesh);
-
 		// Material(Sphere)
 		let mat = new CANNON.Material(name);
 		let body = new CANNON.Body({mass: 1, material: mat});
-		body.addShape(new CANNON.Sphere(size));
+		body.addShape(new CANNON.Sphere(radius));
 		body.position.set(x, y, z);
 		//body.angularVelocity.set(5, 5, 5);
 		//body.angularDamping = 0.1;
