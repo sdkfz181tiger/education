@@ -83,9 +83,11 @@ class CannonManager{
 		dirLight.shadow.camera.near    = 0;
 		this._scene.add(dirLight);
 
+		// AmbientLight
 		let ambLight = new THREE.AmbientLight(0x999999);
 		this._scene.add(ambLight);
 
+		// Objects
 		this._objs = [];
 	}
 
