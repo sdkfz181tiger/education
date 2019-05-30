@@ -54,13 +54,13 @@ class CannonManager{
 
 		// Camera
 		this._camera = new THREE.PerspectiveCamera(30, 650/400, 1, 10000);
-		this._camera.position.set(0, 15, 20);
+		this._camera.position.set(0, 12, 23);
 		this._camera.lookAt(new THREE.Vector3(0, 2, 0));
 		this._scene.add(this._camera);
 
 		// Controls
 		this._controls = new THREE.TrackballControls(this._camera);// Cameraのみ対応
-		this._controls.target.set(0, 0, 0);
+		this._controls.target.set(0, 5, 0);
 
 		// Renderer
 		this._renderer = new THREE.WebGLRenderer({antialias: true});
@@ -87,24 +87,6 @@ class CannonManager{
 		this._scene.add(ambLight);
 
 		this._objs = [];
-		let ground = this.createPlane("myGround");
-		let box1   = this.createBox("myBox1", 0, 1, 0, 2, 0.5, 2, 0x333333);
-		// let box2   = this.createBox("myBox2", 0, 2, 0, 2, 0.5, 2, 0x333333);
-		// let box3   = this.createBox("myBox3", 0, 3, 0, 2, 0.5, 2, 0x333333);
-		let sph1   = this.createSphere("mySphere1", 0, 6, -10, 1);
-		let sph2   = this.createSphere("mySphere2", 0, 9, -15, 1);
-		let cyl1   = this.createCylinder("myCylinder1", 0, 6, -5, 1, 1, 1, 10, 0x993333);
-		// let cyl2   = this.createCylinder("myCylinder2", 0, 4, 0, 1, 1, 1, 10, 0x339933);
-		// let cyl3   = this.createCylinder("myCylinder3", 0, 5, 0, 1, 1, 1, 10, 0x333399);
-
-		ground.body.addEventListener("collide", (e)=>{
-			// console.log(e.contact.bi.material.name);
-			// console.log(e.contact.bj.material.name);
-		});
-
-		this.createContact(ground.mat, ground.mat);
-		this.createContact(ground.mat, box1.mat, 0.01);
-		this.createContact(ground.mat, cyl1.mat, 0.0001);
 	}
 
 	createPlane(name, color=0xffffff){
@@ -118,7 +100,7 @@ class CannonManager{
 		let mat = new CANNON.Material(name);
 		let body = new CANNON.Body({mass: 0, material: mat});
 		body.addShape(new CANNON.Plane());
-		body.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -80*DEG_TO_RAD);
+		body.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -90*DEG_TO_RAD);
 		this._world.add(body);
 		// Object
 		let obj = {mesh: mesh, mat: mat, body: body};
@@ -126,7 +108,7 @@ class CannonManager{
 		return obj;
 	}
 
-	createBox(name, x, y, z, w, h, d, color=0xffffff){
+	createBox(name, x, y, z, w, h, d, mass=1, color=0xffffff){
 		// Mesh(Sphere)
 		let mesh = new THREE.Mesh(
 			new THREE.BoxGeometry(w, h, d),
@@ -136,7 +118,7 @@ class CannonManager{
 		this._scene.add(mesh);
 		// Material(Sphere)
 		let mat = new CANNON.Material(name);
-		let body = new CANNON.Body({mass: 1, material: mat});
+		let body = new CANNON.Body({mass: mass, material: mat});
 		body.addShape(new CANNON.Box(new CANNON.Vec3(w*0.5,h*0.5,d*0.5)));
 		body.position.set(x, y, z);
 		//body.angularVelocity.set(5, 5, 5);
@@ -152,7 +134,7 @@ class CannonManager{
 		return obj;
 	}
 
-	createSphere(name, x, y, z, radius, color=0xffffff){
+	createSphere(name, x, y, z, radius, mass=1, color=0xffffff){
 		// Mesh(Sphere)
 		let mesh = new THREE.Mesh(
 			new THREE.SphereGeometry(radius*0.95, 50, 50),
@@ -162,7 +144,7 @@ class CannonManager{
 		this._scene.add(mesh);
 		// Material(Sphere)
 		let mat = new CANNON.Material(name);
-		let body = new CANNON.Body({mass: 1, material: mat});
+		let body = new CANNON.Body({mass: mass, material: mat});
 		body.addShape(new CANNON.Sphere(radius));
 		body.position.set(x, y, z);
 		//body.angularVelocity.set(5, 5, 5);
@@ -178,7 +160,7 @@ class CannonManager{
 		return obj;
 	}
 
-	createCylinder(name, x, y, z, t, b, h, seg, color=0xffffff){
+	createCylinder(name, x, y, z, t, b, h, seg, mass=1, color=0xffffff){
 		// Mesh(Sphere)
 		let mesh = new THREE.Mesh(
 			new THREE.CylinderGeometry(t*0.95, b*0.95, h*0.95, seg),
@@ -188,7 +170,7 @@ class CannonManager{
 		this._scene.add(mesh);
 		// Material(Sphere)
 		let mat = new CANNON.Material(name);
-		let body = new CANNON.Body({mass: 1, material: mat});
+		let body = new CANNON.Body({mass: mass, material: mat});
 		let vec3 = new CANNON.Vec3();
 		let quat = new CANNON.Quaternion(1, 0, 0, 1);
 		quat.normalize();
@@ -207,7 +189,7 @@ class CannonManager{
 		return obj;
 	}
 
-	createContact(materialA, materialB, fri=0.4, rest=0.3){
+	createContact(materialA, materialB, fri=0.001, rest=0.3){
 		// Contact
 		let contact = new CANNON.ContactMaterial(
 			materialA, materialB, {
