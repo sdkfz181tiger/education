@@ -31,6 +31,7 @@ class CannonManager{
 		this._world.broadphase = new CANNON.NaiveBroadphase();
 		this._world.solver.iterations = 5; // 反復計算回数
 		this._world.solver.tolerance = 0.1;// 許容値
+		this._world.allowSleep = true;     // Sleep
 
 		// Scene
 		this._scene = new THREE.Scene();
@@ -53,7 +54,7 @@ class CannonManager{
 
 		// Camera
 		this._camera = new THREE.PerspectiveCamera(30, 650/400, 1, 10000);
-		this._camera.position.set(0, 10, 40);
+		this._camera.position.set(0, 15, 20);
 		this._camera.lookAt(new THREE.Vector3(0, 2, 0));
 		this._scene.add(this._camera);
 
@@ -82,34 +83,42 @@ class CannonManager{
 		dirLight.shadow.camera.near    = 0;
 		this._scene.add(dirLight);
 
-		var ambLight = new THREE.AmbientLight(0x999999);
+		let ambLight = new THREE.AmbientLight(0x999999);
 		this._scene.add(ambLight);
 
 		this._objs = [];
-		let plane  = this.createPlane("myPlane");
-		let box1   = this.createBox("myBox1", 0, 3, 0, 1, 3, 1);
-		let sph1   = this.createSphere("mySphere1", 0, 6, 0, 1);
-		let sph2   = this.createSphere("mySphere2", 0, 9, 0, 1);
+		let ground = this.createPlane("myGround");
+		let box1   = this.createBox("myBox1", 0, 1, 0, 2, 0.5, 2, 0x333333);
+		// let box2   = this.createBox("myBox2", 0, 2, 0, 2, 0.5, 2, 0x333333);
+		// let box3   = this.createBox("myBox3", 0, 3, 0, 2, 0.5, 2, 0x333333);
+		let sph1   = this.createSphere("mySphere1", 0, 6, -10, 1);
+		let sph2   = this.createSphere("mySphere2", 0, 9, -15, 1);
+		let cyl1   = this.createCylinder("myCylinder1", 0, 6, -5, 1, 1, 1, 10, 0x993333);
+		// let cyl2   = this.createCylinder("myCylinder2", 0, 4, 0, 1, 1, 1, 10, 0x339933);
+		// let cyl3   = this.createCylinder("myCylinder3", 0, 5, 0, 1, 1, 1, 10, 0x333399);
 
-		//this.createContact(plane.mat, box1.mat);
-		//this.createContact(plane.mat, sph1.mat);
-		//this.createContact(plane.mat, sph2.mat);
+		ground.body.addEventListener("collide", (e)=>{
+			// console.log(e.contact.bi.material.name);
+			// console.log(e.contact.bj.material.name);
+		});
+
+		this.createContact(ground.mat, ground.mat);
+		this.createContact(ground.mat, box1.mat, 0.01);
+		this.createContact(ground.mat, cyl1.mat, 0.0001);
 	}
 
-	createPlane(name){
+	createPlane(name, color=0xffffff){
 		// Mesh(Plane)
 		let mesh = new THREE.Mesh(
 			new THREE.PlaneGeometry(10, 10),
-			new THREE.MeshPhongMaterial({color: 0x999999}));
-		mesh.rotation.x = -Math.PI / 2;
-		mesh.position.y = 0;
+			new THREE.MeshPhongMaterial({color: color}));
 		mesh.receiveShadow = true;
 		this._scene.add(mesh);
 		// Material(Plane)
 		let mat = new CANNON.Material(name);
 		let body = new CANNON.Body({mass: 0, material: mat});
 		body.addShape(new CANNON.Plane());
-		body.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
+		body.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -80*DEG_TO_RAD);
 		this._world.add(body);
 		// Object
 		let obj = {mesh: mesh, mat: mat, body: body};
@@ -117,11 +126,11 @@ class CannonManager{
 		return obj;
 	}
 
-	createBox(name, x, y, z, w, h, d){
+	createBox(name, x, y, z, w, h, d, color=0xffffff){
 		// Mesh(Sphere)
 		let mesh = new THREE.Mesh(
 			new THREE.BoxGeometry(w, h, d),
-			new THREE.MeshLambertMaterial({color: 0xffffff}));
+			new THREE.MeshLambertMaterial({color: color}));
 		mesh.castShadow = true;
 		mesh.receiveShadow = true;
 		this._scene.add(mesh);
@@ -132,6 +141,10 @@ class CannonManager{
 		body.position.set(x, y, z);
 		//body.angularVelocity.set(5, 5, 5);
 		//body.angularDamping = 0.1;
+		body.allowSleep = true;// Sleep
+		body.addEventListener("sleep", (e)=>{
+			console.log("sleep:" + name);
+		});
 		this._world.add(body);
 		// Object
 		let obj = {mesh: mesh, mat: mat, body: body};
@@ -139,11 +152,11 @@ class CannonManager{
 		return obj;
 	}
 
-	createSphere(name, x, y, z, radius){
+	createSphere(name, x, y, z, radius, color=0xffffff){
 		// Mesh(Sphere)
 		let mesh = new THREE.Mesh(
-			new THREE.SphereGeometry(radius*0.9, 50, 50),
-			new THREE.MeshLambertMaterial({color: 0xffffff}));
+			new THREE.SphereGeometry(radius*0.95, 50, 50),
+			new THREE.MeshLambertMaterial({color: color}));
 		mesh.castShadow = true;
 		mesh.receiveShadow = true;
 		this._scene.add(mesh);
@@ -154,6 +167,10 @@ class CannonManager{
 		body.position.set(x, y, z);
 		//body.angularVelocity.set(5, 5, 5);
 		//body.angularDamping = 0.1;
+		body.allowSleep = true;// Sleep
+		body.addEventListener("sleep", (e)=>{
+			console.log("sleep:" + name);
+		});
 		this._world.add(body);
 		// Object
 		let obj = {mesh: mesh, mat: mat, body: body};
@@ -161,16 +178,45 @@ class CannonManager{
 		return obj;
 	}
 
-	createContact(materialA, materialB){
+	createCylinder(name, x, y, z, t, b, h, seg, color=0xffffff){
+		// Mesh(Sphere)
+		let mesh = new THREE.Mesh(
+			new THREE.CylinderGeometry(t*0.95, b*0.95, h*0.95, seg),
+			new THREE.MeshLambertMaterial({color: color}));
+		mesh.castShadow = true;
+		mesh.receiveShadow = true;
+		this._scene.add(mesh);
+		// Material(Sphere)
+		let mat = new CANNON.Material(name);
+		let body = new CANNON.Body({mass: 1, material: mat});
+		let vec3 = new CANNON.Vec3();
+		let quat = new CANNON.Quaternion(1, 0, 0, 1);
+		quat.normalize();
+		body.addShape(new CANNON.Cylinder(t, b, h, seg), vec3, quat);
+		body.position.set(x, y, z);
+		//body.angularVelocity.set(5, 5, 5);
+		//body.angularDamping = 0.1;
+		body.allowSleep = true;// Sleep
+		body.addEventListener("sleep", (e)=>{
+			console.log("sleep:" + name);
+		});
+		this._world.add(body);
+		// Object
+		let obj = {mesh: mesh, mat: mat, body: body};
+		this._objs.push(obj);
+		return obj;
+	}
+
+	createContact(materialA, materialB, fri=0.4, rest=0.3){
 		// Contact
 		let contact = new CANNON.ContactMaterial(
 			materialA, materialB, {
-			contactEquationRelaxation: 3,        // 接触式の緩和性
-			contactEquationStiffness: 10000000,  // 接触式の剛性
-			friction: 0.3,                       // 摩擦係数
-			frictionEquationRelaxation: 3,       // 摩擦式の剛性
-			frictionEquationStiffness: 10000000, // 摩擦式の緩和性
-			restitution: 0.3                     // 反発係数
+			friction: fri,
+			restitution: rest,
+			contactEquationStiffness: 1e8,
+			contactEquationRelaxation: 3,
+			frictionEquationStiffness: 1e8,
+			frictionEquationRegularizationTime: 3
 		});
 		this._world.addContactMaterial(contact);
 	}
