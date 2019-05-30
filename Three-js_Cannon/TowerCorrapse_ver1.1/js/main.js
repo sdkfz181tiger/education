@@ -10,11 +10,13 @@ const C_PURPLE = 0x663399;
 
 // Data
 const models = {data:[
-	{dir:"./models/obj/", mtl:"tree_1.mtl", obj:"tree_1.obj"},
-	{dir:"./models/obj/", mtl:"tree_2.mtl", obj:"tree_2.obj"},
-	{dir:"./models/obj/", mtl:"car_1.mtl",  obj:"car_1.obj"},
-	{dir:"./models/obj/", mtl:"car_2.mtl",  obj:"car_2.obj"},
-	{dir:"./models/obj/", mtl:"car_3.mtl",  obj:"car_3.obj"}
+	{dir:"./models/obj/", mtl:"car_1.mtl",   obj:"car_1.obj"},
+	{dir:"./models/obj/", mtl:"car_2.mtl",   obj:"car_2.obj"},
+	{dir:"./models/obj/", mtl:"car_3.mtl",   obj:"car_3.obj"},
+	{dir:"./models/obj/", mtl:"tree_1.mtl",  obj:"tree_1.obj"},
+	{dir:"./models/obj/", mtl:"tree_2.mtl",  obj:"tree_2.obj"},
+	{dir:"./models/obj/", mtl:"truck_1.mtl", obj:"truck_1.obj"},
+	{dir:"./models/obj/", mtl:"truck_2.mtl", obj:"truck_2.obj"}
 ]};
 
 let cm = null;
@@ -47,7 +49,7 @@ function initStage(){
 	console.log("initStage");
 
 	let ground = cm.createPlane("myGround", 0x999999);
-	let box1   = cm.createBox("myBox1", 0, 0.5, 0, 3, 0.5, 3, 5, 0xcccccc);
+	let box1   = cm.createBox("myBox1", 0, 0.5, 0, 2, 0.5, 2, 5, 0xcccccc);
 
 	let sph1 = cm.createSphere("mySph1", +4, 1, 0, 1);
 	let sph2 = cm.createSphere("mySph2", +4, 3, 0, 1);
@@ -88,8 +90,14 @@ function initStage(){
 	cm.createContact(cyl4.mat, cyl5.mat, 0.01, 0);
 
 	// Car1
-	let model1 = objLoader.findModels("car_1.obj");
-	let car1 = cm.createBoxWithModel("myBox1", 7, 2, 0, model1);
+	let car1   = cm.createBoxWithModel("", -2, 2, 4, objLoader.findModels("car_1.obj"));
+	let car2   = cm.createBoxWithModel("", +0, 2, 4, objLoader.findModels("car_2.obj"));
+	let car3   = cm.createBoxWithModel("", +4, 2, 4, objLoader.findModels("car_3.obj"));
+	let tree1  = cm.createBoxWithModel("", -4, 2, 2, objLoader.findModels("tree_1.obj"));
+	let tree2  = cm.createBoxWithModel("", -3, 2, 2, objLoader.findModels("tree_1.obj"));
+	let tree3  = cm.createBoxWithModel("", -2, 2, 2, objLoader.findModels("tree_1.obj"));
+	let truck1 = cm.createBoxWithModel("", +2, 2, 2, objLoader.findModels("truck_1.obj"));
+	let truck2 = cm.createBoxWithModel("", +2, 4, 2, objLoader.findModels("truck_2.obj"));
 
 	// Animate
 	animate();

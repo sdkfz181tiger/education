@@ -54,13 +54,13 @@ class CannonManager{
 
 		// Camera
 		this._camera = new THREE.PerspectiveCamera(30, 650/400, 1, 10000);
-		this._camera.position.set(0, 12, 23);
+		this._camera.position.set(0, 4, 18);
 		this._camera.lookAt(new THREE.Vector3(0, 2, 0));
 		this._scene.add(this._camera);
 
 		// Controls
 		this._controls = new THREE.TrackballControls(this._camera);// Cameraのみ対応
-		this._controls.target.set(0, 5, 0);
+		this._controls.target.set(0, 2, 0);
 
 		// Renderer
 		this._renderer = new THREE.WebGLRenderer({antialias: true});
