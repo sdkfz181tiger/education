@@ -191,7 +191,7 @@ class CannonManager{
 		return obj;
 	}
 
-	createContact(materialA, materialB, fri=0.001, rest=0.3){
+	createContact(materialA, materialB, fri=0.01, rest=0.3){
 		// Contact
 		let contact = new CANNON.ContactMaterial(
 			materialA, materialB, {
