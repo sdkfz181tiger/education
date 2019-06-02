@@ -2,6 +2,8 @@ console.log("Hello p5.js!!");
 
 const START_X = 50;
 const START_Y = 50;
+const A_PADDING = 46;
+const A_HEIGHT  = 220;
 
 let font  = null;
 
@@ -15,9 +17,7 @@ function setup(){
 	createCanvas(480, 320);
 	background(33, 33, 33);
 
-	let aPadding = 50;
-	let aHeight = 220;
-	let nums = [2, 2, 2, 0];
+	let nums = [3, 2, 3, 2, 3, 2, 3, 2, 0];
 	let amidas = [];
 	for(let i=0; i<nums.length; i++){
 		let bars = [];
@@ -28,22 +28,22 @@ function setup(){
 	strokeWeight(2);
 
 	// Vertical
-	for(let v=0; v<nums.length; v++){
-		let x = START_X + aPadding * v;
+	for(let i=0; i<nums.length; i++){
+		let x = START_X + A_PADDING * i;
 		let y = START_Y;
-		line(x, y, x, y+aHeight);
+		line(x, y, x, y+A_HEIGHT);
 		// Horizontal
-		for(let s=0; s<nums[v]; s++){
+		for(let s=0; s<nums[i]; s++){
 			let lX = x;
-			let lY = y + random(30, aHeight-30);
-			let rX = lX + aPadding;
+			let lY = y + random(30, A_HEIGHT-30);
+			let rX = lX + A_PADDING;
 			let rY = lY;
 			line(lX, lY, rX, rY);
 			// Amidas
-			let fromL = {v:v+1, x:rX, y:rY};
-			amidas[v].push(fromL);
-			let fromR = {v:v, x:lX, y:lY};
-			amidas[v+1].push(fromR);
+			let fromL = {index:i+1, fromX:lX, fromY:lY, toX:rX, toY:rY};
+			amidas[i].push(fromL);
+			let fromR = {index:i, fromX:rX, fromY:rY, toX:lX, toY:lY};
+			amidas[i+1].push(fromR);
 		}
 	}
 
@@ -52,33 +52,43 @@ function setup(){
 		bubbleSort(amidas[i]);
 	}
 
-	// Test
-	let lineX = START_X;
-	let lineY = START_Y;
-	let v = 3;
-	let bar = trace(lineY, amidas[v]);
-	console.log(bar);
-	while(bar != null){
-		v = bar.v;
-		lineY = bar.y;
-		bar = trace(lineY, amidas[v]);
-	}
-
-	console.log("result:" + v);
+	colorMode(HSB);
+	stroke(0, 100, 100);
+	strokeWeight(4);
+	detectAmida(amidas, 0);
+	stroke(100, 100, 100);
+	detectAmida(amidas, 7);
 }
 
-function trace(lineY, bars){
-	console.log("trace:" + lineY);
-	for(let i=0; i<bars.length; i++){
-		if(lineY < bars[i].y) return bars[i];
+function detectAmida(amidas, index){
+	let pX = START_X + A_PADDING * index;
+	let pY = START_Y;
+	let bar = trace(amidas[index], pX, pY);
+	while(bar != null){
+		index = bar.index;
+		pX  = bar.toX;
+		pY  = bar.toY;
+		bar = trace(amidas[index], pX, pY);
 	}
+	return index;
+}
+
+function trace(bars, pX, pY){
+	for(let i=0; i<bars.length; i++){
+		if(pY < bars[i].toY){
+			line(pX, pY, bars[i].fromX, bars[i].fromY);
+			line(bars[i].fromX, bars[i].fromY, bars[i].toX, bars[i].toY);
+			return bars[i];
+		}
+	}
+	line(pX, pY, pX, START_Y+A_HEIGHT);
 	return null;
 }
 
 function bubbleSort(arr){
 	for(let l=arr.length-1; 0<=l; l--){
 		for(let s=0; s<=l-1; s++){
-			if(arr[s+1].y < arr[s].y){
+			if(arr[s+1].toY < arr[s].toY){
 				let tmp  = arr[s];
 				arr[s]   = arr[s+1];
 				arr[s+1] = tmp;
