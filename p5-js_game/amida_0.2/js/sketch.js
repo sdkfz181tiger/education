@@ -1,9 +1,11 @@
 console.log("Hello p5.js!!");
 
-const START_X = 40;
-const START_Y = 50;
+const START_X   = 40;
+const START_Y   = 50;
 const A_PADDING = 50;
 const A_HEIGHT  = 220;
+const V_NUM     = 9;
+const H_NUM     = 5;
 
 let font  = null;
 
@@ -17,34 +19,41 @@ function setup(){
 	createCanvas(480, 320);
 	background(33, 33, 33);
 
-	let nums = [
-	6, 4, 6, 4, 6, 4, 6, 4, 0];
+	stroke(255);
+	strokeWeight(2);
+
 	let amidas = [];
-	for(let i=0; i<nums.length; i++){
+	for(let v=0; v<V_NUM; v++){
 		let bars = [];
 		amidas.push(bars);
 	}
 
-	stroke(255);
-	strokeWeight(2);
+	let nums = [];
+	for(let i=0; i<V_NUM*H_NUM; i++) nums.push(i);
+	dastenfeldShuffle(nums);
 
 	// Vertical
-	for(let i=0; i<nums.length; i++){
-		let x = START_X + A_PADDING * i;
+	for(let v=0; v<V_NUM; v++){
+		let x = START_X + A_PADDING * v;
 		let y = START_Y;
 		line(x, y, x, y+A_HEIGHT);
-		// Horizontal
-		for(let s=0; s<nums[i]; s++){
-			let lX = x;
-			let lY = y + random(30, A_HEIGHT-30);
+	}
+
+	// Horiozntal
+	let offset  = 20;
+	let padding = (A_HEIGHT-offset) / (V_NUM * H_NUM);
+	for(let v=0; v<V_NUM-1; v++){
+		for(let h=0; h<H_NUM; h++){
+			let lX = START_X + A_PADDING * v;
+			let lY = START_Y + nums[H_NUM*v+h] * padding + offset;
 			let rX = lX + A_PADDING;
 			let rY = lY;
 			line(lX, lY, rX, rY);
 			// Amidas
-			let fromL = {index:i+1, fromX:lX, fromY:lY, toX:rX, toY:rY};
-			amidas[i].push(fromL);
-			let fromR = {index:i, fromX:rX, fromY:rY, toX:lX, toY:lY};
-			amidas[i+1].push(fromR);
+			let fromL = {index:v+1, fromX:lX, fromY:lY, toX:rX, toY:rY};
+			amidas[v].push(fromL);
+			let fromR = {index:v, fromX:rX, fromY:rY, toX:lX, toY:lY};
+			amidas[v+1].push(fromR);
 		}
 	}
 
@@ -53,17 +62,28 @@ function setup(){
 		bubbleSort(amidas[i]);
 	}
 
+	// Test
 	colorMode(HSB);
-	stroke(0, 100, 100);
-	strokeWeight(4);
-	detectAmida(amidas, 0);
-	stroke(100, 100, 100);
-	detectAmida(amidas, 7);
+	strokeWeight(3);
+	for(let i=0; i<amidas.length; i++){
+		let rdm = random(0, 360);
+		stroke(rdm, 100, 100);
+		detectAmida(amidas, i);
+	}
+}
+
+function dastenfeldShuffle(arr){
+	for(let i=arr.length-1; 0<i; i--){
+		let rdm  = Math.floor(Math.random() * i);
+		let tmp  = arr[i];
+		arr[i]   = arr[rdm];
+		arr[rdm] = tmp;
+	}
 }
 
 function detectAmida(amidas, index){
-	let pX = START_X + A_PADDING * index;
-	let pY = START_Y;
+	let pX  = START_X + A_PADDING * index;
+	let pY  = START_Y;
 	let bar = trace(amidas[index], pX, pY);
 	while(bar != null){
 		index = bar.index;
@@ -75,6 +95,7 @@ function detectAmida(amidas, index){
 }
 
 function trace(bars, pX, pY){
+
 	for(let i=0; i<bars.length; i++){
 		if(pY < bars[i].toY){
 			line(pX, pY, bars[i].fromX, bars[i].fromY);
