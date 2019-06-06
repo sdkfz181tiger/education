@@ -22,6 +22,9 @@ const models = {data:[
 let cm = null;
 let objLoader = null;
 
+// GamepadHelper
+let gpHelper = new GamepadHelper();
+
 window.onload = function(){
 	console.log("OnLoad");
 
@@ -97,8 +100,15 @@ function initStage(){
 	});
 
 	// GamepadHelper
-	let gpHelper = new GamepadHelper();
 	const power = 6;
+	// Connect, Disconnect
+	gpHelper.setConnectedListener((gamepad)=>{
+		console.log("Connected:" + gamepad.index + ", " + gamepad.id);
+	});
+	gpHelper.setDisconnectedListener((gamepad)=>{
+		console.log("Disconnected:" + gamepad.index + ", " + gamepad.id);
+	});
+	// Controller
 	gpHelper.setAxesXListener((key, num)=>{
 		console.log("X[" + key + "]:" + num);
 		if(num == 1)  controlBody(sph1.body, +power, 0, 0);

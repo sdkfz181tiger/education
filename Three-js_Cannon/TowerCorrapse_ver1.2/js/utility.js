@@ -328,6 +328,10 @@ class GamepadHelper{
 
 	constructor(){
 		console.log("GamePadHelper");
+		// Connect / Disconnect
+		this._connectedListener    = null;
+		this._disconnectedListener = null;
+		// Gamepads
 		this._gamepads        = {};
 		this._prevAxes        = {};
 		this._prevButtons     = {};
@@ -339,18 +343,23 @@ class GamepadHelper{
 	init(){
 		// Connected
 		window.addEventListener("gamepadconnected", (e)=>{
-			console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.",
-				e.gamepad.index, e.gamepad.id,
-				e.gamepad.buttons.length, e.gamepad.axes.length);
+			if(this._connectedListener) this._connectedListener(e.gamepad);
 			this.gamepadHandler(e.gamepad, true);
 		});
 
 		// Disconeccted
 		window.addEventListener("gamepaddisconnected", (e)=>{
-			console.log("Gamepad disconnected from index %d: %s",
-				e.gamepad.index, e.gamepad.id);
+			if(this._diconnectedListener) this._diconnectedListener(e.gamepad);
 			this.gamepadHandler(e.gamepad, false);
 		});
+	}
+
+	setConnectedListener(callback){
+		this._connectedListener = callback;
+	}
+
+	setDisconnectedListener(callback){
+		this._diconnectedListener = callback;
 	}
 
 	gamepadHandler(gamepad, connectFlg){
