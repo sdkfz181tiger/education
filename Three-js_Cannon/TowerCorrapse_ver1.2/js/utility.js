@@ -396,41 +396,41 @@ class GamepadHelper{
 
 	loop(){
 		setTimeout(()=>{
-			for(let key in this._gamepads){
-				let gamepad = this._gamepads[key];
+			for(let index in this._gamepads){
+				let gamepad = this._gamepads[index];
 
 				// Axes(X)
-				let disX = this._prevAxes[key][0] - Math.round(gamepad.axes[0]);
+				let disX = this._prevAxes[index][0] - Math.round(gamepad.axes[0]);
 				if(disX < 0) disX *= -1.0;
 				if(0.5 < disX){
-					this._prevAxes[key][0] = Math.round(gamepad.axes[0]);
+					this._prevAxes[index][0] = Math.round(gamepad.axes[0]);
 					if(this._axesXCallback){
-						this._axesXCallback(key, this._prevAxes[key][0]);
+						this._axesXCallback(index, this._prevAxes[index][0]);
 					}
 				}
 
 				// Axes(Y)
-				let disY = this._prevAxes[key][1] - Math.round(gamepad.axes[1]);
+				let disY = this._prevAxes[index][1] - Math.round(gamepad.axes[1]);
 				if(disY < 0) disY *= -1.0;
 				if(0.5 < disY){
-					this._prevAxes[key][1] = Math.round(gamepad.axes[1]);
+					this._prevAxes[index][1] = Math.round(gamepad.axes[1]);
 					if(this._axesYCallback){
-						this._axesYCallback(key, this._prevAxes[key][1]);
+						this._axesYCallback(index, this._prevAxes[index][1]);
 					}
 				}
 
 				// Buttons
 				for(let i=0; i<gamepad.buttons.length; i++){
-					if(this._prevButtons[key][i] != gamepad.buttons[i].pressed){
-						this._prevButtons[key][i] = gamepad.buttons[i].pressed;
+					if(this._prevButtons[index][i] != gamepad.buttons[i].pressed){
+						this._prevButtons[index][i] = gamepad.buttons[i].pressed;
 						if(this._buttonsCallback){
-							this._buttonsCallback(key, i, gamepad.buttons[i].pressed);
+							this._buttonsCallback(index, i, gamepad.buttons[i].pressed);
 						}
 					}
 				}
 			}
 			if(this._gamepads.length <= 0) return;
 			this.loop();
-		}, 200);
+		}, 100);
 	}
 }

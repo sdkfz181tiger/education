@@ -7,6 +7,7 @@ const C_GREEN  = 0x339933;
 const C_AQUA   = 0x336699;
 const C_BLUE   = 0x333399;
 const C_PURPLE = 0x663399;
+const COLORS   = [C_RED, C_ORANGE, C_YELLOW, C_GREEN, C_AQUA, C_BLUE, C_PURPLE];
 
 // Data
 const models = {data:[
@@ -59,12 +60,12 @@ function initStage(){
 	let table = cm.createCylinder("table", 0, 0.5, 0, 4, 4, 0.5, 20, 5, C_PURPLE);
 	table.body.type = CANNON.Body.KINEMATIC;
 
-	let sph1 = cm.createSphere("mySph1", 0, 2, 3, 0.5);
+	//let sph1 = cm.createSphere("mySph1", 0, 2, 0, 0.5);
 	// let sph2 = cm.createSphere("mySph2", 0, 4, 0, 1);
 	// let sph3 = cm.createSphere("mySph3", 0, 6, 0, 1);
 
 	// Tower
-	let cyls = createTower(0, 1.8);
+	//let cyls = createTower(0, 1.8);
 
 	// Hammer
 	// let hammer = cm.createBox("myHammer", -5, 3, 0, 0.5, 0.5, 0.5, 5, 0xcccccc)
@@ -85,7 +86,7 @@ function initStage(){
 	// cm.createContact(cyl4.mat, cyl5.mat, 0.01, 0);
 
 	// Car1
-	let car1   = cm.createBoxWithModel("", 0, 2, 2, objLoader.findModels("car_1.obj"));
+	//let car1   = cm.createBoxWithModel("", 0, 2, 2, objLoader.findModels("car_1.obj"));
 	// let car2   = cm.createBoxWithModel("", +0, 2, 4, objLoader.findModels("car_2.obj"));
 	// let car3   = cm.createBoxWithModel("", +4, 2, 4, objLoader.findModels("car_3.obj"));
 	// let tree1  = cm.createBoxWithModel("", -4, 2, 2, objLoader.findModels("tree_1.obj"));
@@ -99,35 +100,49 @@ function initStage(){
 		// console.log(e.contact.bj.material.name);
 	});
 
+	//==========
 	// GamepadHelper
-	const power = 6;
+
 	// Connect, Disconnect
 	gpHelper.setConnectedListener((gamepad)=>{
 		console.log("Connected:" + gamepad.index + ", " + gamepad.id);
+		createPlayer(gamepad);// Create new player!!
 	});
 	gpHelper.setDisconnectedListener((gamepad)=>{
 		console.log("Disconnected:" + gamepad.index + ", " + gamepad.id);
 	});
 	// Controller
-	gpHelper.setAxesXListener((key, num)=>{
-		console.log("X[" + key + "]:" + num);
-		if(num == 1)  controlBody(sph1.body, +power, 0, 0);
-		if(num == -1) controlBody(sph1.body, -power, 0, 0);
-	});
-	gpHelper.setAxesYListener((key, num)=>{
-		console.log("Y[" + key + "]:" + num);
+	gpHelper.setAxesXListener((index, num)=>{
+		console.log("X[" + index + "]:" + num);
 		if(num == 0) return;
-		if(num == 1)  controlBody(sph1.body, 0, 0, +power);
-		if(num == -1) controlBody(sph1.body, 0, 0, -power);
+		controlPlayerXYZ(index, num, 0, 0);
 	});
-	gpHelper.setButtonsListener((key, i, flg)=>{
-		console.log("Button[" + key + "]:" + i + "_" + flg);
+	gpHelper.setAxesYListener((index, num)=>{
+		console.log("Y[" + index + "]:" + num);
+		if(num == 0) return;
+		controlPlayerXYZ(index, 0, 0, num);
+	});
+	gpHelper.setButtonsListener((index, i, flg)=>{
+		console.log("Button[" + index + "]:" + i + "_" + flg);
 		if(flg == false) return;
-		if(i == 0) controlBody(sph1.body, 0, +power, 0);
-		if(i == 1) controlBody(sph1.body, 0, -power, 0);
+		if(i == 0 && flg) controlPlayerXYZ(index, 0, 1, 0);
 	});
 
-	function controlBody(body, x, y, z){
+	// Players
+	let players = {};
+	const power = 6;
+	function createPlayer(gamepad){
+		let name = "player" + gamepad.index;
+		let player = cm.createSphere(name, 0, 2, 0, 0.5, 1, COLORS[gamepad.index]);
+		players[gamepad.index] = player;
+	}
+
+	function controlPlayerXYZ(index, x, y, z){
+		console.log("controlPlayerAxes[" + index + "]:" + x + ", " + z);
+		controlVelocity(players[index].body, x*power, y*power, z*power);
+	}
+
+	function controlVelocity(body, x, y, z){
 		if(body == null) return;
 		body.wakeUp();
 		//body.velocity.set(0, 0, 0);
