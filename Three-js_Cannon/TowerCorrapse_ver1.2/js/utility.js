@@ -27,7 +27,7 @@ class CannonManager{
 
 		// World
 		this._world = new CANNON.World();
-		this._world.gravity.set(0, -9.82, 0);
+		this._world.gravity.set(0, -9.82*1.0, 0);// 0, -9.82, 0
 		this._world.broadphase = new CANNON.NaiveBroadphase();
 		this._world.solver.iterations = 5; // 反復計算回数
 		this._world.solver.tolerance = 0.1;// 許容値
@@ -127,8 +127,9 @@ class CannonManager{
 		let body = new CANNON.Body({mass: mass, material: mat});
 		body.addShape(new CANNON.Box(new CANNON.Vec3(w*0.5,h*0.5,d*0.5)));
 		body.position.set(x, y, z);
-		//body.angularVelocity.set(5, 5, 5);
-		//body.angularDamping = 0.1;
+		body.linearDamping   = 0.1;
+		body.angularDamping  = 0.1;
+		body.sleepSpeedLimit = 0.1;
 		body.allowSleep = true;// Sleep
 		body.addEventListener("sleep", (e)=>{
 			//console.log("sleep:" + name);
@@ -153,8 +154,9 @@ class CannonManager{
 		let body = new CANNON.Body({mass: mass, material: mat});
 		body.addShape(new CANNON.Sphere(radius));
 		body.position.set(x, y, z);
-		//body.angularVelocity.set(5, 5, 5);
-		//body.angularDamping = 0.1;
+		body.linearDamping   = 0.1;
+		body.angularDamping  = 0.1;
+		body.sleepSpeedLimit = 0.1;
 		body.allowSleep = true;// Sleep
 		body.addEventListener("sleep", (e)=>{
 			//console.log("sleep:" + name);
@@ -182,8 +184,9 @@ class CannonManager{
 		quat.normalize();
 		body.addShape(new CANNON.Cylinder(t, b, h, seg), vec3, quat);
 		body.position.set(x, y, z);
-		//body.angularVelocity.set(5, 5, 5);
-		//body.angularDamping = 0.1;
+		body.linearDamping   = 0.1;
+		body.angularDamping  = 0.1;
+		body.sleepSpeedLimit = 0.1;
 		body.allowSleep = true;// Sleep
 		body.addEventListener("sleep", (e)=>{
 			//console.log("sleep:" + name);
@@ -213,8 +216,9 @@ class CannonManager{
 		let body = new CANNON.Body({mass: mass, material: mat});
 		body.addShape(new CANNON.Box(new CANNON.Vec3(w*scale*0.5, h*scale*0.5, d*scale*0.5)));
 		body.position.set(x, y, z);
-		//body.angularVelocity.set(5, 5, 5);
-		//body.angularDamping = 0.1;
+		body.linearDamping   = 0.1;
+		body.angularDamping  = 0.1;
+		body.sleepSpeedLimit = 0.1;
 		body.allowSleep = true;// Sleep
 		body.addEventListener("sleep", (e)=>{
 			//console.log("sleep:" + name);

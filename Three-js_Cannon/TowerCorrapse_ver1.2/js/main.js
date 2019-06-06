@@ -56,7 +56,7 @@ function initStage(){
 	let table = cm.createCylinder("table", 0, 0.5, 0, 4, 4, 0.5, 20, 5, C_PURPLE);
 	table.body.type = CANNON.Body.KINEMATIC;
 
-	// let sph1 = cm.createSphere("mySph1", 0, 2, 0, 1);
+	let sph1 = cm.createSphere("mySph1", 0, 2, 3, 0.5);
 	// let sph2 = cm.createSphere("mySph2", 0, 4, 0, 1);
 	// let sph3 = cm.createSphere("mySph3", 0, 6, 0, 1);
 
@@ -98,34 +98,32 @@ function initStage(){
 
 	// GamepadHelper
 	let gpHelper = new GamepadHelper();
+	const power = 6;
 	gpHelper.setAxesXListener((key, num)=>{
 		console.log("X[" + key + "]:" + num);
+		if(num == 1)  controlBody(sph1.body, +power, 0, 0);
+		if(num == -1) controlBody(sph1.body, -power, 0, 0);
 	});
 	gpHelper.setAxesYListener((key, num)=>{
 		console.log("Y[" + key + "]:" + num);
+		if(num == 0) return;
+		if(num == 1)  controlBody(sph1.body, 0, 0, +power);
+		if(num == -1) controlBody(sph1.body, 0, 0, -power);
 	});
 	gpHelper.setButtonsListener((key, i, flg)=>{
 		console.log("Button[" + key + "]:" + i + "_" + flg);
-		console.log(car1.body);
 		if(flg == false) return;
-		if(car1){
-			car1.body.wakeUp();
-			car1.body.velocity.x = 0;
-			car1.body.velocity.y = 5;
-			car1.body.velocity.z = 0;
-			car1.body.angularVelocity.x = 0;
-			car1.body.angularVelocity.y = 0;
-			car1.body.angularVelocity.z = 0;
-			let x = 0;
-			let y = 0;
-			let z = 0;
-			if(i == 0) x = 5;
-			if(i == 1) x = -5;
-			let impulse = new CANNON.Vec3(x, y, z);
-			let worldPoint = new CANNON.Vec3(0, 0, 0);
-			car1.body.applyLocalImpulse(impulse, worldPoint);
-		}
+		if(i == 0) controlBody(sph1.body, 0, +power, 0);
+		if(i == 1) controlBody(sph1.body, 0, -power, 0);
 	});
+
+	function controlBody(body, x, y, z){
+		if(body == null) return;
+		body.wakeUp();
+		//body.velocity.set(0, 0, 0);
+		let impulse = new CANNON.Vec3(x, y, z);
+		body.applyImpulse(impulse, body.position);
+	}
 
 	// Animate
 	animate();
