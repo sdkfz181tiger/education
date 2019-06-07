@@ -333,7 +333,7 @@ class ObjLoader{
 class SoundLoader{
 
 	constructor(camera){
-		console.log("FontLoader");
+		console.log("SoundLoader");
 		this._camera = camera;
 	}
 

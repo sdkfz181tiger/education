@@ -12,7 +12,7 @@ const C_BLUE   = 0x333399;
 const C_PURPLE = 0x663399;
 const RAINBOW  = [C_RED, C_ORANGE, C_YELLOW, C_GREEN, C_AQUA, C_BLUE, C_PURPLE];
 
-const B_IMPULSE  = 3;
+const B_IMPULSE  = 5;
 const B_VELOCITY = 5;
 
 // Data
@@ -26,8 +26,14 @@ const models = {data:[
 	{dir:"./models/obj/", mtl:"truck_2.mtl", obj:"truck_2.obj"}
 ]};
 
+const sounds = {data:[
+	{dir:"./sounds/", mp3:"step_ng.mp3"},
+	{dir:"./sounds/", mp3:"step_ok.mp3"}
+]};
+
 let cm = null;
-let objLoader = null;
+let objLoader   = null;
+let soundLoader = null;
 
 // GamepadHelper
 let gpHelper = new GamepadHelper();
@@ -43,10 +49,18 @@ window.onload = function(){
 	objLoader = new ObjLoader();
 	objLoader.loadModels(models, onReadyModels, onError);
 
+	// SoundLoader
+	soundLoader = new SoundLoader(cm.getCamera());
+	soundLoader.loadSounds(sounds, onReadySounds, onError);
+
 	// Ready
 	function onReadyModels(){
 		console.log("You are ready to use models!!");
 		initStage();
+	}
+
+	function onReadySounds(){
+		console.log("You are ready to use sounds!!");
 	}
 
 	// Error
@@ -60,22 +74,32 @@ function initStage(){
 
 	let ground = cm.createPlane("myGround", C_BLACK);
 
+	// Goal
 	let goal = cm.createBox("myGoal", 0, 2, -10, 1, 1, 1, 5, C_WHITE);
 	goal.body.type = CANNON.Body.KINEMATIC;
+	goal.body.addEventListener("collide", (e)=>{
+		let nameA = e.contact.bi.material.name;
+		let nameB = e.contact.bj.material.name;
+		console.log("Goal!!:" + nameA);
+		soundLoader.findAndPlay("step_ok.mp3");
+	});
 
-	let table = cm.createCylinder("myTable", 0, 1, 0, 2, 2, 2, 20, 5, C_BLACK);
-	table.body.type = CANNON.Body.KINEMATIC;
+	let road = cm.createBox("myRoad", 0, 0.1, -10, 5, 0.2, 20, 20, C_WHITE);
+	goal.body.type = CANNON.Body.KINEMATIC;
+
+	// let tbl1 = cm.createCylinder("myTable", 0, 1, 0, 2, 2, 2, 20, 5, C_BLACK);
+	// tbl1.body.type = CANNON.Body.KINEMATIC;
 
 	// Tower
-	let cyls = createTower(0, 0.5, -13);
+	//let cyls = createTower(0, 0.5, -13);
 
 	// Car
-	let car1 = cm.createBoxWithModel("", 8, 0, -5, objLoader.findModels("car_1.obj"));
+	let car1 = cm.createBoxWithModel("", 8, 0.75, -3, objLoader.findModels("car_1.obj"));
 	car1.body.type = CANNON.Body.KINEMATIC;
 	car1.body.velocity.set(-2, 0, 0);
 	setInterval(()=>{
 		car1.body.wakeUp();
-		car1.body.position.set(8, 0, -5);
+		car1.body.position.x = 8;
 	}, 1000*8);
 
 	cm.createContact(ground.mat, ground.mat);
@@ -96,11 +120,6 @@ function initStage(){
 	// let truck1 = cm.createBoxWithModel("", +2, 2, 2, objLoader.findModels("truck_1.obj"));
 	// let truck2 = cm.createBoxWithModel("", +2, 4, 2, objLoader.findModels("truck_2.obj"));
 
-	ground.body.addEventListener("collide", (e)=>{
-		// console.log(e.contact.bi.material.name);
-		// console.log(e.contact.bj.material.name);
-	});
-
 	//==========
 	// GamepadHelper
 
@@ -116,17 +135,19 @@ function initStage(){
 	gpHelper.setAxesXListener((index, num)=>{
 		console.log("X[" + index + "]:" + num);
 		if(num == 0) return;
-		controlVelocityXYZ(index, num, 0, 0);
+		controlImpulseXYZ(index, num, 0, 0);
+		//controlVelocityXYZ(index, num, 0, 0);
 	});
 	gpHelper.setAxesYListener((index, num)=>{
 		console.log("Y[" + index + "]:" + num);
 		if(num == 0) return;
-		controlVelocityXYZ(index, 0, 0, num);
+		controlImpulseXYZ(index, 0, 0, num);
+		//controlVelocityXYZ(index, 0, 0, num);
 	});
 	gpHelper.setButtonsListener((index, i, flg)=>{
 		console.log("Button[" + index + "]:" + i + "_" + flg);
 		if(flg == false) return;
-		if(i == 0 && flg) controlVelocityXYZ(index, 0, 1, 0);// Jump
+		if(i == 0 && flg) controlImpulseXYZ(index, 0, 1, 0);// Jump
 		if(i == 1 && flg) controlVelocityXYZ(index, 0, 0, 0);// Stop
 	});
 
