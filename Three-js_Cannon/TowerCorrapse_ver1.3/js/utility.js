@@ -54,13 +54,13 @@ class CannonManager{
 
 		// Camera
 		this._camera = new THREE.PerspectiveCamera(30, 650/400, 1, 10000);
-		this._camera.position.set(0, 4, 18);
-		this._camera.lookAt(new THREE.Vector3(0, 2, 0));
+		this._camera.position.set(0, 4, 18);            // Default
+		this._camera.lookAt(new THREE.Vector3(0, 0, 0));// Default
 		this._scene.add(this._camera);
 
 		// Controls
 		this._controls = new THREE.TrackballControls(this._camera);// Cameraのみ対応
-		this._controls.target.set(0, 2, 0);
+		this._controls.target.set(0, 0, 0);// Default
 
 		// Renderer
 		this._renderer = new THREE.WebGLRenderer({antialias: true});
@@ -91,13 +91,11 @@ class CannonManager{
 		this._objs = [];
 	}
 
-	getScene(){
-		return this._scene;
-	}
-
-	getCamera(){
-		return this._camera;
-	}
+	// Get(Scene, Camera, Controls, Renderer)
+	getScene(){return this._scene;}
+	getCamera(){return this._camera;}
+	getControls(){return this._controls;}
+	getRenderer(){return this._renderer;}
 
 	addScene(mesh){
 		this._scene.add(mesh);

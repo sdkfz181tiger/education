@@ -2,7 +2,7 @@ console.log("Hello Three.js!!");
 
 const C_BLACK  = 0x333333;
 const C_WHITE  = 0xffffff;
-const C_GRAY   = 0x999999;
+const C_GRAY   = 0x666666;
 const C_RED    = 0x993333;
 const C_ORANGE = 0x996633;
 const C_YELLOW = 0x999933;
@@ -75,7 +75,7 @@ function initStage(){
 	let ground = cm.createPlane("myGround", C_BLACK);
 
 	// Goal
-	let goal = cm.createBox("myGoal", 0, 2, -10, 1, 1, 1, 5, C_WHITE);
+	let goal = cm.createBox("myGoal", 0, 2, -10, 1, 1, 1, 5, C_RED);
 	goal.body.type = CANNON.Body.KINEMATIC;
 	goal.body.addEventListener("collide", (e)=>{
 		let nameA = e.contact.bi.material.name;
@@ -84,7 +84,11 @@ function initStage(){
 		soundLoader.findAndPlay("step_ok.mp3");
 	});
 
-	let road = cm.createBox("myRoad", 0, 0.1, -10, 5, 0.2, 20, 20, C_WHITE);
+	// Camera, Controls
+	let camera = cm.getCamera();
+	camera.position.set(8, 12, 8);
+
+	let road = cm.createBox("myRoad", 0, 0.1, -5, 5, 0.2, 5, 20, C_GRAY);
 	goal.body.type = CANNON.Body.KINEMATIC;
 
 	// let tbl1 = cm.createCylinder("myTable", 0, 1, 0, 2, 2, 2, 20, 5, C_BLACK);
@@ -135,14 +139,14 @@ function initStage(){
 	gpHelper.setAxesXListener((index, num)=>{
 		console.log("X[" + index + "]:" + num);
 		if(num == 0) return;
-		controlImpulseXYZ(index, num, 0, 0);
-		//controlVelocityXYZ(index, num, 0, 0);
+		//controlImpulseXYZ(index, num, 0, 0);
+		controlLR(index, num);// Turn LR
 	});
 	gpHelper.setAxesYListener((index, num)=>{
 		console.log("Y[" + index + "]:" + num);
 		if(num == 0) return;
-		controlImpulseXYZ(index, 0, 0, num);
-		//controlVelocityXYZ(index, 0, 0, num);
+		//controlImpulseXYZ(index, 0, 0, num);
+		controlFB(index, num);
 	});
 	gpHelper.setButtonsListener((index, i, flg)=>{
 		console.log("Button[" + index + "]:" + i + "_" + flg);
@@ -155,7 +159,10 @@ function initStage(){
 	let players = {};
 	function createPlayer(gamepad){
 		let name = "player" + gamepad.index;
-		let player = cm.createSphere(name, 0, 5, 0, 0.5, 1, RAINBOW[gamepad.index]);
+		//let player = cm.createSphere(name, 0, 5, 0, 0.5, 1, RAINBOW[gamepad.index]);
+		let player = cm.createBoxWithModel(name, 0, 0.75, 0,
+			objLoader.findModels("car_1.obj"));
+		cm.createContact(ground.mat, player.mat, 0.005, 0);
 		players[gamepad.index] = player;
 	}
 
@@ -168,7 +175,7 @@ function initStage(){
 			body.velocity.z = 0;
 		}
 		let impulse = new CANNON.Vec3(x*B_IMPULSE, y*B_IMPULSE, z*B_IMPULSE);
-		body.applyImpulse(impulse, body.position);
+		body.applyImpulse(impulse, body.position);// Global position
 	}
 
 	function controlVelocityXYZ(index, x, y, z){
@@ -178,12 +185,44 @@ function initStage(){
 		body.velocity.set(x*B_VELOCITY, y*B_VELOCITY, z*B_VELOCITY);
 	}
 
+	function controlFB(index, x){
+		let body = players[index].body;
+		if(body == null) return;
+		body.wakeUp();
+		let impulse = new CANNON.Vec3(x*B_IMPULSE, 0, 0);
+		body.applyLocalImpulse(impulse, new CANNON.Vec3);// Local position
+	}
+
+	function controlLR(index, y){
+		let body = players[index].body;
+		if(body == null) return;
+		body.wakeUp();
+		body.angularVelocity.set(0, y*-B_VELOCITY, 0);
+	}
+
 	// Animate
 	animate();
 	function animate(){
 		cm.update();// Manager
 		requestAnimationFrame(animate);
+		adjustCamera();
 	};
+
+	function adjustCamera(){
+		let length = Object.keys(players).length;
+		if(length <= 0) return;
+		let x = 0;
+		let z = 0;
+		for(let key in players){
+			let player = players[key];
+			x += player.body.position.x;
+			z += player.body.position.z;
+		}
+		x /= length;
+		z /= length;
+		let controls = cm.getControls();
+		controls.target.set(x, 0, z);
+	}
 }
 
 function createTower(x, y, z){
