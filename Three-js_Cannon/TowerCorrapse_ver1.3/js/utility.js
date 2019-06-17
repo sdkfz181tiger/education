@@ -27,7 +27,7 @@ class CannonManager{
 
 		// World
 		this._world = new CANNON.World();
-		this._world.gravity.set(0, -9.82*1.0, 0);// 0, -9.82, 0
+		this._world.gravity.set(0, -9.82, 0);// 0, -9.82, 0
 		this._world.broadphase = new CANNON.NaiveBroadphase();
 		this._world.solver.iterations = 5; // 反復計算回数
 		this._world.solver.tolerance = 0.1;// 許容値

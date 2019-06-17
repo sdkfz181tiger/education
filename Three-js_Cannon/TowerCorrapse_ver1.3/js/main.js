@@ -12,8 +12,8 @@ const C_BLUE   = 0x333399;
 const C_PURPLE = 0x663399;
 const RAINBOW  = [C_RED, C_ORANGE, C_YELLOW, C_GREEN, C_AQUA, C_BLUE, C_PURPLE];
 
-const B_IMPULSE  = 5;
-const B_VELOCITY = 5;
+const B_IMPULSE  = 3;
+const B_VELOCITY = 3;
 
 // Data
 const models = {data:[
@@ -88,8 +88,17 @@ function initStage(){
 	let camera = cm.getCamera();
 	camera.position.set(8, 12, 8);
 
-	let road = cm.createBox("myRoad", 0, 0.1, -5, 5, 0.2, 5, 20, C_GRAY);
-	goal.body.type = CANNON.Body.KINEMATIC;
+	let road = cm.createBox("myRoad", 0, 0.5, 0, 2, 1, 2, 20, C_GRAY);
+	road.body.type = CANNON.Body.KINEMATIC;
+
+	console.log(road.body);
+
+	let tl = new TimelineMax({repeat:-1, yoyo:true});
+	tl.to(road.body.position, 5, {y: 5});
+
+	function onTwComplete(){
+		console.log("onTwComplete!!");
+	}
 
 	// let tbl1 = cm.createCylinder("myTable", 0, 1, 0, 2, 2, 2, 20, 5, C_BLACK);
 	// tbl1.body.type = CANNON.Body.KINEMATIC;
@@ -140,18 +149,18 @@ function initStage(){
 		console.log("X[" + index + "]:" + num);
 		if(num == 0) return;
 		//controlImpulseXYZ(index, num, 0, 0);
-		controlLR(index, num);// Turn LR
+		turnLR(index, num, 1.5);// Turn LR
 	});
 	gpHelper.setAxesYListener((index, num)=>{
 		console.log("Y[" + index + "]:" + num);
 		if(num == 0) return;
 		//controlImpulseXYZ(index, 0, 0, num);
-		controlFB(index, num);
+		stepFB(index, num, 1.5);
 	});
 	gpHelper.setButtonsListener((index, i, flg)=>{
 		console.log("Button[" + index + "]:" + i + "_" + flg);
 		if(flg == false) return;
-		if(i == 0 && flg) controlImpulseXYZ(index, 0, 1, 0);// Jump
+		if(i == 0 && flg) controlJump(index, 1);// Jump
 		if(i == 1 && flg) controlVelocityXYZ(index, 0, 0, 0);// Stop
 	});
 
@@ -159,8 +168,7 @@ function initStage(){
 	let players = {};
 	function createPlayer(gamepad){
 		let name = "player" + gamepad.index;
-		//let player = cm.createSphere(name, 0, 5, 0, 0.5, 1, RAINBOW[gamepad.index]);
-		let player = cm.createBoxWithModel(name, 0, 0.75, 0,
+		let player = cm.createBoxWithModel(name, 0, 3, 0,
 			objLoader.findModels("car_1.obj"));
 		cm.createContact(ground.mat, player.mat, 0.005, 0);
 		players[gamepad.index] = player;
@@ -185,19 +193,36 @@ function initStage(){
 		body.velocity.set(x*B_VELOCITY, y*B_VELOCITY, z*B_VELOCITY);
 	}
 
-	function controlFB(index, x){
+	function controlJump(index, y){
 		let body = players[index].body;
 		if(body == null) return;
 		body.wakeUp();
-		let impulse = new CANNON.Vec3(x*B_IMPULSE, 0, 0);
+		body.quaternion.x = 0;
+		body.quaternion.z = 0;
+		body.velocity.set(0, y*B_VELOCITY, 0);
+		body.angularVelocity.set(0, 0, 0);
+	}
+
+	function stepFB(index, x, j){
+		let body = players[index].body;
+		if(body == null) return;
+		body.wakeUp();
+		body.quaternion.x = 0;
+		body.quaternion.z = 0;
+		body.angularVelocity.set(0, 0, 0);
+		let impulse = new CANNON.Vec3(x*B_IMPULSE, j*B_IMPULSE, 0);
 		body.applyLocalImpulse(impulse, new CANNON.Vec3);// Local position
 	}
 
-	function controlLR(index, y){
+	function turnLR(index, y, j){
 		let body = players[index].body;
 		if(body == null) return;
 		body.wakeUp();
+		body.quaternion.x = 0;
+		body.quaternion.z = 0;
 		body.angularVelocity.set(0, y*-B_VELOCITY, 0);
+		let impulse = new CANNON.Vec3(0, j*B_IMPULSE, 0);
+		body.applyLocalImpulse(impulse, new CANNON.Vec3);// Local position
 	}
 
 	// Animate
