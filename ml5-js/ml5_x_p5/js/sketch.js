@@ -4,21 +4,18 @@ const DEG_TO_RAD = Math.PI / 180;
 
 let img;
 let classifier;
-let glot;
 
 function preload(){
 	console.log("preload!!");
 	// Image
-	img = loadImage("./assets/sample1.png");
+	img = loadImage("./assets/sample7.jpg");
 	// ml5
 	classifier = ml5.imageClassifier("MobileNet");
-	// Glottologist
-	glot = new Glottologist();
-	// TextSpeech
-	initSpeechSynthesis();
 }
+
 function setup(){
-	createCanvas(480, 320);
+	console.log("setup!!");
+	createCanvas(img.width, img.height);
 	// Image
 	image(img, 0, 0);
 	// ml5
@@ -32,15 +29,26 @@ function gotResult(error, results){
 	}
 	console.log(results);
 	// Glottologist
-	glot.t(results[0].label, "jp").then((result)=>{
+	startGlot(results[0].label, "jp", (result)=>{
+		let msg = "これはひょっとすると、" + createMsg(result) + "ですかね?";
 		// TextSpeech
-		startSpeech("これは多分、" + result + "だと、思います!!");
+		startSpeech(msg);
 		// Fill, Stroke
-		fill(255);
+		fill(255, 100, 100);
 		noStroke();
 		// Text
 		textSize(32);
 		textAlign(CENTER);
-		text(result, 240, 160);
+		text(msg, width*0.5, 30);
 	});
+}
+
+function createMsg(str){
+	let arr = str.split("、");
+	let msg = "";
+	for(let i=0; i<arr.length; i++){
+		msg += arr[i];
+		if(i<arr.length-2) msg += "か、もしくは";
+	}
+	return msg;
 }
