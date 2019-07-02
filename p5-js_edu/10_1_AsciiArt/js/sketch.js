@@ -5,7 +5,7 @@ const title = "Pegeon Simulator_ver1.0.0";
 let img;
 
 const AA_WIDTH  = 100;
-const AA_HEIGHT = 40;
+const AA_HEIGHT = 100;
 
 let gfx;
 
@@ -17,13 +17,16 @@ function preload(){
 	console.log("preload!!");
 
 	// Image
-	img = loadImage("./assets/person_480x320.png");
+	img = loadImage("./assets/art1.jpg");
 }
 
 function setup(){
 	console.log("setup!!");
-	createCanvas(480, 320);
+	createCanvas(img.width, img.height);
 	background(33);
+
+	// Image
+	//image(img, 0, 0);
 
 	// Graphics
 	gfx = createGraphics(AA_WIDTH, AA_HEIGHT);
