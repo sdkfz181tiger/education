@@ -88,34 +88,22 @@ function initStage(){
 	let camera = cm.getCamera();
 	camera.position.set(8, 12, 8);
 
-	let road = cm.createBox("myRoad", 0, 0.5, 0, 2, 1, 2, 20, C_GRAY);
-	road.body.type = CANNON.Body.KINEMATIC;
-
-	console.log(road.body);
-
-	let tl = new TimelineMax({repeat:-1, yoyo:true});
-	tl.to(road.body.position, 5, {y: 5});
-
-	function onTwComplete(){
-		console.log("onTwComplete!!");
-	}
-
 	// let tbl1 = cm.createCylinder("myTable", 0, 1, 0, 2, 2, 2, 20, 5, C_BLACK);
 	// tbl1.body.type = CANNON.Body.KINEMATIC;
 
 	// Tower
-	let cyls = createTower(0, 0.5, -13);
+	// let cyls = createTower(0, 0.5, -13);
 
 	// Car
-	let car1 = cm.createBoxWithModel("", 8, 0.75, -3, objLoader.findModels("car_1.obj"));
-	car1.body.type = CANNON.Body.KINEMATIC;
-	car1.body.velocity.set(-2, 0, 0);
-	setInterval(()=>{
-		car1.body.wakeUp();
-		car1.body.position.x = 8;
-	}, 1000*8);
+	// let car1 = cm.createBoxWithModel("", 8, 0.75, -3, objLoader.findModels("car_1.obj"));
+	// car1.body.type = CANNON.Body.KINEMATIC;
+	// car1.body.velocity.set(-2, 0, 0);
+	// setInterval(()=>{
+	// 	car1.body.wakeUp();
+	// 	car1.body.position.x = 8;
+	// }, 1000*8);
 
-	cm.createContact(ground.mat, ground.mat);
+	// cm.createContact(ground.mat, ground.mat);
 	// cm.createContact(ground.mat, box1.mat, 0.01, 0);
 	// cm.createContact(box1.mat, cyl1.mat, 0.01, 0);
 	// cm.createContact(cyl1.mat, cyl2.mat, 0.01, 0);
@@ -132,6 +120,137 @@ function initStage(){
 	// let tree3  = cm.createBoxWithModel("", -2, 2, 2, objLoader.findModels("tree_1.obj"));
 	// let truck1 = cm.createBoxWithModel("", +2, 2, 2, objLoader.findModels("truck_1.obj"));
 	// let truck2 = cm.createBoxWithModel("", +2, 4, 2, objLoader.findModels("truck_2.obj"));
+
+	//==========
+	// RaycastVehicle
+
+	var mass = 150;
+	var groundMaterial = new CANNON.Material("groundMaterial");
+	var wheelMaterial = new CANNON.Material("wheelMaterial");
+	var wheelGroundContactMaterial = window.wheelGroundContactMaterial = new CANNON.ContactMaterial(wheelMaterial, groundMaterial, {
+		friction: 0.3,
+		restitution: 0.5,
+		contactEquationStiffness: 1000
+	});
+
+	cm._world.addContactMaterial(wheelGroundContactMaterial);
+
+	var chassisShape = new CANNON.Box(new CANNON.Vec3(2, 1, 0.5));
+	var centerOfMassAdjust = new CANNON.Vec3(0, 0, -1);
+	var chassisBody = new CANNON.Body({ mass: 1 });
+	chassisBody.addShape(chassisShape, centerOfMassAdjust);
+	chassisBody.position.set(0, 8, 0);
+
+	var chassisShape;
+	chassisShape = new CANNON.Box(new CANNON.Vec3(2, 1,0.5));
+	var chassisBody = new CANNON.Body({ mass: mass });
+	chassisBody.addShape(chassisShape);
+	chassisBody.position.set(0, 4, 0);
+	chassisBody.quaternion.set(-1, 0, 0, 1);
+	chassisBody.angularVelocity.set(0, 0, 0.5);
+
+	chassisBody.allowSleep = false;// Sleep
+	chassisBody.addEventListener("sleep", (e)=>{
+		console.log("sleep: car!!");
+	});
+
+	var options = {
+		radius: 0.5,
+		directionLocal: new CANNON.Vec3(0, 0, -1),
+		suspensionStiffness: 30,
+		suspensionRestLength: 0.3,
+		frictionSlip: 5,
+		dampingRelaxation: 2.3,
+		dampingCompression: 4.4,
+		maxSuspensionForce: 100000,
+		rollInfluence:  0.01,
+		axleLocal: new CANNON.Vec3(0, 1, 0),
+		chassisConnectionPointLocal: new CANNON.Vec3(1, 1, 0),
+		maxSuspensionTravel: 0.3,
+		customSlidingRotationalSpeed: -30,
+		useCustomSlidingRotationalSpeed: true
+	};
+
+	// Create the vehicle
+	let vehicle = new CANNON.RaycastVehicle({
+		chassisBody: chassisBody,
+	});
+	options.chassisConnectionPointLocal.set(1, 1, 0);
+	vehicle.addWheel(options);
+	options.chassisConnectionPointLocal.set(1, -1, 0);
+	vehicle.addWheel(options);
+	options.chassisConnectionPointLocal.set(-1, 1, 0);
+	vehicle.addWheel(options);
+	options.chassisConnectionPointLocal.set(-1, -1, 0);
+	vehicle.addWheel(options);
+	vehicle.addToWorld(cm._world);
+
+	var wheelBodies = [];
+	for(var i=0; i<vehicle.wheelInfos.length; i++){
+		var wheel = vehicle.wheelInfos[i];
+		var cylinderShape = new CANNON.Cylinder(wheel.radius, wheel.radius, wheel.radius / 2, 20);
+		var wheelBody = new CANNON.Body({
+			mass: 0
+		});
+		wheelBody.type = CANNON.Body.KINEMATIC;
+		wheelBody.collisionFilterGroup = 0; // turn off collisions
+		var q = new CANNON.Quaternion();
+		q.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), Math.PI / 2);
+		wheelBody.addShape(cylinderShape, new CANNON.Vec3(), q);
+		wheelBodies.push(wheelBody);
+		cm._world.addBody(wheelBody);
+	}
+
+	// Update wheels
+	cm._world.addEventListener('postStep', function(){
+		for (var i = 0; i < vehicle.wheelInfos.length; i++) {
+			vehicle.updateWheelTransform(i);
+			var t = vehicle.wheelInfos[i].worldTransform;
+			var wheelBody = wheelBodies[i];
+			wheelBody.position.copy(t.position);
+			wheelBody.quaternion.copy(t.quaternion);
+		}
+	});
+
+	document.onkeydown = handler;
+	document.onkeyup = handler;
+	var maxSteerVal = 0.5;
+	var maxForce = 1000;
+	var brakeForce = 1000000;
+	function handler(event){
+		var up = (event.type == 'keyup');
+		if(!up && event.type !== 'keydown'){
+			return;
+		}
+		vehicle.setBrake(0, 0);
+		vehicle.setBrake(0, 1);
+		vehicle.setBrake(0, 2);
+		vehicle.setBrake(0, 3);
+		switch(event.keyCode){
+		case 38: // forward
+			vehicle.applyEngineForce(up ? 0 : -maxForce, 2);
+			vehicle.applyEngineForce(up ? 0 : -maxForce, 3);
+			break;
+		case 40: // backward
+			vehicle.applyEngineForce(up ? 0 : maxForce, 2);
+			vehicle.applyEngineForce(up ? 0 : maxForce, 3);
+			break;
+		case 66: // b
+			vehicle.setBrake(brakeForce, 0);
+			vehicle.setBrake(brakeForce, 1);
+			vehicle.setBrake(brakeForce, 2);
+			vehicle.setBrake(brakeForce, 3);
+			break;
+		case 39: // right
+			vehicle.setSteeringValue(up ? 0 : -maxSteerVal, 0);
+			vehicle.setSteeringValue(up ? 0 : -maxSteerVal, 1);
+			break;
+		case 37: // left
+			vehicle.setSteeringValue(up ? 0 : maxSteerVal, 0);
+			vehicle.setSteeringValue(up ? 0 : maxSteerVal, 1);
+			break;
+		}
+	}
 
 	//==========
 	// GamepadHelper
