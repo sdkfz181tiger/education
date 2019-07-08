@@ -95,13 +95,13 @@ function initStage(){
 	let cyls = createTower(0, 0.5, -13);
 
 	// Car
-	// let car1 = cm.createBoxWithModel("", 8, 0.75, -3, objLoader.findModels("car_1.obj"));
-	// car1.body.type = CANNON.Body.KINEMATIC;
-	// car1.body.velocity.set(-2, 0, 0);
-	// setInterval(()=>{
-	// 	car1.body.wakeUp();
-	// 	car1.body.position.x = 8;
-	// }, 1000*8);
+	let car1 = cm.createBoxWithModel("", 8, 0.75, -3, objLoader.findModels("car_1.obj"));
+	car1.body.type = CANNON.Body.KINEMATIC;
+	car1.body.velocity.set(-2, 0, 0);
+	setInterval(()=>{
+		car1.body.wakeUp();
+		car1.body.position.x = 8;
+	}, 1000*8);
 
 	// cm.createContact(ground.mat, ground.mat);
 	// cm.createContact(ground.mat, box1.mat, 0.01, 0);
@@ -124,7 +124,12 @@ function initStage(){
 	//==========
 	// RaycastVehicle
 
-	createVehicle(cm);
+	//createVehicleWithModel(cm._world, "", 0, 2, 0, objLoader.findModels("car_2.obj"));
+
+	// let vm = new VehicleManager(cm._world);
+	// vm.createVehicle("", 0, 1, 0);
+
+	let vehicle1 = cm.createVehicleWithModel("", 0, 2, 0, objLoader.findModels("car_2.obj"));
 
 	//==========
 	// GamepadHelper

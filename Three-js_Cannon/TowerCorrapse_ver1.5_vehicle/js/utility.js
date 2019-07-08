@@ -8,7 +8,7 @@ const OS_iPod    = "iPod";
 const DEG_TO_RAD = Math.PI / 180;
 const RAD_TO_DEG = 180 / Math.PI;
 
-// Three.js
+// CannonManager
 class CannonManager{
 
 	constructor(pcX=0, pcY=0, pcZ=0){
@@ -230,6 +230,21 @@ class CannonManager{
 		let obj = {mesh: model, mat: mat, body: body};
 		this._objs.push(obj);
 		return obj;
+	}
+
+	createVehicleWithModel(name, x, y, z, model, scale=0.1){
+		// Measure
+		let vm = new VehicleManager(this._world);
+		vm.createVehicle("", x, y, z);
+
+		// Scale
+		model.scale.set(scale, scale, scale);
+		this._scene.add(model);
+
+		// Object
+		// let obj = {mesh: model, mat: mat, body: body};
+		// this._objs.push(obj);
+		// return obj;
 	}
 
 	createContact(materialA, materialB, fri=0.01, rest=0.3){
