@@ -92,7 +92,7 @@ function initStage(){
 	// tbl1.body.type = CANNON.Body.KINEMATIC;
 
 	// Tower
-	let cyls = createTower(0, 0.5, -13);
+	let cyls = createTower(-3, 0.5, 0);
 
 	// Car
 	let car1 = cm.createBoxWithModel("", 8, 0.75, -3, objLoader.findModels("car_1.obj"));
@@ -129,7 +129,7 @@ function initStage(){
 	// let vm = new VehicleManager(cm._world);
 	// vm.createVehicle("", 0, 1, 0);
 
-	let vehicle1 = cm.createVehicleWithModel("", 0, 2, 0, objLoader.findModels("car_2.obj"));
+	let vehicle1 = cm.createVehicleWithModel("", 0, 2, 0, objLoader.findModels("car_1.obj"));
 
 	//==========
 	// GamepadHelper

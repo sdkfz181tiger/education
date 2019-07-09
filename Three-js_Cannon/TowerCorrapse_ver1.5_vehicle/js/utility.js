@@ -183,10 +183,10 @@ class CannonManager{
 		// Material(Sphere)
 		let mat = new CANNON.Material(name);
 		let body = new CANNON.Body({mass: mass, material: mat});
-		let vec3 = new CANNON.Vec3();
 		let quat = new CANNON.Quaternion(-1, 0, 0, 1);
 		quat.normalize();
-		body.addShape(new CANNON.Cylinder(t, b, h, seg), vec3, quat);
+		body.addShape(new CANNON.Cylinder(t, b, h, seg), 
+			new CANNON.Vec3(), quat);
 		body.position.set(x, y, z);
 		body.linearDamping   = 0.1;
 		body.angularDamping  = 0.1;
@@ -208,7 +208,7 @@ class CannonManager{
 		let h = box3.max.y - box3.min.y;
 		let d = box3.max.z - box3.min.z;
 		// Anchor
-		model.children[0].position.y   -= h * 0.5;
+		model.children[0].position.z   -= d * 0.5;
 		model.children[0].castShadow    = true;
 		model.children[0].receiveShadow = true;
 		// Scale
@@ -218,6 +218,7 @@ class CannonManager{
 		let mat = new CANNON.Material(name);
 		let body = new CANNON.Body({mass: mass, material: mat});
 		body.addShape(new CANNON.Box(new CANNON.Vec3(w*scale*0.5, h*scale*0.5, d*scale*0.5)));
+		body.quaternion.set(-1, 0, 0, 1);
 		body.position.set(x, y, z);
 		body.linearDamping   = 0.1;
 		body.angularDamping  = 0.1;
@@ -234,17 +235,24 @@ class CannonManager{
 
 	createVehicleWithModel(name, x, y, z, model, scale=0.1){
 		// Measure
-		let vm = new VehicleManager(this._world);
-		vm.createVehicle("", x, y, z);
-
+		let box3 = new THREE.Box3().setFromObject(model);
+		let w = box3.max.x - box3.min.x;
+		let h = box3.max.y - box3.min.y;
+		let d = box3.max.z - box3.min.z;
+		// Anchor
+		model.children[0].position.z   -= d * 0.5;
+		model.children[0].castShadow    = true;
+		model.children[0].receiveShadow = true;
 		// Scale
 		model.scale.set(scale, scale, scale);
 		this._scene.add(model);
-
+		// VehicleManager
+		let vm = new VehicleManager(this._world);
+		vm.createVehicle(name, x, y, z, w*scale*0.5, h*scale*0.5, d*scale*0.5);
 		// Object
-		// let obj = {mesh: model, mat: mat, body: body};
-		// this._objs.push(obj);
-		// return obj;
+		let obj = {mesh: model, mat: vm.getMaterial(), body: vm.getBody()};
+		this._objs.push(obj);
+		return obj;
 	}
 
 	createContact(materialA, materialB, fri=0.01, rest=0.3){
