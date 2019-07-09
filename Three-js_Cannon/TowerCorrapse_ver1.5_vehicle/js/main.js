@@ -17,6 +17,7 @@ const B_VELOCITY = 3;
 
 // Data
 const models = {data:[
+	{dir:"./models/obj/", mtl:"car_t.mtl",   obj:"car_t.obj"},
 	{dir:"./models/obj/", mtl:"car_1.mtl",   obj:"car_1.obj"},
 	{dir:"./models/obj/", mtl:"car_2.mtl",   obj:"car_2.obj"},
 	{dir:"./models/obj/", mtl:"car_3.mtl",   obj:"car_3.obj"},
@@ -95,7 +96,7 @@ function initStage(){
 	let cyls = createTower(-3, 0.5, 0);
 
 	// Car
-	let car1 = cm.createBoxWithModel("", 8, 0.75, -3, objLoader.findModels("car_1.obj"));
+	let car1 = cm.createBoxWithModel("", 8, 0.75, -3, objLoader.findModels("car_t.obj"));
 	car1.body.type = CANNON.Body.KINEMATIC;
 	car1.body.velocity.set(-2, 0, 0);
 	setInterval(()=>{
@@ -129,7 +130,7 @@ function initStage(){
 	// let vm = new VehicleManager(cm._world);
 	// vm.createVehicle("", 0, 1, 0);
 
-	let vehicle1 = cm.createVehicleWithModel("", 0, 2, 0, objLoader.findModels("car_1.obj"));
+	let vehicle1 = cm.createVehicleWithModel("", 0, 2, 0, objLoader.findModels("car_t.obj"));
 
 	//==========
 	// GamepadHelper

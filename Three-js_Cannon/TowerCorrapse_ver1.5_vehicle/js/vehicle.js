@@ -37,7 +37,7 @@ class VehicleManager{
 			frictionSlip:         50,  // タイヤのグリップ
 			rollInfluence:        0.01,
 			suspensionStiffness:  30,
-			suspensionRestLength: 0.2,
+			suspensionRestLength: 0.5,
 			maxSuspensionForce:   100000,
 			maxSuspensionTravel:  0.2,
 			dampingRelaxation:    2.3,
