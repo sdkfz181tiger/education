@@ -1,5 +1,8 @@
 console.log("utility.js!!");
 
+const DISP_W = 480;
+const DISP_H = 320;
+
 const OS_Android = "Android";
 const OS_iPhone  = "iPhone";
 const OS_iPad    = "iPad";
@@ -58,6 +61,11 @@ class CannonManager{
 		this._camera.lookAt(new THREE.Vector3(0, 0, 0));// Default
 		this._scene.add(this._camera);
 
+		this._cameraX = new THREE.PerspectiveCamera(30, 650/400, 1, 10000);
+		this._cameraX.position.set(4, 4, 18);            // Default
+		this._cameraX.lookAt(new THREE.Vector3(0, 0, 0));// Default
+		this._scene.add(this._cameraX);
+
 		// Controls
 		this._controls = new THREE.TrackballControls(this._camera);// Cameraのみ対応
 		this._controls.target.set(0, 0, 0);// Default
@@ -67,6 +75,7 @@ class CannonManager{
 		this._renderer.setSize(480, 320);
 		this._renderer.setClearColor(0x000000, 1);
 		this._renderer.shadowMap.enabled = true;
+		this._renderer.autoClear = false;// For multi screens
 		document.body.appendChild(this._renderer.domElement);
 
 		// DirectionalLight
@@ -283,8 +292,24 @@ class CannonManager{
 		}
 		// Debugger
 		this._debugRenderer.update();
-		// Renderer
+
+		// Multi screen
+		this._camera.aspect  = 0.5 * DISP_W / DISP_H;
+		this._cameraX.aspect = 0.5 * DISP_W / DISP_H;
+		this._camera.updateProjectionMatrix();
+		this._cameraX.updateProjectionMatrix();
+
+		this._renderer.setViewport(0, 0, DISP_W, DISP_H);
+		this._renderer.clear();
+
+		this._renderer.setViewport(0, 0, DISP_W*0.5, DISP_H);
 		this._renderer.render(this._scene, this._camera);
+		
+		this._renderer.setViewport(DISP_W*0.5, 0, DISP_W*0.5, DISP_H);
+		this._renderer.render(this._scene, this._cameraX);
+
+		// Renderer
+		//this._renderer.render(this._scene, this._camera);
 	}
 }
 
