@@ -57,6 +57,7 @@ class ThreeManager{
 		// Camera
 		this._camera = new THREE.PerspectiveCamera(
 			75, window.innerWidth/window.innerHeight, 0.1, 1000);
+		this._camera.fov = 90;
 
 		// Container(for VR)
 		this._cameraContainer = new THREE.Object3D();

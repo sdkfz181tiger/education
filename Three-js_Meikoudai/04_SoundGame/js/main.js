@@ -5,7 +5,16 @@
 console.log("Hello Three.js!!");
 
 const SOUND_BGM     = "./sounds/bgm_1.mp3";
-const TIME_TO_PIXEL = 10;
+const SOUND_VOLUME  = 1.0;// 0.0 ~ 1.0
+const TIME_TO_PIXEL = 20;
+
+const noteData = {
+	"n1": [0.5, 1.3, 2.5, 2.7, 2.9],
+	"n2": [0.2, 0.8, 1.8, 3.4, 3.8],
+	"n3": [0.5, 1.0, 1.5, 2.0, 4.5],
+	"n4": [0.3, 1.8, 2.8, 3.8, 4.2],
+	"n5": [0.9, 3.5, 3.8, 4.0, 4.5]
+};
 
 // Data
 const models = {data:[
@@ -60,22 +69,14 @@ let fontLoader  = null;
 
 window.onload = function(){
 	console.log("OnLoad");
-	readyHowler();// Ready
-}
-
-// Howler.js
-function readyHowler(){
 	// Howler
 	howl = new Howl({src: [SOUND_BGM]});
-
-	howl.on("load", function(){
-		console.log("Howler:load");
-		readyThreeJS();// Ready
-	});
+	howl.on("load", readyThreeJS);// Load
 }
 
 // Three.js
 function readyThreeJS(){
+	console.log("readyThreeJS");
 	// ThreeManager
 	// 	Camera position(PC): pcX, pcY, pcZ
 	tm = new ThreeManager(0, 15, 20);
@@ -142,12 +143,10 @@ function readyThreeJS(){
 		tm._renderer.setAnimationLoop(animate);
 
 		// Howler
-		howl.on("play", readyNotes);
-		howl.on("end",  endNotes);
-		setTimeout(()=>{
-			howl.volume(1.0);// Volume 0.0 ~ 1.0
-			howl.play();     // Play
-		}, 3000);
+		howl.volume(SOUND_VOLUME);
+		howl.on("play", onPlay);
+		howl.on("end",  onEnd);
+		readyNotes();// Ready
 	}
 
 	function onReadySounds(){
@@ -172,14 +171,12 @@ function readyThreeJS(){
 		tm.update();   // Manager
 		ctlVR.update();// Controller
 		// Howler
-		if(howl && howl.playing()){
-			// Time
-			let cTime = howl.seek() || 0;
-			let tTime = howl.duration();
-			let per = Math.floor((cTime/tTime)*100);
-			console.log(per + "%");
-			noteGroup.position.z = cTime * TIME_TO_PIXEL;
-		}
+		if(!howl || !howl.playing()) return;
+		let cTime = howl.seek() || 0;
+		let tTime = howl.duration();
+		let per = Math.floor((cTime/tTime)*100);
+		//console.log(per + "%");
+		noteGroup.position.z = cTime * TIME_TO_PIXEL;
 	};
 
 	// Notes
@@ -189,10 +186,10 @@ function readyThreeJS(){
 		let cTime = howl.seek() || 0;
 		let tTime = howl.duration();
 		let per = Math.floor((cTime/tTime)*100);
-		console.log(per + "%");
+		//console.log(per + "%");
 
 		// Cube
-		let geometry = new THREE.BoxGeometry(24, 1, 1);
+		let geometry = new THREE.BoxGeometry(3, 3, 3);
 		let material = new THREE.MeshNormalMaterial();
 
 		let mkStart = new THREE.Mesh(geometry, material);
@@ -204,9 +201,52 @@ function readyThreeJS(){
 		mkEnd.position.set(0, 0, tTime*TIME_TO_PIXEL*-1.0);
 		mkEnd.name = "mkEnd";
 		noteGroup.add(mkEnd);
+
+		// GUI
+		let GuiCtl = function(){
+			this.play  = ()=>{howl.play();};
+			this.stop  = ()=>{howl.stop();};
+			this.pause = ()=>{howl.pause();};
+		};
+		let gui    = new dat.GUI();
+		let guiCtl = new GuiCtl();
+
+		let folder = gui.addFolder("Controller");
+		folder.add(guiCtl, "play");
+		folder.add(guiCtl, "stop");
+		folder.add(guiCtl, "pause");
+		//folder.addColor(guiCtl , "seek").onChange();
+		folder.open();
+
+
+		// Data
+		putMarkers(noteData.n1, "n1", -16, 0);
+		putMarkers(noteData.n2, "n2",  -8, 0);
+		putMarkers(noteData.n3, "n3",   0, 0);
+		putMarkers(noteData.n4, "n4",  +8, 0);
+		putMarkers(noteData.n5, "n5", +16, 0);
+
+		// Play
+		setTimeout(()=>{howl.play();}, 1000);
 	}
 
-	function endNotes(){
-		console.log("endNotes");
+	function putMarkers(times, name, x, y){
+		let geometry = new THREE.BoxGeometry(3, 3, 3);
+		let material = new THREE.MeshNormalMaterial();
+		for(let i=0; i<times.length; i++){
+			let time = times[i];
+			let mk = new THREE.Mesh(geometry, material);
+			mk.position.set(x, y, time*TIME_TO_PIXEL*-1.0);
+			mk.name = name;
+			noteGroup.add(mk);
+		}
+	}
+
+	function onPlay(){
+		console.log("onPlay");
+	}
+
+	function onEnd(){
+		console.log("onEnd");
 	}
 }
