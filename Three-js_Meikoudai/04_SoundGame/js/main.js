@@ -5,16 +5,15 @@
 console.log("Hello Three.js!!");
 
 const SOUND_BGM     = "./sounds/bgm_1.mp3";
-const SOUND_VOLUME  = 1.0;// 0.0 ~ 1.0
+const SOUND_VOLUME  = 0.02;// 音量: 0.0 ~ 1.0
+const SOUND_SEEK    = 0.0;// 再生時間: 0.0 ~
 const TIME_TO_PIXEL = 20;
 
-const noteData = {
-	"n1": [0.5, 1.3, 2.5, 2.7, 2.9],
-	"n2": [0.2, 0.8, 1.8, 3.4, 3.8],
-	"n3": [0.5, 1.0, 1.5, 2.0, 4.5],
-	"n4": [0.3, 1.8, 2.8, 3.8, 4.2],
-	"n5": [0.9, 3.5, 3.8, 4.0, 4.5]
-};
+const noteData = [
+	{"name": "n1", "x": -10, "y": 0, "z": [0.6, 1.0, 2.8, 3.5, 3.9], "sound": "effect_1.mp3"},
+	{"name": "n2", "x":   0, "y": 0, "z": [1.0, 2.0, 2.5, 2.7, 2.9], "sound": "effect_1.mp3"},
+	{"name": "n3", "x": +10, "y": 0, "z": [0.5, 1.8, 2.0, 2.2, 3.2], "sound": "effect_1.mp3"}
+];
 
 // Data
 const models = {data:[
@@ -56,16 +55,19 @@ const fonts = {data:[
 
 // Howler
 let howl        = null;
-
 // ThreeManager
 let tm          = null;
+// Group
 let rootGroup   = null;
+let sonsorGroup = null;
 let noteGroup   = null;
-
 // Loader
 let objLoader   = null;
 let soundLoader = null;
 let fontLoader  = null;
+// Sensors, Markers
+let sensors     = [];
+let markers     = [];
 
 window.onload = function(){
 	console.log("OnLoad");
@@ -81,8 +83,10 @@ function readyThreeJS(){
 	// 	Camera position(PC): pcX, pcY, pcZ
 	tm = new ThreeManager(0, 15, 20);
 
-	// RootGroup, NoteGroup
+	// RootGroup, SensorGroup, NoteGroup
 	rootGroup = tm.getGroup();
+	sensorGroup = new THREE.Group();
+	rootGroup.add(sensorGroup);
 	noteGroup = new THREE.Group();
 	rootGroup.add(noteGroup);
 
@@ -113,19 +117,6 @@ function readyThreeJS(){
 		// Skybox
 		let skybox = tm.createSkybox("./textures/skybox_space.png", 6, 300);
 		rootGroup.add(skybox);
-		
-		// Cube
-		let geometry = new THREE.BoxGeometry(3, 3, 3);
-		let material = new THREE.MeshNormalMaterial();
-
-		let ctlGroup = new THREE.Group();
-		ctlGroup.position.set(0, 0, 50);
-		rootGroup.add(ctlGroup);
-
-		let ctlForward = new THREE.Mesh(geometry, material);
-		ctlForward.position.set(0, 0, -4);
-		ctlForward.name = "hoge";
-		ctlGroup.add(ctlForward);
 
 		// Raycaster
 		tm.setRaycasterListener((intersects)=>{
@@ -143,7 +134,6 @@ function readyThreeJS(){
 		tm._renderer.setAnimationLoop(animate);
 
 		// Howler
-		howl.volume(SOUND_VOLUME);
 		howl.on("play", onPlay);
 		howl.on("end",  onEnd);
 		readyNotes();// Ready
@@ -174,9 +164,22 @@ function readyThreeJS(){
 		if(!howl || !howl.playing()) return;
 		let cTime = howl.seek() || 0;
 		let tTime = howl.duration();
-		let per = Math.floor((cTime/tTime)*100);
-		//console.log(per + "%");
+		// NoteGroup
 		noteGroup.position.z = cTime * TIME_TO_PIXEL;
+		// Sensors x Markers
+		for(let s=0; s<sensors.length; s++){
+			for(let m=markers.length-1; 0<=m; m--){
+				let disX = sensors[s].position.x - (markers[m].position.x+noteGroup.position.x);
+				let disY = sensors[s].position.y - (markers[m].position.y+noteGroup.position.y);
+				let disZ = sensors[s].position.z - (markers[m].position.z+noteGroup.position.z);
+				let distance = Math.sqrt(disX*disX + disY*disY + disZ*disZ);
+				if(distance < 2){
+					soundLoader.playSound(markers[m].sound);// Sound
+					noteGroup.remove(markers[m]);
+					markers.splice(m, 1);
+				}
+			}
+		}
 	};
 
 	// Notes
@@ -185,11 +188,9 @@ function readyThreeJS(){
 
 		let cTime = howl.seek() || 0;
 		let tTime = howl.duration();
-		let per = Math.floor((cTime/tTime)*100);
-		//console.log(per + "%");
 
 		// Cube
-		let geometry = new THREE.BoxGeometry(3, 3, 3);
+		let geometry = new THREE.BoxGeometry(32, 0.2, 0.2);
 		let material = new THREE.MeshNormalMaterial();
 
 		let mkStart = new THREE.Mesh(geometry, material);
@@ -204,41 +205,66 @@ function readyThreeJS(){
 
 		// GUI
 		let GuiCtl = function(){
+			this.check = ()=>{check();};
 			this.play  = ()=>{howl.play();};
 			this.stop  = ()=>{howl.stop();};
 			this.pause = ()=>{howl.pause();};
+			this.seek  = 0;
 		};
 		let gui    = new dat.GUI();
 		let guiCtl = new GuiCtl();
 
 		let folder = gui.addFolder("Controller");
+		folder.add(guiCtl, "check");
 		folder.add(guiCtl, "play");
 		folder.add(guiCtl, "stop");
 		folder.add(guiCtl, "pause");
-		//folder.addColor(guiCtl , "seek").onChange();
+		folder.add(guiCtl, "seek", cTime, tTime).onFinishChange((s)=>{
+			if(howl.playing()) howl.stop();
+			howl.seek(s); howl.play();
+		});
 		folder.open();
 
-
-		// Data
-		putMarkers(noteData.n1, "n1", -16, 0);
-		putMarkers(noteData.n2, "n2",  -8, 0);
-		putMarkers(noteData.n3, "n3",   0, 0);
-		putMarkers(noteData.n4, "n4",  +8, 0);
-		putMarkers(noteData.n5, "n5", +16, 0);
+		// Markers, Sensors
+		sensors = [];
+		markers = [];
+		// Note
+		for(let i=0; i<noteData.length; i++){
+			putSensors(noteData[i]);
+			putMarkers(noteData[i]);
+		}
 
 		// Play
-		setTimeout(()=>{howl.play();}, 1000);
+		setTimeout(()=>{
+			howl.volume(SOUND_VOLUME);// Volume
+			howl.seek(SOUND_SEEK);    // Seek
+			howl.play();
+		}, 1000);
 	}
 
-	function putMarkers(times, name, x, y){
-		let geometry = new THREE.BoxGeometry(3, 3, 3);
+	function putSensors(note){
+		let geometry = new THREE.BoxGeometry(1.5, 1.5, 1.5);
 		let material = new THREE.MeshNormalMaterial();
-		for(let i=0; i<times.length; i++){
-			let time = times[i];
-			let mk = new THREE.Mesh(geometry, material);
-			mk.position.set(x, y, time*TIME_TO_PIXEL*-1.0);
-			mk.name = name;
-			noteGroup.add(mk);
+		for(let i=0; i<note.z.length; i++){
+			let sensor = new THREE.Mesh(geometry, material);
+			sensor.position.set(note.x, note.y, 0);
+			sensor.name = "sensor";
+			sensorGroup.add(sensor);
+			sensors.push(sensor);
+		}
+	}
+
+	function putMarkers(note){
+		let geometry = new THREE.BoxGeometry(2, 2, 2);
+		let material = new THREE.MeshNormalMaterial();
+		for(let i=0; i<note.z.length; i++){
+			let time = note.z[i];
+			let marker = new THREE.Mesh(geometry, material);
+			marker.position.set(note.x, note.y, time*TIME_TO_PIXEL*-1.0);
+			marker.name  = note.name;
+			marker.sound = note.sound;
+			noteGroup.add(marker);
+			markers.push(marker);
 		}
 	}
 
@@ -249,4 +275,9 @@ function readyThreeJS(){
 	function onEnd(){
 		console.log("onEnd");
 	}
+
+	function check(){
+		console.log("check:" + noteGroup.position.z);
+	}
 }
+

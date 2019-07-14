@@ -64,31 +64,9 @@ class ThreeManager{
 		this._cameraContainer.add(this._camera);
 		this._scene.add(this._cameraContainer);
 
-		// PC or DeviceOrientation
-		if(this._modeAndroid == false && this._modeiOS == false){
-			console.log("This is PC!!");
-			// Camera
-			this._camera.position.set(pcX, pcY, pcZ);// PCでポジションを移動させる場合
-			this._cameraContainer.rotation.set(0*DEG_TO_RAD, 0*DEG_TO_RAD, 0*DEG_TO_RAD);
-			// Controls
-			this._controls = new THREE.TrackballControls(this._camera);// Cameraのみ対応
-			this._controls.target.set(0, 0, -10);
-		}else{
-			console.log("This is Smartphone!!");
-			// Camera
-			this._cameraContainer.position.set(pcX, pcY, pcZ);
-			this._cameraContainer.rotation.set(0*DEG_TO_RAD, 0*DEG_TO_RAD, 0*DEG_TO_RAD);
-			// Controls(DeviceOrientation)
-			this._controls = new THREE.DeviceOrientationControls(this._camera);
-			if(this._modeAndroid == true){
-				console.log("This is Android!!");
-				this._controls.alphaOffset = Math.PI * 0.5; // radians
-			}
-			if(this._modeiOS == true){
-				console.log("This is iOS!!");
-				this._controls.alphaOffset = 0; // radians
-			}
-		}
+		// PC
+		this._camera.position.set(pcX, pcY, pcZ);// PCでポジションを移動させる場合
+		this._cameraContainer.rotation.set(0*DEG_TO_RAD, 0*DEG_TO_RAD, 0*DEG_TO_RAD);
 
 		// HemiLight
 		this._hemiLight = new THREE.HemisphereLight(0x3333ff, 0x3333ff, 0.7);
@@ -121,6 +99,10 @@ class ThreeManager{
 		this._cssRenderer.domElement.style.position = "absolute";
 		this._cssRenderer.domElement.style.top = 0;
 		document.body.appendChild(this._cssRenderer.domElement);
+
+		// Controls
+		this._controls = new THREE.TrackballControls(this._camera, this._cssRenderer.domElement);
+		this._controls.target.set(0, 0, -10);
 
 		// Wire
 		this.createWire(14, 14, SIZE_GRID, {color: 0x999999});
