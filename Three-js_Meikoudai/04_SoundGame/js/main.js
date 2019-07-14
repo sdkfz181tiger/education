@@ -4,6 +4,9 @@
 
 console.log("Hello Three.js!!");
 
+const SOUND_BGM     = "./sounds/bgm_1.mp3";
+const TIME_TO_PIXEL = 10;
+
 // Data
 const models = {data:[
 	{dir:"./models/obj/", mtl:"city_1.mtl",        obj:"city_1.obj"},
@@ -44,11 +47,11 @@ const fonts = {data:[
 
 // Howler
 let howl        = null;
-let currentTime = 0.0;
 
 // ThreeManager
 let tm          = null;
 let rootGroup   = null;
+let noteGroup   = null;
 
 // Loader
 let objLoader   = null;
@@ -63,21 +66,11 @@ window.onload = function(){
 // Howler.js
 function readyHowler(){
 	// Howler
-	let src = "./sounds/bgm_1.mp3";
-	howl = new Howl({src: [src]});
+	howl = new Howl({src: [SOUND_BGM]});
 
 	howl.on("load", function(){
 		console.log("Howler:load");
-		howl.volume(1.0);// Volume 0.0 ~ 1.0
 		readyThreeJS();// Ready
-	});
-
-	howl.on("play", function(){
-		console.log("Howler:play");
-	});
-
-	howl.on("end", function(){
-		console.log("Howler:end");
 	});
 }
 
@@ -85,10 +78,12 @@ function readyHowler(){
 function readyThreeJS(){
 	// ThreeManager
 	// 	Camera position(PC): pcX, pcY, pcZ
-	tm = new ThreeManager(0, 60, 90);
+	tm = new ThreeManager(0, 15, 20);
 
-	// RootGroup
+	// RootGroup, NoteGroup
 	rootGroup = tm.getGroup();
+	noteGroup = new THREE.Group();
+	rootGroup.add(noteGroup);
 
 	// Loader
 	objLoader = new ObjLoader();
@@ -147,7 +142,12 @@ function readyThreeJS(){
 		tm._renderer.setAnimationLoop(animate);
 
 		// Howler
-		howl.play();
+		howl.on("play", readyNotes);
+		howl.on("end",  endNotes);
+		setTimeout(()=>{
+			howl.volume(1.0);// Volume 0.0 ~ 1.0
+			howl.play();     // Play
+		}, 3000);
 	}
 
 	function onReadySounds(){
@@ -171,10 +171,42 @@ function readyThreeJS(){
 	function animate(){
 		tm.update();   // Manager
 		ctlVR.update();// Controller
-		// Time
+		// Howler
+		if(howl && howl.playing()){
+			// Time
+			let cTime = howl.seek() || 0;
+			let tTime = howl.duration();
+			let per = Math.floor((cTime/tTime)*100);
+			console.log(per + "%");
+			noteGroup.position.z = cTime * TIME_TO_PIXEL;
+		}
+	};
+
+	// Notes
+	function readyNotes(){
+		console.log("readyNotes");
+
 		let cTime = howl.seek() || 0;
 		let tTime = howl.duration();
 		let per = Math.floor((cTime/tTime)*100);
 		console.log(per + "%");
-	};
+
+		// Cube
+		let geometry = new THREE.BoxGeometry(24, 1, 1);
+		let material = new THREE.MeshNormalMaterial();
+
+		let mkStart = new THREE.Mesh(geometry, material);
+		mkStart.position.set(0, 0, 0);
+		mkStart.name = "mkStart";
+		noteGroup.add(mkStart);
+
+		let mkEnd = new THREE.Mesh(geometry, material);
+		mkEnd.position.set(0, 0, tTime*TIME_TO_PIXEL*-1.0);
+		mkEnd.name = "mkEnd";
+		noteGroup.add(mkEnd);
+	}
+
+	function endNotes(){
+		console.log("endNotes");
+	}
 }

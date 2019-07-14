@@ -71,7 +71,7 @@ class ThreeManager{
 			this._cameraContainer.rotation.set(0*DEG_TO_RAD, 0*DEG_TO_RAD, 0*DEG_TO_RAD);
 			// Controls
 			this._controls = new THREE.TrackballControls(this._camera);// Cameraのみ対応
-			this._controls.target.set(0, 0, 0);
+			this._controls.target.set(0, 0, -10);
 		}else{
 			console.log("This is Smartphone!!");
 			// Camera
