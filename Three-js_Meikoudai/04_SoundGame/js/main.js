@@ -225,6 +225,14 @@ function readyThreeJS(){
 		});
 		folder.open();
 
+		resetNotes()// Reset
+	}
+
+	function resetNotes(){
+		console.log("resetNotes");
+
+		// TODO
+
 		// Markers, Sensors
 		sensors = [];
 		markers = [];
