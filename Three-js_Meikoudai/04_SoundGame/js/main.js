@@ -2,56 +2,7 @@
 // Three.js
 // -> https://threejs.org/
 
-console.log("Hello Three.js!!");
-
-const SOUND_BGM     = "./sounds/bgm_1.mp3";
-const SOUND_VOLUME  = 0.02;// 音量: 0.0 ~ 1.0
-const SOUND_SEEK    = 0.0;// 再生時間: 0.0 ~
-const TIME_TO_PIXEL = 20;
-
-const noteData = [
-	{"name": "n1", "x": -10, "y": 0, "z": [0.6, 1.0, 2.8, 3.5, 3.9], "sound": "effect_1.mp3"},
-	{"name": "n2", "x":   0, "y": 0, "z": [1.0, 2.0, 2.5, 2.7, 2.9], "sound": "effect_1.mp3"},
-	{"name": "n3", "x": +10, "y": 0, "z": [0.5, 1.8, 2.0, 2.2, 3.2], "sound": "effect_1.mp3"}
-];
-
-// Data
-const models = {data:[
-	{dir:"./models/obj/", mtl:"city_1.mtl",        obj:"city_1.obj"},
-	{dir:"./models/obj/", mtl:"city_2.mtl",        obj:"city_2.obj"},
-	{dir:"./models/obj/", mtl:"obj_red.mtl",       obj:"obj_red.obj"},
-	{dir:"./models/obj/", mtl:"obj_green.mtl",     obj:"obj_green.obj"},
-	{dir:"./models/obj/", mtl:"obj_blue.mtl",      obj:"obj_blue.obj"},
-	{dir:"./models/obj/", mtl:"tree_1.mtl",        obj:"tree_1.obj"},
-	{dir:"./models/obj/", mtl:"tree_2.mtl",        obj:"tree_2.obj"},
-	{dir:"./models/obj/", mtl:"car_1.mtl",         obj:"car_1.obj"},
-	{dir:"./models/obj/", mtl:"car_2.mtl",         obj:"car_2.obj"},
-	{dir:"./models/obj/", mtl:"car_3.mtl",         obj:"car_3.obj"}, 
-	{dir:"./models/obj/", mtl:"truck_1.mtl",       obj:"truck_1.obj"},
-	{dir:"./models/obj/", mtl:"truck_2.mtl",       obj:"truck_2.obj"},
-	{dir:"./models/obj/", mtl:"wood_1.mtl",        obj:"wood_1.obj"},
-	{dir:"./models/obj/", mtl:"wood_2.mtl",        obj:"wood_2.obj"},
-	{dir:"./models/obj/", mtl:"road_1.mtl",        obj:"road_1.obj"},
-	{dir:"./models/obj/", mtl:"river_1.mtl",       obj:"river_1.obj"},
-	{dir:"./models/obj/", mtl:"tanuki_talk_1.mtl", obj:"tanuki_talk_1.obj"},
-	{dir:"./models/obj/", mtl:"tanuki_talk_1.mtl", obj:"tanuki_talk_1.obj"},
-	{dir:"./models/obj/", mtl:"tanuki_talk_1.mtl", obj:"tanuki_talk_1.obj"},
-	{dir:"./models/obj/", mtl:"tanuki_talk_2.mtl", obj:"tanuki_talk_2.obj"},
-	{dir:"./models/obj/", mtl:"tanuki_sad_1.mtl",  obj:"tanuki_sad_1.obj"},
-	{dir:"./models/obj/", mtl:"tanuki_sad_2.mtl",  obj:"tanuki_sad_2.obj"},
-	{dir:"./models/obj/", mtl:"tanuki_run_1.mtl",  obj:"tanuki_run_1.obj"},
-	{dir:"./models/obj/", mtl:"tanuki_run_2.mtl",  obj:"tanuki_run_2.obj"},
-	{dir:"./models/obj/", mtl:"tanuki_run_3.mtl",  obj:"tanuki_run_3.obj"},
-]};
-
-const sounds = {data:[
-	{dir:"./sounds/", mp3:"effect_1.mp3"}
-]};
-
-const fonts = {data:[
-	{dir:"./fonts/", font:"MisakiGothic_Regular.json"},
-	{dir:"./fonts/", font:"MisakiMincho_Regular.json"},
-]};
+console.log("main.js!!");
 
 // Howler
 let howl        = null;
@@ -167,13 +118,11 @@ function readyThreeJS(){
 		// NoteGroup
 		noteGroup.position.z = cTime * TIME_TO_PIXEL;
 		// Sensors x Markers
-		for(let s=0; s<sensors.length; s++){
+		for(let s=sensors.length-1; 0<=s; s--){
 			for(let m=markers.length-1; 0<=m; m--){
-				let disX = sensors[s].position.x - (markers[m].position.x+noteGroup.position.x);
-				let disY = sensors[s].position.y - (markers[m].position.y+noteGroup.position.y);
-				let disZ = sensors[s].position.z - (markers[m].position.z+noteGroup.position.z);
-				let distance = Math.sqrt(disX*disX + disY*disY + disZ*disZ);
-				if(distance < 2){
+				let box3A = new THREE.Box3().setFromObject(sensors[s]);
+				let box3B = new THREE.Box3().setFromObject(markers[m]);
+				if(box3A.intersectsBox(box3B)){
 					soundLoader.playSound(markers[m].sound);// Sound
 					noteGroup.remove(markers[m]);
 					markers.splice(m, 1);
@@ -205,52 +154,55 @@ function readyThreeJS(){
 
 		// GUI
 		let GuiCtl = function(){
-			this.check = ()=>{check();};
 			this.play  = ()=>{howl.play();};
-			this.stop  = ()=>{howl.stop();};
 			this.pause = ()=>{howl.pause();};
+			this.reset = ()=>{resetNotes();};
 			this.seek  = 0;
 		};
 		let gui    = new dat.GUI();
 		let guiCtl = new GuiCtl();
 
 		let folder = gui.addFolder("Controller");
-		folder.add(guiCtl, "check");
 		folder.add(guiCtl, "play");
-		folder.add(guiCtl, "stop");
 		folder.add(guiCtl, "pause");
-		folder.add(guiCtl, "seek", cTime, tTime).onFinishChange((s)=>{
-			if(howl.playing()) howl.stop();
-			howl.seek(s); howl.play();
-		});
+		folder.add(guiCtl, "reset");
+		folder.add(guiCtl, "seek",
+			cTime, tTime, 0.02).onFinishChange(resetNotes);
 		folder.open();
 
-		resetNotes()// Reset
+		resetNotes();// Reset
 	}
 
-	function resetNotes(){
+	function resetNotes(seek=0.0){
 		console.log("resetNotes");
+		howl.volume(SOUND_VOLUME);// Volume
+		howl.stop();              // Stop
+		howl.seek(seek);          // Seek
 
-		// TODO
+		// Clear
+		for(let i=sensors.length-1; 0<=i; i--){
+			sensorGroup.remove(sensors[i]);
+			sensors.splice(i, 1);
+		}
+		for(let i=markers.length-1; 0<=i; i--){
+			noteGroup.remove(markers[i]);
+			markers.splice(i, 1);
+		}
 
-		// Markers, Sensors
+		// Put
 		sensors = [];
 		markers = [];
-		// Note
 		for(let i=0; i<noteData.length; i++){
 			putSensors(noteData[i]);
 			putMarkers(noteData[i]);
 		}
 
 		// Play
-		setTimeout(()=>{
-			howl.volume(SOUND_VOLUME);// Volume
-			howl.seek(SOUND_SEEK);    // Seek
-			howl.play();
-		}, 1000);
+		setTimeout(()=>{howl.play();}, 300);
 	}
 
 	function putSensors(note){
+		console.log("putSensors");
 		let geometry = new THREE.BoxGeometry(1.5, 1.5, 1.5);
 		let material = new THREE.MeshNormalMaterial();
 		for(let i=0; i<note.z.length; i++){
@@ -263,12 +215,13 @@ function readyThreeJS(){
 	}
 
 	function putMarkers(note){
+		console.log("putMarkers");
 		let geometry = new THREE.BoxGeometry(2, 2, 2);
 		let material = new THREE.MeshNormalMaterial();
 		for(let i=0; i<note.z.length; i++){
-			let time = note.z[i];
+			if(note.z[i] == 0) continue;
 			let marker = new THREE.Mesh(geometry, material);
-			marker.position.set(note.x, note.y, time*TIME_TO_PIXEL*-1.0);
+			marker.position.set(note.x, note.y, i*TIME_TO_PIXEL*TIME_TO_SPAN*-1.0);
 			marker.name  = note.name;
 			marker.sound = note.sound;
 			noteGroup.add(marker);
@@ -282,10 +235,6 @@ function readyThreeJS(){
 
 	function onEnd(){
 		console.log("onEnd");
-	}
-
-	function check(){
-		console.log("check:" + noteGroup.position.z);
 	}
 }
 
