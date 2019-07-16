@@ -199,7 +199,7 @@ function readyThreeJS(){
 		howl.seek(seek);          // Seek
 		// Clear
 		for(let i=sensors.length-1; 0<=i; i--){
-			sensorGroup.remove(sensors[i]);
+			sensorGroup.remove(sensors[i].group);
 			sensors.splice(i, 1);
 		}
 		for(let i=markers.length-1; 0<=i; i--){
