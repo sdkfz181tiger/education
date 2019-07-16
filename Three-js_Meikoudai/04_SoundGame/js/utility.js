@@ -7,7 +7,7 @@ const OS_iPod    = "iPod";
 
 const DEG_TO_RAD = Math.PI / 180;
 const RAD_TO_DEG = 180 / Math.PI;
-const SIZE_GRID  = 10;
+const SIZE_GRID  = 2;
 
 // Cube
 function createCube(w=3, h=3, d=3, x=0, y=0, z=0){
@@ -56,7 +56,7 @@ class ThreeManager{
 
 		// Camera
 		this._camera = new THREE.PerspectiveCamera(
-			75, window.innerWidth/window.innerHeight, 0.1, 1000);
+			75, window.innerWidth/window.innerHeight, 1, 1000);
 		this._camera.fov = 90;
 
 		// Container(for VR)
@@ -105,7 +105,7 @@ class ThreeManager{
 		this._controls.target.set(TGT_X, TGT_Y, TGT_Z);
 
 		// Wire
-		//this.createWire(14, 14, SIZE_GRID, {color: 0x999999});
+		this.createWire(14, 14, SIZE_GRID, {color: 0x666666});
 
 		// Raycaster(for PC)
 		let mouseVector = new THREE.Vector3();

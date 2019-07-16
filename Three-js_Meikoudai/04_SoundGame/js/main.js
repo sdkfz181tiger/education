@@ -149,15 +149,16 @@ function readyThreeJS(){
 		for(let c=0; c<cols; c++){
 			let v = new THREE.Geometry();
 			let x = noteData[c].x;
+			let y = noteData[c].y;
 			let z = TIME_TO_PIXEL * TIME_TO_SPAN * rows * -1.0;
-			v.vertices.push(new THREE.Vector3(x, 0, 0));
-			v.vertices.push(new THREE.Vector3(x, 0, z));
+			v.vertices.push(new THREE.Vector3(x, y, 0));
+			v.vertices.push(new THREE.Vector3(x, y, z));
 			noteGroup.add(new THREE.Line(v, material));
 			for(let r=0; r<rows; r++){
 				let h = new THREE.Geometry();
-				let z = TIME_TO_PIXEL * TIME_TO_SPAN * r * -1.0;
-				h.vertices.push(new THREE.Vector3(x-2, 0, z));
-				h.vertices.push(new THREE.Vector3(x+2, 0, z));
+				z = TIME_TO_PIXEL * TIME_TO_SPAN * r * -1.0;
+				h.vertices.push(new THREE.Vector3(x-2, y, z));
+				h.vertices.push(new THREE.Vector3(x+2, y, z));
 				noteGroup.add(new THREE.Line(h, material));
 			}
 		}
