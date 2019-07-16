@@ -120,6 +120,8 @@ function readyThreeJS(){
 		// Sensors x Markers
 		for(let s=sensors.length-1; 0<=s; s--){
 			for(let m=markers.length-1; 0<=m; m--){
+				let disZ = Math.abs(noteGroup.position.z + markers[m].position.z);
+				if(20 < disZ) continue;
 				let box3A = new THREE.Box3().setFromObject(sensors[s]);
 				let box3B = new THREE.Box3().setFromObject(markers[m]);
 				if(box3A.intersectsBox(box3B)){
@@ -189,7 +191,6 @@ function readyThreeJS(){
 		howl.volume(SOUND_VOLUME);// Volume
 		howl.stop();              // Stop
 		howl.seek(seek);          // Seek
-
 		// Clear
 		for(let i=sensors.length-1; 0<=i; i--){
 			sensorGroup.remove(sensors[i]);
@@ -199,7 +200,6 @@ function readyThreeJS(){
 			noteGroup.remove(markers[i]);
 			markers.splice(i, 1);
 		}
-
 		// Put
 		sensors = [];
 		markers = [];
@@ -207,14 +207,13 @@ function readyThreeJS(){
 			putSensors(noteData[i]);
 			putMarkers(noteData[i]);
 		}
-
 		// Play
 		setTimeout(()=>{howl.play();}, 300);
 	}
 
 	function putSensors(note){
 		console.log("putSensors");
-		let geometry = new THREE.BoxGeometry(1.5, 1.5, 1.5);
+		let geometry = new THREE.BoxGeometry(1, 1, 1);
 		let material = new THREE.MeshNormalMaterial();
 		for(let i=0; i<note.z.length; i++){
 			let sensor = new THREE.Mesh(geometry, material);
@@ -231,7 +230,8 @@ function readyThreeJS(){
 		let material = new THREE.MeshNormalMaterial();
 		for(let i=0; i<note.z.length; i++){
 			if(note.z[i] == 0) continue;
-			let marker = new THREE.Mesh(geometry, material);
+			let marker = objLoader.findModels(note.obj);
+			marker.scale.set(0.2, 0.2, 0.2);
 			marker.position.set(note.x, note.y, i*TIME_TO_PIXEL*TIME_TO_SPAN*-1.0);
 			marker.name  = note.name;
 			marker.sound = note.sound;

@@ -5,9 +5,9 @@ const SOUND_VOLUME  = 1.0;// 音量: 0.0 ~ 1.0
 const TIME_TO_PIXEL = 50; // 1秒が何ピクセルか
 const TIME_TO_SPAN  = 0.5;// ブロック間隔(秒数)
 
-const CAM_X = 0;  // カメラの座標
-const CAM_Y = 15;
-const CAM_Z = 20;
+const CAM_X = 20; // カメラの座標
+const CAM_Y = 25;
+const CAM_Z = 15;
 
 const TGT_X = 0;  // カメラの向き
 const TGT_Y = 0;
@@ -15,11 +15,11 @@ const TGT_Z = -10;
 
 // Data
 const models = {data:[
-	{dir:"./models/obj/", mtl:"city_1.mtl",    obj:"city_1.obj"},
-	{dir:"./models/obj/", mtl:"city_2.mtl",    obj:"city_2.obj"},
-	{dir:"./models/obj/", mtl:"obj_red.mtl",   obj:"obj_red.obj"},
-	{dir:"./models/obj/", mtl:"obj_green.mtl", obj:"obj_green.obj"},
-	{dir:"./models/obj/", mtl:"obj_blue.mtl",  obj:"obj_blue.obj"}
+	{dir:"./models/obj/", mtl:"tree_1.mtl",   obj:"tree_1.obj"},
+	{dir:"./models/obj/", mtl:"tree_2.mtl",   obj:"tree_2.obj"},
+	{dir:"./models/obj/", mtl:"car_1.mtl",   obj:"car_1.obj"},
+	{dir:"./models/obj/", mtl:"car_2.mtl",   obj:"car_2.obj"},
+	{dir:"./models/obj/", mtl:"car_3.mtl",   obj:"car_3.obj"}
 ]};
 
 const sounds = {data:[
@@ -36,10 +36,10 @@ const fonts = {data:[
 ]};
 
 const noteData = [
-	{"name": "t1", "sound": "tap.mp3", "x": -10, "y": 5, 
-		"z": [0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0]},
-	{"name": "t1", "sound": "tap.mp3", "x":   0, "y": 5, 
-		"z": [0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0]},
-	{"name": "t1", "sound": "tap.mp3", "x": +10, "y": 5, 
-		"z": [0,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1]}
+	{name: "t1", obj: "car_1.obj", sound: "tap.mp3", x: -10, y: 5, 
+		z: [0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0]},
+	{name: "t1", obj: "car_2.obj", sound: "tap.mp3", x:   0, y: 5, 
+		z: [0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0]},
+	{name: "t1", obj: "car_3.obj", sound: "tap.mp3", x: +10, y: 5, 
+		z: [0,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1]}
 ];
