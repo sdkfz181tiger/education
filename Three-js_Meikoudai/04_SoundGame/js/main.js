@@ -16,6 +16,7 @@ let noteGroup   = null;
 let objLoader   = null;
 let soundLoader = null;
 let fontLoader  = null;
+let totalLoader = null;
 // Sensors, Markers
 let sensors     = [];
 let markers     = [];
@@ -33,14 +34,12 @@ function readyThreeJS(){
 	// ThreeManager
 	// 	Camera position(PC): pcX, pcY, pcZ
 	tm = new ThreeManager(CAM_X, CAM_Y, CAM_Z);
-
 	// RootGroup, SensorGroup, NoteGroup
 	rootGroup = tm.getGroup();
 	sensorGroup = new THREE.Group();
 	rootGroup.add(sensorGroup);
 	noteGroup = new THREE.Group();
 	rootGroup.add(noteGroup);
-
 	// Loader
 	objLoader = new ObjLoader();
 	objLoader.loadModels(models, onReadyModels, onError);
@@ -48,7 +47,7 @@ function readyThreeJS(){
 	soundLoader.loadSounds(sounds, onReadySounds, onError);
 	fontLoader = new FontLoader();
 	fontLoader.loadFonts(fonts, onReadyFonts, onError);
-
+	loaderCounter = 3;// Counter
 	// Controller
 	let ctlVR = new CtlVR();
 	ctlVR.setTouchpadListener(
@@ -58,17 +57,13 @@ function readyThreeJS(){
 		()=>{console.log("onPressed!!");}, 
 		()=>{console.log("onReleased!!");});
 
-	// Ready
+	// Ready(Models)
 	function onReadyModels(){
 		console.log("You are ready to use models!!");
-
-		// Camera
+		// Camera, Skybox
 		let cContainer = tm.getCameraContainer();
-
-		// Skybox
-		let skybox = tm.createSkybox("./textures/skybox_space.png", 6, 300);
+		let skybox = tm.createSkybox(SKYBOX_SRC, 6, 300);
 		rootGroup.add(skybox);
-
 		// Raycaster
 		tm.setRaycasterListener((intersects)=>{
 			for(let target of intersects){
@@ -77,29 +72,31 @@ function readyThreeJS(){
 				console.log("name:" + name);
 			}
 		});
-
 		// Shadow
 		tm._renderer.shadowMap.enabled = true;
-
 		// Animation
 		tm._renderer.setAnimationLoop(animate);
-
 		// Howler
 		howl.on("play", onPlay);
 		howl.on("end",  onEnd);
-		readyNotes();// Ready
+		checkLoaders();// Check
 	}
 
+	// Ready(Sounds)
 	function onReadySounds(){
 		console.log("You are ready to use sounds!!");
+		checkLoaders();// Check
 	}
 
+	// Ready(Fonts)
 	function onReadyFonts(){
 		console.log("You are ready to use fonts!!");
-		// Font
-		let font = fontLoader.findFonts("MisakiGothic");
-		let text = fontLoader.createText("How are you!?", font, 4, 0, 20, -50);
-		rootGroup.add(text);
+		checkLoaders();// Check
+	}
+
+	function checkLoaders(){
+		loaderCounter--;
+		if(loaderCounter <= 0) readyNotes();
 	}
 
 	// Error
@@ -120,12 +117,13 @@ function readyThreeJS(){
 		// Sensors x Markers
 		for(let s=sensors.length-1; 0<=s; s--){
 			for(let m=markers.length-1; 0<=m; m--){
-				let disZ = Math.abs(noteGroup.position.z + markers[m].position.z);
-				if(20 < disZ) continue;
-				let box3A = new THREE.Box3().setFromObject(sensors[s]);
+				let distance = Math.abs(noteGroup.position.z + markers[m].position.z);
+				if(10 < distance) continue;
+				let box3A = new THREE.Box3().setFromObject(sensors[s].group);
 				let box3B = new THREE.Box3().setFromObject(markers[m]);
 				if(box3A.intersectsBox(box3B)){
 					soundLoader.playSound(markers[m].sound, 0.2);// Sound
+					sensors[s].jump();
 					noteGroup.remove(markers[m]);
 					markers.splice(m, 1);
 				}
@@ -140,6 +138,7 @@ function readyThreeJS(){
 		let tTime = howl.duration(); // 終了時間
 		setWire(cTime, tTime);       // Wire
 		setGUI(cTime, tTime);        // GUI
+		setScenery();                // Scenery
 		resetNotes();                // Reset
 	}
 
@@ -169,21 +168,28 @@ function readyThreeJS(){
 	function setGUI(cTime, tTime){
 		console.log("setGUI");
 		let GuiCtl = function(){
-			this.play  = ()=>{howl.play();};
-			this.pause = ()=>{howl.pause();};
-			this.reset = ()=>{resetNotes();};
+			this.toggle = ()=>{toggleNotes();};
+			this.reset  = ()=>{resetNotes();};
 			this.seek  = 0;
 		};
 		let gui    = new dat.GUI();
 		let guiCtl = new GuiCtl();
 
 		let folder = gui.addFolder("Controller");
-		folder.add(guiCtl, "play");
-		folder.add(guiCtl, "pause");
+		folder.add(guiCtl, "toggle");
 		folder.add(guiCtl, "reset");
 		folder.add(guiCtl, "seek",
 			cTime, tTime, 0.02).onFinishChange(resetNotes);
 		folder.open();
+	}
+
+	function toggleNotes(){
+		console.log("toggleNotes");
+		if(!howl.playing()){
+			howl.play();
+		}else{
+			howl.pause();
+		}
 	}
 
 	function resetNotes(seek=0.0){
@@ -213,15 +219,9 @@ function readyThreeJS(){
 
 	function putSensors(note){
 		console.log("putSensors");
-		let geometry = new THREE.BoxGeometry(1, 1, 1);
-		let material = new THREE.MeshNormalMaterial();
-		for(let i=0; i<note.z.length; i++){
-			let sensor = new THREE.Mesh(geometry, material);
-			sensor.position.set(note.x, note.y, 0);
-			sensor.name = "sensor";
-			sensorGroup.add(sensor);
-			sensors.push(sensor);
-		}
+		// Sensor
+		let sensor = new Sensor(note.x, note.y, 0, note.sensor, note.key);
+		sensors.push(sensor);
 	}
 
 	function putMarkers(note){
@@ -231,8 +231,8 @@ function readyThreeJS(){
 		for(let i=0; i<note.z.length; i++){
 			if(note.z[i] == 0) continue;
 			let marker = objLoader.findModels(note.obj);
-			marker.scale.set(0.2, 0.2, 0.2);
-			marker.position.set(note.x, note.y, i*TIME_TO_PIXEL*TIME_TO_SPAN*-1.0);
+			marker.position.set(note.x, note.y, 
+				i*TIME_TO_PIXEL*TIME_TO_SPAN*-1.0);
 			marker.name  = note.name;
 			marker.sound = note.sound;
 			noteGroup.add(marker);
@@ -246,6 +246,21 @@ function readyThreeJS(){
 
 	function onEnd(){
 		console.log("onEnd");
+	}
+
+	function setScenery(){
+		console.log("setScenery");
+		// Trees
+		let area = 30;
+		for(let i=0; i<50; i++){
+			let x = Math.floor(Math.random() * area) - area*0.5;
+			let z = Math.floor(Math.random() * area) - area*0.5;
+			let scale = 0.1 + 0.1 * Math.random();
+			let tree = objLoader.findModels("tree_1.obj", scale);
+			tree.position.set(x, 0, z);
+			tree.name = "tree_1";
+			rootGroup.add(tree);
+		}
 	}
 }
 

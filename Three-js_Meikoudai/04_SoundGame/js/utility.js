@@ -1,13 +1,7 @@
 console.log("utility.js!!");
 
-const OS_Android = "Android";
-const OS_iPhone  = "iPhone";
-const OS_iPad    = "iPad";
-const OS_iPod    = "iPod";
-
 const DEG_TO_RAD = Math.PI / 180;
 const RAD_TO_DEG = 180 / Math.PI;
-const SIZE_GRID  = 2;
 
 // Cube
 function createCube(w=3, h=3, d=3, x=0, y=0, z=0){
@@ -23,17 +17,6 @@ class ThreeManager{
 
 	constructor(pcX=0, pcY=0, pcZ=0){
 		console.log("ThreeManager");
-
-		// PC or Smartphone
-		this._modeAndroid = false;
-		this._modeiOS     = false;
-		if(navigator.userAgent.indexOf(OS_Android) > 0) this._modeAndroid = true;
-		if(navigator.userAgent.indexOf(OS_iPhone)  > 0) this._modeiOS = true;
-		if(navigator.userAgent.indexOf(OS_iPad)    > 0) this._modeiOS = true;
-		if(navigator.userAgent.indexOf(OS_iPod)    > 0) this._modeiOS = true;
-
-		console.log("_modeAndroid:" + this._modeAndroid);
-		console.log("_modeiOS:" + this._modeiOS);
 
 		// Scene
 		this._scene = new THREE.Scene();
@@ -105,7 +88,7 @@ class ThreeManager{
 		this._controls.target.set(TGT_X, TGT_Y, TGT_Z);
 
 		// Wire
-		this.createWire(14, 14, SIZE_GRID, {color: 0x666666});
+		this.createWire(14, 14, 2, {color: 0x666666});
 
 		// Raycaster(for PC)
 		let mouseVector = new THREE.Vector3();
@@ -256,6 +239,8 @@ class ObjLoader{
 	findModels(name){
 		for(let i=0; i<this._models.length; i++){
 			if(this._models[i].name != name) continue;
+			let clone = this._models[i];
+			clone.scale.set(MODEL_SCALE, MODEL_SCALE, MODEL_SCALE);
 			return this._models[i].clone();
 		}
 		return null;
@@ -402,10 +387,10 @@ class FontLoader{
 		return label;
 	}
 
-	createText(str="***", font, size=4, x=0, y=4, z=-0){
+	createText(str="***", font, size=4, h=1, x=0, y=4, z=0){
 		let textGeo = new THREE.TextGeometry(str, {
-			font: font, size: size, height: 2, curveSegments: 4,
-			bevelThickness: 2, bevelSize: 0.2, bevelEnabled: false
+			font: font, size: size, height: h, curveSegments: 2,
+			bevelThickness: 1, bevelSize: 0.2, bevelEnabled: false
 		});
 		textGeo.computeBoundingBox();
 		textGeo.computeVertexNormals();
@@ -481,5 +466,51 @@ class CtlVR{
 				if(this._onTriggerReleased) this._onTriggerReleased();
 			}
 		}
+	}
+}
+
+class Sensor{
+
+	constructor(x, y, z, name, text){
+		console.log("Sensor");
+		this._x = x; this._y = y; this._z = z;
+		this._name = name; this._text = text;
+		this.init();
+	}
+
+	init(){
+		// Group
+		this._group = new THREE.Group();
+		this._group.position.set(this._x, this._y, this._z);
+		sensorGroup.add(this._group);// Add to group!!
+		// Clone
+		this._clone = objLoader.findModels(this._name);
+		this._clone.scale.set(MODEL_SCALE, MODEL_SCALE, MODEL_SCALE);
+		this._group.add(this._clone);// Add to group!!
+		// Text
+		let font = fontLoader.findFonts("MisakiGothic");
+		let text = fontLoader.createText(this._text, font, 1.5, 0.5, 0, 0, 3);
+		text.rotation.set(-60*DEG_TO_RAD, 0, 0);
+		this._group.add(text);
+		// Motion
+		this._jumpFlg = false; this._jumpTl = null;
+	}
+
+	get position(){return this._group.position;}
+	get group(){return this._group;}
+
+	jump(sX=0.0, sY=5.0, sZ=0.0){
+		if(this._jumpFlg == true) return;
+		this._jumpFlg = true;
+		//console.log("stepOut:" + sX + ", " + sY + ", " + sZ);
+		let timeUp   = 0.4;
+		let timeDown = 0.8;
+		this._jumpTl = new TimelineMax({repeat: 0, yoyo: false, onComplete:()=>{
+			this._jumpFlg = false;
+		}});
+		this._jumpTl.to(this._group.position, timeUp,
+			{x: "+="+sX, y: "+="+sY, z: "+="+sZ, ease: Sine.easeOut});
+		this._jumpTl.to(this._group.position, timeDown, 
+			{x: "+="+sX, y: "-="+sY, z: "+="+sZ, ease: Bounce.easeOut});
 	}
 }
