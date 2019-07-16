@@ -41,10 +41,10 @@ const fonts = {data:[
 ]};
 
 const noteData = [
-	{name: "t1", sensor: "tanuki_run_1.obj", obj: "car_1.obj", sound: "tap.mp3", key: "A", x: -10, y: 5, 
+	{name: "t1", sensor: "tanuki_run_1.obj", marker: "car_1.obj", sound: "tap.mp3", key: "A", x: -10, y: 5, 
 		z: [0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0]},
-	{name: "t1", sensor: "tanuki_run_1.obj", obj: "car_2.obj", sound: "tap.mp3", key: "B", x:   0, y: 5, 
+	{name: "t1", sensor: "tanuki_run_1.obj", marker: "car_2.obj", sound: "tap.mp3", key: "B", x:   0, y: 5, 
 		z: [0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0]},
-	{name: "t1", sensor: "tanuki_run_1.obj", obj: "car_3.obj", sound: "tap.mp3", key: "C", x: +10, y: 5, 
+	{name: "t1", sensor: "tanuki_run_1.obj", marker: "car_3.obj", sound: "tap.mp3", key: "C", x: +10, y: 5, 
 		z: [0,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1]}
 ];
