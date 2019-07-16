@@ -105,7 +105,7 @@ class ThreeManager{
 		this._controls.target.set(TGT_X, TGT_Y, TGT_Z);
 
 		// Wire
-		this.createWire(14, 14, SIZE_GRID, {color: 0x999999});
+		//this.createWire(14, 14, SIZE_GRID, {color: 0x999999});
 
 		// Raycaster(for PC)
 		let mouseVector = new THREE.Vector3();

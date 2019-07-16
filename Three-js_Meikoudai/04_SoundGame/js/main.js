@@ -134,25 +134,37 @@ function readyThreeJS(){
 	// Notes
 	function readyNotes(){
 		console.log("readyNotes");
+		let cTime = howl.seek() || 0;// 開始時間
+		let tTime = howl.duration(); // 終了時間
+		setWire(cTime, tTime);       // Wire
+		setGUI(cTime, tTime);        // GUI
+		resetNotes();                // Reset
+	}
 
-		let cTime = howl.seek() || 0;
-		let tTime = howl.duration();
+	function setWire(cTime, tTime){
+		console.log("setWire");
+		let cols = noteData.length;
+		let rows = Math.floor(tTime / TIME_TO_SPAN);
+		let material = new THREE.LineBasicMaterial({color: 0x999999});
+		for(let c=0; c<cols; c++){
+			let v = new THREE.Geometry();
+			let x = noteData[c].x;
+			let z = TIME_TO_PIXEL * TIME_TO_SPAN * rows * -1.0;
+			v.vertices.push(new THREE.Vector3(x, 0, 0));
+			v.vertices.push(new THREE.Vector3(x, 0, z));
+			noteGroup.add(new THREE.Line(v, material));
+			for(let r=0; r<rows; r++){
+				let h = new THREE.Geometry();
+				let z = TIME_TO_PIXEL * TIME_TO_SPAN * r * -1.0;
+				h.vertices.push(new THREE.Vector3(x-2, 0, z));
+				h.vertices.push(new THREE.Vector3(x+2, 0, z));
+				noteGroup.add(new THREE.Line(h, material));
+			}
+		}
+	}
 
-		// Cube
-		let geometry = new THREE.BoxGeometry(32, 0.2, 0.2);
-		let material = new THREE.MeshNormalMaterial();
-
-		let mkStart = new THREE.Mesh(geometry, material);
-		mkStart.position.set(0, 0, 0);
-		mkStart.name = "mkStart";
-		noteGroup.add(mkStart);
-
-		let mkEnd = new THREE.Mesh(geometry, material);
-		mkEnd.position.set(0, 0, tTime*TIME_TO_PIXEL*-1.0);
-		mkEnd.name = "mkEnd";
-		noteGroup.add(mkEnd);
-
-		// GUI
+	function setGUI(cTime, tTime){
+		console.log("setGUI");
 		let GuiCtl = function(){
 			this.play  = ()=>{howl.play();};
 			this.pause = ()=>{howl.pause();};
@@ -169,8 +181,6 @@ function readyThreeJS(){
 		folder.add(guiCtl, "seek",
 			cTime, tTime, 0.02).onFinishChange(resetNotes);
 		folder.open();
-
-		resetNotes();// Reset
 	}
 
 	function resetNotes(seek=0.0){
