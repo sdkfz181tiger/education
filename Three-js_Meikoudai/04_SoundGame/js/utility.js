@@ -102,7 +102,7 @@ class ThreeManager{
 
 		// Controls
 		this._controls = new THREE.TrackballControls(this._camera, this._cssRenderer.domElement);
-		this._controls.target.set(0, 0, -10);
+		this._controls.target.set(TGT_X, TGT_Y, TGT_Z);
 
 		// Wire
 		this.createWire(14, 14, SIZE_GRID, {color: 0x999999});

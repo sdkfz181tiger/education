@@ -32,7 +32,7 @@ function readyThreeJS(){
 	console.log("readyThreeJS");
 	// ThreeManager
 	// 	Camera position(PC): pcX, pcY, pcZ
-	tm = new ThreeManager(0, 15, 20);
+	tm = new ThreeManager(CAM_X, CAM_Y, CAM_Z);
 
 	// RootGroup, SensorGroup, NoteGroup
 	rootGroup = tm.getGroup();
@@ -104,7 +104,7 @@ function readyThreeJS(){
 
 	// Error
 	function onError(){
-		console.log("Something went wrong...");
+		console.error("Something went wrong...");
 	}
 
 	// Animate
@@ -123,7 +123,7 @@ function readyThreeJS(){
 				let box3A = new THREE.Box3().setFromObject(sensors[s]);
 				let box3B = new THREE.Box3().setFromObject(markers[m]);
 				if(box3A.intersectsBox(box3B)){
-					soundLoader.playSound(markers[m].sound);// Sound
+					soundLoader.playSound(markers[m].sound, 0.2);// Sound
 					noteGroup.remove(markers[m]);
 					markers.splice(m, 1);
 				}
