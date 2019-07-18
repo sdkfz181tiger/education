@@ -2,7 +2,7 @@ console.log("data.js!!");
 
 const SKYBOX_SRC    = "./textures/skybox_space.png";
 const SOUND_BGM     = "./sounds/minuet_bach.mp3";
-const SOUND_VOLUME  = 0.1;// 音量: 0.0 ~ 1.0
+const SOUND_VOLUME  = 1.0;// 音量: 0.0 ~ 1.0
 
 const TIME_TO_PIXEL = 50; // 1秒が何ピクセルか
 const TIME_TO_SPAN  = 0.5;// ブロック間隔(秒数)
