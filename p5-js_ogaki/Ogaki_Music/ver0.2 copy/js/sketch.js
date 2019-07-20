@@ -14,7 +14,7 @@ const noteData = [
 ];
 
 const SOUND_BGM     = "./assets/bgm_bach.mp3";
-const SOUND_VOLUME  = 0.2;// 音量: 0.0 ~ 1.0
+const SOUND_VOLUME  = 0.5;// 音量: 0.0 ~ 1.0
 
 const TIME_TO_PIXEL = 80;  // 1秒が何ピクセルか
 const TIME_TO_SPAN  = 0.25;// ブロック間隔(秒数)
@@ -36,7 +36,6 @@ function preload(){
 	console.log("preload!!");
 	// BGM
 	sndBGM = loadSound(SOUND_BGM);
-	sndBGM.setVolume(SOUND_VOLUME);
 	// Sounds
 	for(let i=0; i<noteData.length; i++){
 		let name = noteData[i].sound;
@@ -54,9 +53,6 @@ function setup(){
 	bY = Math.floor(height * 0.9);
 	nManager = new NoteManager(sndBGM, bX, bY);
 	combo = 0; score = 0;
-
-	setTimeout(()=>{sndBGM.play();}, 1000);// Play
-	setGUI(nManager.cTime, nManager.tTime);
 }
 
 function draw(){
@@ -73,10 +69,14 @@ class NoteManager{
 
 	constructor(bgm, x, y){
 		console.log("NoteManager");
+		this._bgm   = bgm;
 		this._x     = x;
 		this._y     = y;
 		this._cTime = bgm.currentTime();
 		this._tTime = bgm.buffer.duration;
+		// Play
+		this._bgm.setVolume(SOUND_VOLUME);
+		setTimeout(()=>{this._bgm.play();}, 1000);
 		this.init();
 	}
 
@@ -105,10 +105,6 @@ class NoteManager{
 	get tTime(){return this._tTime;};
 
 	draw(){
-		if(sndBGM.isPlaying()){
-			this._cTime = sndBGM.currentTime();// Current time
-			this._y = bY + this._cTime * TIME_TO_PIXEL;
-		}
 		this.drawLine();
 		this.drawParams();
 		this.moveSprites();
@@ -117,6 +113,8 @@ class NoteManager{
 	drawLine(){
 		noFill(); stroke(255); strokeWeight(1.0);
 		line(0, bY, width, bY);
+		this._cTime = this._bgm.currentTime();// Current time
+		this._y = bY + this._cTime * TIME_TO_PIXEL;
 		for(let i=0; i<noteData.length; i++){
 			let note = noteData[i];
 			let sX = Math.floor(this._x + note.x);
@@ -130,10 +128,10 @@ class NoteManager{
 
 	drawParams(){
 		fill(255); noStroke();
-		textSize(12); textAlign(LEFT);
-		text("COMBO:" + combo, 10, 18);
-		textSize(12); textAlign(LEFT);
-		text("SCORE:" + score, 10, 36);
+		textSize(18); textAlign(LEFT);
+		text("COMBO:" + combo, 10, 24);
+		textSize(18); textAlign(RIGHT);
+		text("SCORE:" + score, width-10, 24);
 	}
 
 	moveSprites(){
@@ -160,23 +158,6 @@ class NoteManager{
 		}
 	}
 
-	reset(){
-
-		// この辺り怪しい
-		for(let s=this._sensors.length-1; 0<=s; s--){
-			this._sensors[s].remove(); // Remove
-			this._sensors.splice(s, 1);// Splice
-		}
-		for(let m=this._markers.length-1; 0<=m; m--){
-			this._markers[m].remove(); // Remove
-			this._markers.splice(m, 1);// Splice
-		}
-		setTimeout(()=>{
-			if(0 < this._sensors.length || 0 < this._markers.length) return;
-			this.init();
-		}, 1000);// init
-	}
-
 	keyTyped(key){
 		for(let s=0; s<this._sensors.length; s++){
 			this._sensors[s].keyTyped(key);
@@ -194,10 +175,6 @@ class Sensor{
 		this._spr.shapeColor = this._cOK;
 		this._key = key;// Key
 		this._typeFlg = true;
-	}
-
-	remove(){
-		this._spr.remove();
 	}
 
 	keyTyped(key){
@@ -225,41 +202,5 @@ class Sensor{
 		if(dist < DIST_GOOD)  return POINT_GOOD;
 		if(dist < DIST_BAD)   return POINT_BAD;
 		return 0;
-	}
-}
-
-function setGUI(cTime, tTime){
-	console.log("setGUI");
-	let GuiCtl = function(){
-		this.toggle = toggleAction;
-		this.reset  = resetAction;
-		this.seek  = 0;
-	};
-	let gui    = new dat.GUI();
-	let guiCtl = new GuiCtl();
-
-	let folder = gui.addFolder("Controller");
-	folder.add(guiCtl, "toggle");
-	folder.add(guiCtl, "reset");
-	folder.add(guiCtl, "seek",
-		cTime, tTime, 0.01).onFinishChange((d)=>{
-			duration(d);
-		});
-	folder.open();
-}
-
-function toggleAction(){
-	if(sndBGM.isPlaying()){
-		sndBGM.pause();
-	}else{
-		sndBGM.play();
-	}
-}
-
-function resetAction(){
-	if(sndBGM.isPlaying()){
-		sndBGM.stop();
-		setTimeout(()=>{sndBGM.play();}, 1000);// Play
-		nManager.reset();// Reset
 	}
 }
