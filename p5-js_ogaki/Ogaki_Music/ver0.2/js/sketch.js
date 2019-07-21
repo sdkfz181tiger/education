@@ -7,14 +7,17 @@ const noteData = [
 		y: [0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0]},
 	{sound: "tap.mp3", key: "d", x:  +0,
 		y: [0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0]},
-	{sound: "tap.mp3", key: "f", x: +30,
-		y: [0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]},
-	{sound: "tap.mp3", key: "g", x: +60,
-		y: [0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0]}
+	// {sound: "tap.mp3", key: "f", x: +30,
+	// 	y: [0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]},
+	// {sound: "tap.mp3", key: "g", x: +60,
+	// 	y: [0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0]}
 ];
 
+const COL_T = [ 60, 255,  60];
+const COL_F = [100, 100, 100];
+
 const SOUND_BGM     = "./assets/bgm_bach.mp3";
-const SOUND_VOLUME  = 0.2;// 音量: 0.0 ~ 1.0
+const SOUND_VOLUME  = 0.8;// 音量: 0.0 ~ 1.0
 
 const TIME_TO_PIXEL = 80;  // 1秒が何ピクセルか
 const TIME_TO_SPAN  = 0.25;// ブロック間隔(秒数)
@@ -92,10 +95,10 @@ class NoteManager{
 				if(noteData[i].y[j] == 0) continue;
 				let sY = TIME_TO_PIXEL * TIME_TO_SPAN * j;
 				let marker = createSprite(sX, this._y - sY, 5, 5);
-				marker.shapeColor = color(255, 100, 100);
 				marker.sound = noteData[i].sound;// Sound
-				marker.offsetX = sX;
-				marker.offsetY = sY;
+				marker.offsetX = sX; marker.offsetY = sY;
+				marker.activeFlg = true;// Active
+				marker.shapeColor = color(COL_T[0], COL_T[1], COL_T[2]);
 				this._markers.push(marker);
 			}
 		}
@@ -144,37 +147,28 @@ class NoteManager{
 		for(let i=this._sensors.length-1; 0<=i; i--){
 			for(let j=this._markers.length-1; 0<=j; j--){
 				if(this._markers[j].position.y < height*0.8) continue;
+				if(this._markers[j].activeFlg == false) continue;
 				let position = this._markers[j].position;
 				if(this._sensors[i].hitTest(position.x, position.y)){
+					this._markers[j].activeFlg = false;// Inactive
+					this._markers[j].shapeColor = color(COL_F[0], COL_F[1], COL_F[2]);
+					sounds[this._markers[j].sound].play();// Sound
 					combo++;// Combo
 					score += this._sensors[i].meetTest(position.x, position.y);// Score
-					sounds[this._markers[j].sound].play();// Sound
-					this._markers[j].remove(); // Remove
-					this._markers.splice(j, 1);// Splice
 				}else if(height < this._markers[j].position.y){
 					combo = 0;// Combo
-					this._markers[j].remove(); // Remove
-					this._markers.splice(j, 1);// Splice
 				}
 			}
 		}
 	}
 
 	reset(){
+		console.log("m:" + this._markers.length);
 
-		// この辺り怪しい
-		for(let s=this._sensors.length-1; 0<=s; s--){
-			this._sensors[s].remove(); // Remove
-			this._sensors.splice(s, 1);// Splice
+		for(let m=0; m<this._markers.length; m++){
+			this._markers[m].activeFlg = true;// Active
+			this._markers[m].shapeColor = color(COL_T[0], COL_T[1], COL_T[2]);
 		}
-		for(let m=this._markers.length-1; 0<=m; m--){
-			this._markers[m].remove(); // Remove
-			this._markers.splice(m, 1);// Splice
-		}
-		setTimeout(()=>{
-			if(0 < this._sensors.length || 0 < this._markers.length) return;
-			this.init();
-		}, 1000);// init
 	}
 
 	keyTyped(key){
@@ -193,7 +187,7 @@ class Sensor{
 		this._spr = createSprite(x, y, 16, 16);
 		this._spr.shapeColor = this._cOK;
 		this._key = key;// Key
-		this._typeFlg = true;
+		this._typeFlg = false;
 	}
 
 	remove(){
@@ -242,9 +236,7 @@ function setGUI(cTime, tTime){
 	folder.add(guiCtl, "toggle");
 	folder.add(guiCtl, "reset");
 	folder.add(guiCtl, "seek",
-		cTime, tTime, 0.01).onFinishChange((d)=>{
-			duration(d);
-		});
+		cTime, tTime, 0.01).onFinishChange(seekAction);
 	folder.open();
 }
 
@@ -259,7 +251,15 @@ function toggleAction(){
 function resetAction(){
 	if(sndBGM.isPlaying()){
 		sndBGM.stop();
-		setTimeout(()=>{sndBGM.play();}, 1000);// Play
+		setTimeout(()=>{sndBGM.play();}, 500);// Play
+		nManager.reset();// Reset
+	}
+}
+
+function seekAction(d){
+	if(sndBGM.isPlaying()){
+		sndBGM.stop();
+		setTimeout(()=>{sndBGM.jump(d);}, 500);// Jump
 		nManager.reset();// Reset
 	}
 }
