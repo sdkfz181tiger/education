@@ -1,5 +1,9 @@
 console.log("Hello p5.js!!");
 
+const srcImages = [
+	"tf01.png", "tf02.png", "tf03.png", "tf04.png", "tf05.png"
+];
+
 const noteData = [
 	{sound: "tap.mp3", image:"f01.png", key: "a", x: -80,
 		y: [0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]},
@@ -13,27 +17,32 @@ const noteData = [
 		y: [0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0]}
 ];
 
-const SOUND_BGM     = "./assets/bgm_jr.mp3";
-const SOUND_VOLUME  = 0.8;// 音量: 0.0 ~ 1.0
+const SOUND_BGM     = "./assets/bgm_bach.mp3";
+const SOUND_VOLUME  = 0.1;// 音量: 0.0 ~ 1.0
 const TYPE_FLG      = false;// true(Auto) / false(Demo)
 
 const TIME_TO_PIXEL = 120; // 1秒が何ピクセルか
 const TIME_TO_SPAN  = 0.25;// ブロック間隔(秒数)
-const MARKER_SCALE  = 0.8; // マーカーのスケール
+const MARKER_SCALE_TRUE  = 0.8;
+const MARKER_SCALE_FALSE = 0.4;
 
 const DIST_GREAT    = 4;
 const DIST_GOOD     = 8;
 const DIST_BAD      = 10;
-
 const POINT_GREAT   = 30;
 const POINT_GOOD    = 10;
 const POINT_BAD     = -5;
+const TEXT_GREAT    = "GREAT!!";
+const TEXT_GOOD     = "GOOD!!";
+const TEXT_BAD      = "BAD!!";
+
 const COL_T = [60, 255, 60];
 const COL_F = [60, 100, 60];
 
 let sndBGM;
 let images = {};
 let sounds = {};
+let popups = [];
 let bX, bY, nManager;
 let combo, score;
 
@@ -42,6 +51,12 @@ function preload(){
 	// BGM
 	sndBGM = loadSound(SOUND_BGM);
 	sndBGM.setVolume(SOUND_VOLUME);
+	// Images
+	for(let i=0; i<srcImages.length; i++){
+		let name = srcImages[i];
+		let path = "./assets/" + name;
+		images[name] = loadImage(path);
+	}
 	// Images
 	for(let i=0; i<noteData.length; i++){
 		let name = noteData[i].image;
@@ -67,7 +82,8 @@ function setup(){
 	combo = 0; score = 0;
 
 	setTimeout(()=>{sndBGM.play();}, 1000);// Play
-	setGUI(nManager.cTime, nManager.tTime);
+	setGUI(nManager.cTime, nManager.tTime);// GUI
+	setScene();// Scene
 }
 
 function draw(){
@@ -105,7 +121,7 @@ class NoteManager{
 				let marker = createSprite(sX, this._y - sY, 5, 5);
 				marker.addImage(images[noteData[i].image]);
 				marker.sound = noteData[i].sound;// Sound
-				marker.scale = MARKER_SCALE;
+				marker.scale = MARKER_SCALE_TRUE;
 				marker.offsetX = sX; marker.offsetY = sY;
 				marker.activeFlg = true;// Active
 				marker.shapeColor = color(COL_T[0], COL_T[1], COL_T[2]);
@@ -114,8 +130,8 @@ class NoteManager{
 		}
 	}
 
-	get cTime(){return this._cTime;};
-	get tTime(){return this._tTime;};
+	get cTime(){return this._cTime;}
+	get tTime(){return this._tTime;}
 
 	draw(){
 		if(sndBGM.isPlaying()){
@@ -148,6 +164,14 @@ class NoteManager{
 		text("CMB:" + combo, 5, height-10);
 		textSize(16); textAlign(RIGHT);
 		text("SCR:" + score, width-5, height-10);
+		// Popups
+		for(let i=popups.length-1; 0<=i; i--){
+			let popup = popups[i];
+			textSize(10); textAlign(CENTER);
+			text(popup.text, popup.x, popup.y-16);
+			popup.life--;
+			if(popup.life <= 0) popups.splice(i, 1);
+		}
 	}
 
 	moveSprites(){
@@ -163,6 +187,7 @@ class NoteManager{
 				if(this._sensors[i].hitTest(position.x, position.y)){
 					this._markers[j].activeFlg = false;// Inactive
 					this._markers[j].shapeColor = color(COL_F[0], COL_F[1], COL_F[2]);
+					this._markers[j].scale = MARKER_SCALE_FALSE;
 					sounds[this._markers[j].sound].play();// Sound
 					combo++;// Combo
 					score += this._sensors[i].meetTest(position.x, position.y);// Score
@@ -174,11 +199,10 @@ class NoteManager{
 	}
 
 	reset(){
-		console.log("m:" + this._markers.length);
-
 		for(let m=0; m<this._markers.length; m++){
 			this._markers[m].activeFlg = true;// Active
 			this._markers[m].shapeColor = color(COL_T[0], COL_T[1], COL_T[2]);
+			this._markers[m].scale = MARKER_SCALE_TRUE;
 		}
 	}
 
@@ -200,6 +224,9 @@ class Sensor{
 		this._key = key;// Key
 		this._typeFlg = TYPE_FLG;
 	}
+
+	get x(){return this._spr.position.x;}
+	get y(){return this._spr.position.y;}
 
 	remove(){
 		this._spr.remove();
@@ -226,9 +253,18 @@ class Sensor{
 		let disX = this._spr.position.x - pX;
 		let disY = this._spr.position.y - pY;
 		let dist = Math.sqrt(disX*disX+disY*disY);
-		if(dist < DIST_GREAT) return POINT_GREAT;
-		if(dist < DIST_GOOD)  return POINT_GOOD;
-		if(dist < DIST_BAD)   return POINT_BAD;
+		if(dist < DIST_GREAT){
+			setPopup(pX, pY, TEXT_GREAT);
+			return POINT_GREAT;
+		}
+		if(dist < DIST_GOOD){
+			setPopup(pX, pY, TEXT_GOOD);
+			return POINT_GOOD;
+		}
+		if(dist < DIST_BAD){
+			setPopup(pX, pY, TEXT_BAD);
+			return POINT_BAD;
+		}
 		return 0;
 	}
 }
@@ -242,7 +278,6 @@ function setGUI(cTime, tTime){
 	};
 	let gui    = new dat.GUI();
 	let guiCtl = new GuiCtl();
-
 	let folder = gui.addFolder("Controller");
 	folder.add(guiCtl, "toggle");
 	folder.add(guiCtl, "reset");
@@ -260,8 +295,16 @@ function toggleAction(){
 }
 
 function resetAction(s=0){
-	console.log(s);
-	sndBGM.stop();
+	combo = 0; score = 0; sndBGM.stop();
 	setTimeout(()=>{sndBGM.jump(s);}, 500);
 	setTimeout(()=>{nManager.reset();}, 550);
+}
+
+function setScene(){
+	let spr = createSprite(32, 32, 16, 16);
+	spr.addImage(images["tf01.png"]);
+}
+
+function setPopup(x, y, text){
+	popups.push({x: x, y: y, text: text, life: 16});
 }

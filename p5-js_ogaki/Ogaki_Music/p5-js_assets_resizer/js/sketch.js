@@ -1,9 +1,9 @@
 console.log("Hello p5.js!!");
 
-const FILE_PREFIX = "f";
+const FILE_PREFIX = "tf";
 const FILE_FROM   = 1;
-const FILE_LAST   = 22;
-const FILE_SCALE  = 3;// FirefoxのZoomを50%にする事
+const FILE_LAST   = 5;
+const FILE_SCALE  = 2;// FirefoxのZoomを50%にする事
 
 const DISP_W = 64;
 const DISP_H = 64;
