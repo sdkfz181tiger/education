@@ -7,16 +7,16 @@ const noteData = [
 		y: [0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0]},
 	{sound: "tap.mp3", key: "d", x:  +0,
 		y: [0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0]},
-	// {sound: "tap.mp3", key: "f", x: +30,
-	// 	y: [0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]},
-	// {sound: "tap.mp3", key: "g", x: +60,
-	// 	y: [0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0]}
+	{sound: "tap.mp3", key: "f", x: +30,
+		y: [0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]},
+	{sound: "tap.mp3", key: "g", x: +60,
+		y: [0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0]}
 ];
 
-const COL_T = [ 60, 255,  60];
-const COL_F = [100, 100, 100];
+const COL_T = [60, 255, 60];
+const COL_F = [60, 100, 60];
 
-const SOUND_BGM     = "./assets/bgm_bach.mp3";
+const SOUND_BGM     = "./assets/bgm_jr.mp3";
 const SOUND_VOLUME  = 0.8;// 音量: 0.0 ~ 1.0
 
 const TIME_TO_PIXEL = 80;  // 1秒が何ピクセルか
@@ -123,9 +123,10 @@ class NoteManager{
 		for(let i=0; i<noteData.length; i++){
 			let note = noteData[i];
 			let sX = Math.floor(this._x + note.x);
-			line(sX, this._y, sX, this._y - this._tTime * TIME_TO_PIXEL);
+			let sY = Math.floor(this._y - this._tTime * TIME_TO_PIXEL);
+			line(sX, this._y, sX, sY);
 			for(let j=0; j<noteData[i].y.length; j++){
-				let sY = this._y - TIME_TO_PIXEL * TIME_TO_SPAN * j;
+				sY = Math.floor(this._y - TIME_TO_PIXEL * TIME_TO_SPAN * j);
 				line(sX-5, sY, sX+5, sY);
 			}
 		}
@@ -227,7 +228,7 @@ function setGUI(cTime, tTime){
 	let GuiCtl = function(){
 		this.toggle = toggleAction;
 		this.reset  = resetAction;
-		this.seek  = 0;
+		this.seek   = 0;
 	};
 	let gui    = new dat.GUI();
 	let guiCtl = new GuiCtl();
@@ -236,7 +237,7 @@ function setGUI(cTime, tTime){
 	folder.add(guiCtl, "toggle");
 	folder.add(guiCtl, "reset");
 	folder.add(guiCtl, "seek",
-		cTime, tTime, 0.01).onFinishChange(seekAction);
+		cTime, tTime, 0.01).onFinishChange(resetAction);
 	folder.open();
 }
 
@@ -248,18 +249,9 @@ function toggleAction(){
 	}
 }
 
-function resetAction(){
-	if(sndBGM.isPlaying()){
-		sndBGM.stop();
-		setTimeout(()=>{sndBGM.play();}, 500);// Play
-		nManager.reset();// Reset
-	}
-}
-
-function seekAction(d){
-	if(sndBGM.isPlaying()){
-		sndBGM.stop();
-		setTimeout(()=>{sndBGM.jump(d);}, 500);// Jump
-		nManager.reset();// Reset
-	}
+function resetAction(s=0){
+	console.log(s);
+	sndBGM.stop();
+	setTimeout(()=>{sndBGM.jump(s);}, 500);
+	setTimeout(()=>{nManager.reset();}, 550);
 }
