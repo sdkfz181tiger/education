@@ -13,11 +13,9 @@ const noteData = [
 		y: [0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0]}
 ];
 
-const COL_T = [60, 255, 60];
-const COL_F = [60, 100, 60];
-
 const SOUND_BGM     = "./assets/bgm_jr.mp3";
 const SOUND_VOLUME  = 0.8;// 音量: 0.0 ~ 1.0
+const TYPE_FLG      = false;// true(Auto) / false(Demo)
 
 const TIME_TO_PIXEL = 120; // 1秒が何ピクセルか
 const TIME_TO_SPAN  = 0.25;// ブロック間隔(秒数)
@@ -30,6 +28,8 @@ const DIST_BAD      = 10;
 const POINT_GREAT   = 30;
 const POINT_GOOD    = 10;
 const POINT_BAD     = -5;
+const COL_T = [60, 255, 60];
+const COL_F = [60, 100, 60];
 
 let sndBGM;
 let images = {};
@@ -144,10 +144,10 @@ class NoteManager{
 
 	drawParams(){
 		fill(255); noStroke();
-		textSize(12); textAlign(LEFT);
-		text("COMBO:" + combo, 10, 18);
-		textSize(12); textAlign(LEFT);
-		text("SCORE:" + score, 10, 36);
+		textSize(16); textAlign(LEFT);
+		text("CMB:" + combo, 5, height-10);
+		textSize(16); textAlign(RIGHT);
+		text("SCR:" + score, width-5, height-10);
 	}
 
 	moveSprites(){
@@ -198,7 +198,7 @@ class Sensor{
 		this._spr = createSprite(x, y, 16, 16);
 		this._spr.shapeColor = this._cOK;
 		this._key = key;// Key
-		this._typeFlg = false;
+		this._typeFlg = TYPE_FLG;
 	}
 
 	remove(){
