@@ -1,15 +1,15 @@
 console.log("Hello p5.js!!");
 
 const noteData = [
-	{sound: "tap.mp3", key: "a", x: -60,
+	{sound: "tap.mp3", image:"f01.png", key: "a", x: -80,
 		y: [0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]},
-	{sound: "tap.mp3", key: "s", x: -30,
+	{sound: "tap.mp3", image:"f02.png", key: "s", x: -40,
 		y: [0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0]},
-	{sound: "tap.mp3", key: "d", x:  +0,
+	{sound: "tap.mp3", image:"f03.png", key: "d", x:  +0,
 		y: [0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0]},
-	{sound: "tap.mp3", key: "f", x: +30,
+	{sound: "tap.mp3", image:"f04.png", key: "f", x: +40,
 		y: [0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]},
-	{sound: "tap.mp3", key: "g", x: +60,
+	{sound: "tap.mp3", image:"f05.png", key: "g", x: +80,
 		y: [0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0]}
 ];
 
@@ -19,18 +19,20 @@ const COL_F = [60, 100, 60];
 const SOUND_BGM     = "./assets/bgm_jr.mp3";
 const SOUND_VOLUME  = 0.8;// 音量: 0.0 ~ 1.0
 
-const TIME_TO_PIXEL = 80;  // 1秒が何ピクセルか
+const TIME_TO_PIXEL = 120; // 1秒が何ピクセルか
 const TIME_TO_SPAN  = 0.25;// ブロック間隔(秒数)
+const MARKER_SCALE  = 0.8; // マーカーのスケール
 
-const DIST_GREAT = 4;
-const DIST_GOOD  = 8;
-const DIST_BAD   = 10;
+const DIST_GREAT    = 4;
+const DIST_GOOD     = 8;
+const DIST_BAD      = 10;
 
-const POINT_GREAT = 30;
-const POINT_GOOD  = 10;
-const POINT_BAD   = -5;
+const POINT_GREAT   = 30;
+const POINT_GOOD    = 10;
+const POINT_BAD     = -5;
 
 let sndBGM;
+let images = {};
 let sounds = {};
 let bX, bY, nManager;
 let combo, score;
@@ -40,6 +42,12 @@ function preload(){
 	// BGM
 	sndBGM = loadSound(SOUND_BGM);
 	sndBGM.setVolume(SOUND_VOLUME);
+	// Images
+	for(let i=0; i<noteData.length; i++){
+		let name = noteData[i].image;
+		let path = "./assets/" + name;
+		images[name] = loadImage(path);
+	}
 	// Sounds
 	for(let i=0; i<noteData.length; i++){
 		let name = noteData[i].sound;
@@ -95,7 +103,9 @@ class NoteManager{
 				if(noteData[i].y[j] == 0) continue;
 				let sY = TIME_TO_PIXEL * TIME_TO_SPAN * j;
 				let marker = createSprite(sX, this._y - sY, 5, 5);
+				marker.addImage(images[noteData[i].image]);
 				marker.sound = noteData[i].sound;// Sound
+				marker.scale = MARKER_SCALE;
 				marker.offsetX = sX; marker.offsetY = sY;
 				marker.activeFlg = true;// Active
 				marker.shapeColor = color(COL_T[0], COL_T[1], COL_T[2]);
@@ -238,7 +248,7 @@ function setGUI(cTime, tTime){
 	folder.add(guiCtl, "reset");
 	folder.add(guiCtl, "seek",
 		cTime, tTime, 0.01).onFinishChange(resetAction);
-	folder.open();
+	folder.open(); gui.close();
 }
 
 function toggleAction(){
