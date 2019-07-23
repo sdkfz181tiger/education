@@ -1,28 +1,29 @@
 console.log("Hello p5.js!!");
 
 const srcImages = [
-	"tf01.png", "tf02.png", "tf03.png", "tf04.png", "tf05.png"
+	"girl_r01.png", "girl_r02.png", "girl_g01.png", "girl_g02.png", "girl_b01.png", "girl_b02.png",
+	"space.png", "rainbow01.png", "mochi01.png", "tf01.png", "tf02.png", "tf03.png", "tf04.png", "tf05.png"
 ];
 
 const noteData = [
 	{sound: "tap.mp3", image:"f01.png", key: "a", x: -80,
-		y: [0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]},
+		y: [0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]},
 	{sound: "tap.mp3", image:"f02.png", key: "s", x: -40,
-		y: [0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0]},
+		y: [0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0]},
 	{sound: "tap.mp3", image:"f03.png", key: "d", x:  +0,
-		y: [0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0]},
+		y: [0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0]},
 	{sound: "tap.mp3", image:"f04.png", key: "f", x: +40,
-		y: [0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]},
+		y: [0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]},
 	{sound: "tap.mp3", image:"f05.png", key: "g", x: +80,
-		y: [0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0]}
+		y: [0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0]}
 ];
 
 const SOUND_BGM     = "./assets/bgm_bach.mp3";
-const SOUND_VOLUME  = 0.1;// 音量: 0.0 ~ 1.0
+const SOUND_VOLUME  = 0.1;  // 音量: 0.0 ~ 1.0
 const TYPE_FLG      = false;// true(Auto) / false(Demo)
 
-const TIME_TO_PIXEL = 120; // 1秒が何ピクセルか
-const TIME_TO_SPAN  = 0.25;// ブロック間隔(秒数)
+const TIME_TO_PIXEL = 120;  // 1秒が何ピクセルか
+const TIME_TO_SPAN  = 0.25; // ブロック間隔(秒数)
 const MARKER_SCALE_TRUE  = 0.8;
 const MARKER_SCALE_FALSE = 0.4;
 
@@ -39,7 +40,7 @@ const TEXT_BAD      = "BAD!!";
 const COL_T = [60, 255, 60];
 const COL_F = [60, 100, 60];
 
-let sndBGM;
+let font, sndBGM;
 let images = {};
 let sounds = {};
 let popups = [];
@@ -48,6 +49,8 @@ let combo, score;
 
 function preload(){
 	console.log("preload!!");
+	// Font
+	font = loadFont("./assets/misaki_gothic.ttf");
 	// BGM
 	sndBGM = loadSound(SOUND_BGM);
 	sndBGM.setVolume(SOUND_VOLUME);
@@ -76,20 +79,20 @@ function setup(){
 	createCanvas(480, 320);
 	frameRate(32);
 
+	setScene();// Scene
+	// NoteManager
 	bX = Math.floor(width * 0.5);
 	bY = Math.floor(height * 0.9);
 	nManager = new NoteManager(sndBGM, bX, bY);
 	combo = 0; score = 0;
-
 	setTimeout(()=>{sndBGM.play();}, 1000);// Play
 	setGUI(nManager.cTime, nManager.tTime);// GUI
-	setScene();// Scene
 }
 
 function draw(){
 	background(33);
-	nManager.draw();
 	drawSprites();
+	nManager.draw();
 }
 
 function keyTyped(){
@@ -159,15 +162,14 @@ class NoteManager{
 	}
 
 	drawParams(){
-		fill(255); noStroke();
-		textSize(16); textAlign(LEFT);
-		text("CMB:" + combo, 5, height-10);
-		textSize(16); textAlign(RIGHT);
-		text("SCR:" + score, width-5, height-10);
+		fill(255); noStroke(); textFont(font);
+		textSize(38); textAlign(RIGHT);
+		text("CM:" + combo, width-10, 120);
+		text("SC:" + score, width-10, 160);
 		// Popups
 		for(let i=popups.length-1; 0<=i; i--){
 			let popup = popups[i];
-			textSize(10); textAlign(CENTER);
+			textSize(16); textAlign(CENTER);
 			text(popup.text, popup.x, popup.y-16);
 			popup.life--;
 			if(popup.life <= 0) popups.splice(i, 1);
@@ -301,8 +303,19 @@ function resetAction(s=0){
 }
 
 function setScene(){
-	let spr = createSprite(32, 32, 16, 16);
-	spr.addImage(images["tf01.png"]);
+	let space = createSprite(width*0.5, height*0.5, 16, 16);
+	space.addImage(images["space.png"]);
+	let rainbow = createSprite(60, 100, 16, 16);
+	rainbow.addImage(images["rainbow01.png"]);
+	rainbow.scale = 0.5;
+	let mochi = createSprite(width-80, height-50, 16, 16);
+	mochi.addImage(images["mochi01.png"]);
+	let girl1 = createSprite(40, 260, 16, 16);
+	girl1.addImage(images["girl_r01.png"]);
+	let girl2 = createSprite(80, 270, 16, 16);
+	girl2.addImage(images["girl_g02.png"]);
+	let girl3 = createSprite(120, 260, 16, 16);
+	girl3.addImage(images["girl_b02.png"]);
 }
 
 function setPopup(x, y, text){
