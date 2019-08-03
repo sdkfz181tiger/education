@@ -28,7 +28,8 @@ function gameStart(){
 
     function fire(){
         console.log("Fire!!");
-        bullet.addImpulse(4.3, -5);
+        bullet.angle = getRandom(0, 90);
+        bullet.addImpulse(4.5, -5);
     }
 
     var area = new Group();
@@ -61,6 +62,8 @@ function gameStart(){
 
     var ground = createBox(0, 350-32, 320*10, 64);
     ground.backgroundColor = "green";
+    ground.tag = "ground";
+    ground.score = -9999;
     area.addChild(ground);
 
     createTable(100, 280);
@@ -70,7 +73,7 @@ function gameStart(){
     var padX = 240;
     for(var i=0; i<10; i++){
         var rdm = getRandom(0, 20);
-        createTable(offX+padX*i, offY-rdm, 8, 10, "images/cf001/coin.png", "item", 10);
+        createTable(offX+padX*i, offY-rdm, 8, 10, "images/cf001/coin.png", "item", 1000);
     }
 
     var bullet = createBox(100, 225, 18, 23, "images/cf001/bullet.png", 0, true);
@@ -79,9 +82,13 @@ function gameStart(){
 
     bullet.addCollision(area);
     bullet.on(Event.COLLISION, (e)=>{
-        if(e.collision.target.tag != "item") return;
-        updateScore(e.collision.target);// Score
-        e.collision.target.destroy();
+        if(e.collision.target.tag == "ground"){
+            updateScore(e.collision.target);// Score
+        }
+        if(e.collision.target.tag == "item"){
+            updateScore(e.collision.target);// Score
+            e.collision.target.destroy();
+        }
     });
 
     var cannon = new Sprite(60, 60);
@@ -164,15 +171,17 @@ function gameStart(){
     }
 
     function updateScore(target){
+        // Score
+        score += target.score;
+        if(score < 0) gameOver();// Game Over!!
         // Label
-        var pLabel = createLabel(target.centerX, target.y-10);
+        var pLabel = createLabel(bullet.centerX, bullet.y-10);
         pLabel.text = target.score; area.addChild(pLabel);
         if(target.score<0) pLabel.color = "red";
         pLabel.tl.moveBy(0, -30, 16);
         pLabel.tl.then(()=>{pLabel.remove();});
-        // Score
-        score += target.score;
         sLabel.text = "SCORE:" + score;
+        // Sound
         if(100 <= target.score){
             core.assets["sounds/cf001/medal.mp3"].clone().play();
         }else if(10 <= target.score){
@@ -188,7 +197,13 @@ function gameStart(){
         scene.tl.then(()=>{
             time--;
             tLabel.text = "TIME:" + time;
-            if(time <= 0) gameOver();
+            if(time <= 0){
+                if(100 <= score){
+                    gameClear();// Game Clear!!
+                }else{
+                    gameOver();// Game Over!!
+                }
+            }
         });
         scene.tl.loop();
     }
@@ -212,30 +227,6 @@ function gameStart(){
     }
 }
 
-function titleStart(){
-    var scene = new Scene();
-    core.replaceScene(scene);
-    
-    // 背景色
-    //scene.backgroundColor = "black";
-
-    // 文字を表示    
-    var title = new Label();
-    title.width = 320;
-    title.x = 0;
-    title.y = 150;
-    title.color = "black";
-    title.textAlign = "center";
-    title.text = "TAP TO START";
-    scene.addChild(title);
-
-    // 画面をクリックしたとき    
-    scene.on(enchant.Event.TOUCH_START, function(){
-        // ゲーム画面を表示    
-        gameStart();
-    });
-}
-
 var core;
 enchant();
 window.onload = function(){
@@ -243,7 +234,7 @@ window.onload = function(){
     core.fps = 16;
     core.preload(assets);
     core.onload = function(){
-        titleStart();
+        gameStart();
     };
     core.start();
 };
