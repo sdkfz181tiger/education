@@ -5,16 +5,19 @@
 const TIME_LIMIT = 10;
 
 var assets = [
-    "images/cf001/b_left.png",   "images/cf001/b_right.png",
-    "images/cf001/b_red.png",    "images/cf001/b_blue.png",
-    "images/cf001/sky.png",      "images/cf001/back1.png",
-    "images/cf001/back2.png",    "images/cf001/bullet.png",
-    "images/cf001/pod.png",      "images/cf001/table.png",
-    "images/cf001/cannon.png",   "images/cf001/codefriends.png",
-    "images/cf001/medal.png",    "images/cf001/coin.png",
+    "images/cf001/b_left.png",    "images/cf001/b_right.png",
+    "images/cf001/b_red.png",     "images/cf001/b_blue.png",
+    "images/cf001/sky.png",       "images/cf001/back1.png",
+    "images/cf001/back2.png",     "images/cf001/bullet.png",
+    "images/cf001/pod.png",       "images/cf001/table.png",
+    "images/cf001/cannon.png",    "images/cf001/codefriends.png",
+    "images/cf001/medal.png",     "images/cf001/coin.png",
     "images/cf001/gameclear.png", "images/cf001/gameover.png",
+    "images/cf001/tebasaki.png",  "images/cf001/musubi.png",
+    "images/cf001/oshiruko.png",
     "sounds/cf001/medal.mp3",     "sounds/cf001/coin.mp3",
-    "sounds/cf001/omg.mp3",       "sounds/cf001/bgm_game.mp3", 
+    "sounds/cf001/cannon.mp3",    "sounds/cf001/omg.mp3",
+    "sounds/cf001/bgm_game.mp3", 
     "sounds/cf001/bgm_clear.mp3", "sounds/cf001/bgm_over.mp3",
 ];
 
@@ -22,14 +25,15 @@ function gameStart(){
     var scene = new Scene();
     core.replaceScene(scene);
 
-    var world = new PhysicsWorld(0, 12);
+    var world = new PhysicsWorld(0, 8);
     scene.addEventListener(Event.ENTER_FRAME, ()=>{world.step(core.fps);});
-    scene.backgroundColor = "#86dcfe";
+    scene.backgroundColor = "black";
 
     function fire(){
         console.log("Fire!!");
+        playSound("sounds/cf001/cannon.mp3");
         bullet.angle = getRandom(0, 90);
-        bullet.addImpulse(4.5, -5);
+        bullet.addImpulse(0, -30);
     }
 
     var area = new Group();
@@ -37,16 +41,16 @@ function gameStart(){
 
     var sky = new Sprite(320*30, 320*5);
     sky.image = core.assets["images/cf001/sky.png"];
-    sky.x = sky.width*-0.5, 
+    sky.x = 0; 
     sky.y = sky.height*-4/5;
     area.addChild(sky);
 
-    var back1 = new Sprite(320*5, 120);
+    var back1 = new Sprite(320*30, 120);
     back1.image = core.assets["images/cf001/back1.png"];
     back1.y = 30;
     area.addChild(back1);
 
-    var back2 = new Sprite(320*5, 200);
+    var back2 = new Sprite(320*30, 200);
     back2.image = core.assets["images/cf001/back2.png"];
     back2.y = 150;
     area.addChild(back2);
@@ -60,10 +64,11 @@ function gameStart(){
     bgm.src.loop = true;
     bgm.play();
 
-    var ground = createBox(0, 350-32, 320*10, 64);
+    var ground = new PhyBoxSprite(320*30, 64, enchant.box2d.STATIC_SPRITE);
+    ground.x = 0; ground.y = 350-32;
     ground.backgroundColor = "green";
     ground.tag = "ground";
-    ground.score = -9999;
+    ground.score = -999;
     area.addChild(ground);
 
     createTable(100, 280);
@@ -71,21 +76,40 @@ function gameStart(){
     var offX = 320;
     var offY = 280;
     var padX = 240;
-    for(var i=0; i<10; i++){
+    for(var i=0; i<20; i++){
         var rdm = getRandom(0, 20);
-        createTable(offX+padX*i, offY-rdm, 8, 10, "images/cf001/coin.png", "item", 1000);
+        if(i < 5){
+            createTable(offX+padX*i, offY-rdm, 8, 10, 
+                        "images/cf001/coin.png", "item", 10);
+        }else if(i < 8){
+            createTable(offX+padX*i, offY-rdm, 32, 32, 
+                        "images/cf001/medal.png", "item", 300);
+        }else if(i < 10){
+            createTable(offX+padX*i, offY-rdm, 32, 32, 
+                        "images/cf001/tebasaki.png", "item", 600);
+        }else if(i < 15){
+            createTable(offX+padX*i, offY-rdm, 32, 32, 
+                        "images/cf001/musubi.png", "item", 900);
+        }else{
+            createTable(offX+padX*i, offY-rdm, 36, 60, 
+                        "images/cf001/oshiruko.png", "item", 1200);
+        }
     }
 
     var bullet = createBox(100, 225, 18, 23, "images/cf001/bullet.png", 0, true);
     area.addChild(bullet);
-    area.setScrollRange(bullet, 90, 90, 32, 90);
+    area.setScrollRange(bullet, 90, 90, 90, 90);
 
     bullet.addCollision(area);
     bullet.on(Event.COLLISION, (e)=>{
+        if(e.collision.target.tag == "table"){
+            // Do nothing
+        }
         if(e.collision.target.tag == "ground"){
             updateScore(e.collision.target);// Score
         }
         if(e.collision.target.tag == "item"){
+            bullet.vx *= 0.2; bullet.vy *= 0.2;// Slow
             updateScore(e.collision.target);// Score
             e.collision.target.destroy();
         }
@@ -127,16 +151,16 @@ function gameStart(){
         podR.image = core.assets["images/cf001/pod.png"];
         podR.centerX = x + 50; podR.centerY = y;
         area.addChild(podR);
-        var table = new Sprite(64, 64);
-        table.image = core.assets["images/cf001/table.png"];
-        table.centerX = x; table.centerY = y;
+        var deco = new Sprite(64, 64);
+        deco.image = core.assets["images/cf001/table.png"];
+        deco.centerX = x; deco.centerY = y;
+        area.addChild(deco);
+        var table = createBox(x, y-25, 64, 32);
+        table.tag = "table";
         area.addChild(table);
-        var step = createBox(x, y-25, 64, 32);
-        area.addChild(step);
         if(iPath == "") return;
         // Items
-        var item = createBox(x, step.y-iH, iW, iH);
-        item.image = core.assets[iPath];
+        var item = createBox(x, table.y-iH, iW, iH, iPath);
         item.tag = tag;
         item.score = s;
         area.addChild(item);
@@ -193,7 +217,7 @@ function gameStart(){
 
     function startTimer(){
         // Count down
-        scene.tl.delay(16);
+        scene.tl.delay(core.fps);
         scene.tl.then(()=>{
             time--;
             tLabel.text = "TIME:" + time;
@@ -224,6 +248,11 @@ function gameStart(){
         var snd = core.assets["sounds/cf001/bgm_over.mp3"].clone();
         snd.play();
         core.stop();
+    }
+
+    function playSound(path){
+        var sound = core.assets[path].clone();
+        sound.play();
     }
 }
 
