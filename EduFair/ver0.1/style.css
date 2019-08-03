@@ -1,0 +1,8 @@
+/*
+    Japanese Webfont Library
+    https://leafscape.be/fonts/
+*/
+@font-face {
+    font-family: 'PixelMplus10';
+    src: url('https://cdn.leafscape.be/PixelMplus/PixelMplus10-Regular_web.woff2') format("woff2");
+}
