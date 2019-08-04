@@ -4,24 +4,6 @@
 
 const TIME_LIMIT = 30;
 
-var assets = [
-    "images/cf001/b_left.png",    "images/cf001/b_right.png",
-    "images/cf001/b_red.png",     "images/cf001/b_blue.png",
-    "images/cf001/sky.png",       "images/cf001/back1.png",
-    "images/cf001/back2.png",     "images/cf001/bullet.png",
-    "images/cf001/pod.png",       "images/cf001/table.png",
-    "images/cf001/cannon.png",    "images/cf001/codefriends.png",
-    "images/cf001/medal.png",     "images/cf001/coin.png",
-    "images/cf001/gameclear.png", "images/cf001/gameover.png",
-    "images/cf001/tebasaki.png",  "images/cf001/musubi.png",
-    "images/cf001/oshiruko.png",  "images/cf001/pl_earth.png",
-    "images/cf001/pl_mars.png",   "images/cf001/pl_moon.png",
-    "sounds/cf001/medal.mp3",     "sounds/cf001/coin.mp3",
-    "sounds/cf001/cannon.mp3",    "sounds/cf001/omg.mp3",
-    "sounds/cf001/bgm_game.mp3", 
-    "sounds/cf001/bgm_clear.mp3", "sounds/cf001/bgm_over.mp3",
-];
-
 function gameStart(){
     var scene = new Scene();
     core.replaceScene(scene);
@@ -30,18 +12,19 @@ function gameStart(){
     scene.addEventListener(Event.ENTER_FRAME, ()=>{world.step(core.fps);});
     scene.backgroundColor = "black";
 
+    //==========
+    // ここから
+    //==========
+
+    // setImpulse("遅延", 加速度(x), 加速度(y));
+
     function fire(){
         console.log("Fire!!");
-
-        // 月を狙う
-        //setImpulse(16*0, 0, -40);
-        //setImpulse(16*2.5, 1, -3);
-
-        // 火星を狙う
-        setImpulse(16*0, 21, -22);
-        setImpulse(16*6.8, 1, -1);
-        setImpulse(16*3, 1, -1);
     }
+
+    //==========
+    // ここまで
+    //==========
 
     function setImpulse(dt, vx, vy){
         bullet.tl.delay(dt).then(()=>{
@@ -303,8 +286,9 @@ function gameStart(){
             var pSprite = new Sprite(target.width, target.height);
             pSprite.image = target.image;
             pSprite.centerX = target.centerX; pSprite.centerY = target.centerY;
+            pSprite.opacity = 0.4;
             area.addChild(pSprite);
-            pSprite.tl.moveBy(0, -32, 16);
+            pSprite.tl.moveBy(0, -32, 8);
             pSprite.tl.then(()=>{
                 pSprite.remove();
                 // Label
@@ -359,6 +343,30 @@ function gameStart(){
     }
 }
 
+function titleStart(){
+    var scene = new Scene();
+    core.replaceScene(scene);
+    
+    // 背景色
+    scene.backgroundColor = "black";
+
+    // 文字を表示    
+    var title = new Label();
+    title.width = 320;
+    title.x = 0;
+    title.y = 150;
+    title.color = "white";
+    title.textAlign = "center";
+    title.text = "TAP TO START";
+    scene.addChild(title);
+
+    // 画面をクリックしたとき    
+    scene.on(enchant.Event.TOUCH_START, function(){
+        // ゲーム画面を表示    
+        gameStart();
+    });
+}
+
 var core;
 enchant();
 window.onload = function(){
@@ -366,7 +374,38 @@ window.onload = function(){
     core.fps = 16;
     core.preload(assets);
     core.onload = function(){
-        gameStart();
+        titleStart();
     };
     core.start();
 };
+
+var assets = [
+    "images/cf001/b_left.png",    "images/cf001/b_right.png",
+    "images/cf001/b_red.png",     "images/cf001/b_blue.png",
+    "images/cf001/sky.png",       "images/cf001/back1.png",
+    "images/cf001/back2.png",     "images/cf001/bullet.png",
+    "images/cf001/pod.png",       "images/cf001/table.png",
+    "images/cf001/cannon.png",    "images/cf001/codefriends.png",
+    "images/cf001/medal.png",     "images/cf001/coin.png",
+    "images/cf001/gameclear.png", "images/cf001/gameover.png",
+    "images/cf001/tebasaki.png",  "images/cf001/musubi.png",
+    "images/cf001/oshiruko.png",  "images/cf001/pl_earth.png",
+    "images/cf001/pl_mars.png",   "images/cf001/pl_moon.png",
+    "sounds/cf001/medal.mp3",     "sounds/cf001/coin.mp3",
+    "sounds/cf001/cannon.mp3",    "sounds/cf001/omg.mp3",
+    "sounds/cf001/bgm_game.mp3", 
+    "sounds/cf001/bgm_clear.mp3", "sounds/cf001/bgm_over.mp3",
+];
+
+/*
+
+// 月を狙う
+//setImpulse(16*0, 0, -40);
+//setImpulse(16*2.5, 1, -3);
+
+// 火星を狙う
+setImpulse(16*0, 21, -22);
+setImpulse(16*6.8, 1, -1);
+setImpulse(16*3, 1, -1);
+
+*/
