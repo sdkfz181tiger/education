@@ -32,10 +32,9 @@ function gameStart(){
     function fire(){
         console.log("Fire!!");
         playSound("sounds/cf001/cannon.mp3");
-        bullet.angle = getRandom(0, 90);
-        bullet.addImpulse(4, -8.0);
-        bullet.addImpulse(5, -8.0);
-
+        //bullet.addImpulse(2, -15);
+        //bullet.addImpulse(1.2, -2);
+        bullet.addImpulse(3.1, -3);
     }
 
     var area = new Group();
@@ -63,7 +62,7 @@ function gameStart(){
 
     var bgm = core.assets["sounds/cf001/bgm_game.mp3"];
     bgm.src.loop = true;
-    bgm.play();
+    //bgm.play();
 
     var ground = new PhyBoxSprite(320*30, 64, enchant.box2d.STATIC_SPRITE);
     ground.x = -320; ground.y = 350-32;
@@ -72,7 +71,7 @@ function gameStart(){
 
     var wL = new PhyBoxSprite(32, 350*30, enchant.box2d.STATIC_SPRITE);
     wL.x = -320-32; wL.y = 350*-29;
-    wL.backgroundColor = "black";
+    wL.backgroundColor = "orange";
     area.addChild(wL);
 
     var wR = new PhyBoxSprite(32, 350*30, enchant.box2d.STATIC_SPRITE);
@@ -82,17 +81,20 @@ function gameStart(){
 
     var wT = new PhyBoxSprite(350*30, 32, enchant.box2d.STATIC_SPRITE);
     wT.x = 0; wT.y = 350*-29;
-    wT.backgroundColor = "red";
+    wT.backgroundColor = "orange";
     area.addChild(wT);
 
     createTable(100, 280);
     
-    createBonus(50, -1200, 5, 5, 8, 10, "images/cf001/coin.png", 10);
-    createBonus(2600, -1200, 20, 20, 8, 10, "images/cf001/coin.png", 10);
+    createBonus(80, -1200, 5, 5, 8, 10, "images/cf001/coin.png", 10);
+    createBonus(1500, -5300, 10, 10, 8, 10, "images/cf001/coin.png", 10);
+    createBonus(1700, -1000, 10, 10, 8, 10, "images/cf001/coin.png", 10);
+    createBonus(2600, -1200, 10, 10, 8, 10, "images/cf001/coin.png", 10);
+    createBonus(320*20, -1200, 20, 20, 8, 10, "images/cf001/coin.png", 10);
 
     var offX = 320;
     var offY = 280;
-    var padX = 240;
+    var padX = 640;
     for(var i=0; i<20; i++){
         var rdm = getRandom(0, 20);
         if(i < 5){
@@ -112,6 +114,7 @@ function gameStart(){
 
     var bullet = createBox(100, 220, 18, 23, "images/cf001/bullet.png", 0, true);
     bullet.density = 3; bullet.friction = 0; bullet.restitution = 0;
+    bullet.angle = getRandom(0, 90);
     bullet.setAwake(false);
     area.addChild(bullet);
     area.setScrollRange(bullet, 90, 90, 90, 90);
@@ -194,7 +197,7 @@ function gameStart(){
         area.addChild(deco);
         var table = createBox(x, y-25, 64, 32);
         table.tag = "table";
-        table.score = 50;
+        table.score = 0;
         area.addChild(table);
         if(iPath == "") return;
         // Items
@@ -250,20 +253,29 @@ function gameStart(){
         // Score
         score += target.score;
         if(score < 0) gameOver();// Game Over!!
-        // Label
-        var pLabel = createLabel(bullet.centerX, bullet.y-10);
-        pLabel.text = target.score; area.addChild(pLabel);
-        if(target.score<0) pLabel.color = "red";
-        pLabel.tl.moveBy(0, -30, 32);
-        pLabel.tl.then(()=>{pLabel.remove();});
-        sLabel.text = "SCORE:" + score;
         // Sound
         if(100 <= target.score){
             core.assets["sounds/cf001/medal.mp3"].clone().play();
         }else if(10 <= target.score){
             core.assets["sounds/cf001/coin.mp3"].clone().play();
-        }else{
-            core.assets["sounds/cf001/omg.mp3"].clone().play();
+        }
+        if(0 < target.score){
+            // Sprite
+            var pSprite = new Sprite(target.width, target.height);
+            pSprite.image = target.image;
+            pSprite.centerX = target.centerX; pSprite.centerY = target.centerY;
+            area.addChild(pSprite);
+            pSprite.tl.moveBy(0, -32, 16);
+            pSprite.tl.then(()=>{
+                pSprite.remove();
+                // Label
+                var pLabel = createLabel(pSprite.centerX, pSprite.centerY);
+                pLabel.text = target.score; area.addChild(pLabel);
+                if(target.score<0) pLabel.color = "red";
+                pLabel.tl.moveBy(0, -30, 32);
+                pLabel.tl.then(()=>{pLabel.remove();});
+                sLabel.text = "SCORE:" + score;
+            });
         }
     }
 
