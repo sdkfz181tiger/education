@@ -14,7 +14,8 @@ var assets = [
     "images/cf001/medal.png",     "images/cf001/coin.png",
     "images/cf001/gameclear.png", "images/cf001/gameover.png",
     "images/cf001/tebasaki.png",  "images/cf001/musubi.png",
-    "images/cf001/oshiruko.png",
+    "images/cf001/oshiruko.png",  "images/cf001/pl_earth.png",
+    "images/cf001/pl_mars.png",   "images/cf001/pl_moon.png",
     "sounds/cf001/medal.mp3",     "sounds/cf001/coin.mp3",
     "sounds/cf001/cannon.mp3",    "sounds/cf001/omg.mp3",
     "sounds/cf001/bgm_game.mp3", 
@@ -31,10 +32,23 @@ function gameStart(){
 
     function fire(){
         console.log("Fire!!");
-        playSound("sounds/cf001/cannon.mp3");
-        //bullet.addImpulse(2, -15);
-        //bullet.addImpulse(1.2, -2);
-        bullet.addImpulse(3.1, -3);
+
+        // 月を狙う
+        //setImpulse(16*0, 0, -40);
+        //setImpulse(16*2.5, 1, -3);
+
+        // 火星を狙う
+        setImpulse(16*0, 21, -22);
+        setImpulse(16*6.8, 1, -1);
+        setImpulse(16*3, 1, -1);
+    }
+
+    function setImpulse(dt, vx, vy){
+        bullet.tl.delay(dt).then(()=>{
+            playSound("sounds/cf001/cannon.mp3");
+            bullet.vx = 0; bullet.vy = 0;
+            bullet.addImpulse(vx, vy);
+        });
     }
 
     var area = new Group();
@@ -62,7 +76,7 @@ function gameStart(){
 
     var bgm = core.assets["sounds/cf001/bgm_game.mp3"];
     bgm.src.loop = true;
-    //bgm.play();
+    bgm.play();
 
     var ground = new PhyBoxSprite(320*30, 64, enchant.box2d.STATIC_SPRITE);
     ground.x = -320; ground.y = 350-32;
@@ -86,28 +100,37 @@ function gameStart(){
 
     createTable(100, 280);
     
-    createBonus(80, -1200, 5, 5, 8, 10, "images/cf001/coin.png", 10);
+    createBonus(80,   -2200,  5,  5, 8, 10, "images/cf001/coin.png", 10);
     createBonus(1500, -5300, 10, 10, 8, 10, "images/cf001/coin.png", 10);
     createBonus(1700, -1000, 10, 10, 8, 10, "images/cf001/coin.png", 10);
     createBonus(2600, -1200, 10, 10, 8, 10, "images/cf001/coin.png", 10);
-    createBonus(320*20, -1200, 20, 20, 8, 10, "images/cf001/coin.png", 10);
+    createBonus(4600, -5300, 20, 20, 8, 10, "images/cf001/coin.png", 10);
+
+    createPlanet(300, -2000,
+                 48, 48, "images/cf001/pl_moon.png", 
+                 32, 32, "images/cf001/musubi.png", 1000);
+
+    createBonus(4800, -1800, 10, 10, 8, 10, "images/cf001/coin.png", 10);
+    createBonus(5100, -1800, 10, 10, 8, 10, "images/cf001/coin.png", 10);
+    createPlanet(5000, -1800,
+                 72, 72, "images/cf001/pl_mars.png", 
+                 36, 60, "images/cf001/oshiruko.png", 3000);
 
     var offX = 320;
     var offY = 280;
     var padX = 640;
     for(var i=0; i<20; i++){
-        var rdm = getRandom(0, 20);
         if(i < 5){
-            createTable(offX+padX*i, offY-rdm, 32, 32, 
+            createTable(offX+padX*i, offY, 32, 32, 
                         "images/cf001/medal.png", 100);
         }else if(i < 8){
-            createTable(offX+padX*i, offY-rdm, 32, 32, 
+            createTable(offX+padX*i, offY, 32, 32, 
                         "images/cf001/tebasaki.png", 300);
         }else if(i < 15){
-            createTable(offX+padX*i, offY-rdm, 32, 32, 
+            createTable(offX+padX*i, offY, 32, 32, 
                         "images/cf001/musubi.png", 900);
         }else{
-            createTable(offX+padX*i, offY-rdm, 36, 60, 
+            createTable(offX+padX*i, offY, 36, 60, 
                         "images/cf001/oshiruko.png", 1200);
         }
     }
@@ -221,6 +244,22 @@ function gameStart(){
         }
     }
 
+    function createPlanet(x, y, wP, hP, iPathP="", wI, hI, iPathI="", s=10){
+        var planet = new Sprite(wP, hP);
+        planet.image = core.assets[iPathP];
+        planet.centerX = x; planet.centerY = y;
+        area.addChild(planet);
+        var step = createBox(x, y, wP, hP);
+        step.centerX = x; step.centerY = y;
+        area.addChild(step);
+        // Items
+        var item = createBox(x, y, wI, hI, iPathI);
+        item.y = planet.y - item.height;
+        item.tag = "item";
+        item.score = s;
+        area.addChild(item);
+    }
+
     function createBox(x, y, w, h, path="", f=0, type=false){
         if(type){
             type = enchant.box2d.DYNAMIC_SPRITE;
@@ -324,7 +363,7 @@ var core;
 enchant();
 window.onload = function(){
     core = new Core(320, 350);
-    core.fps = 24;
+    core.fps = 16;
     core.preload(assets);
     core.onload = function(){
         gameStart();
