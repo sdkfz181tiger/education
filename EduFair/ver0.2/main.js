@@ -4,6 +4,8 @@
 
 const TIME_LIMIT = 30;
 
+var poses = "";
+
 function gameStart(){
     var scene = new Scene();
     core.replaceScene(scene);
@@ -18,8 +20,7 @@ function gameStart(){
 
     function fire(){
         console.log("Fire!!");
-        setImpulse(9, 6);
-        //setImpulse(9*2, 6*2);
+        setImpulse(15, 30);
     }
 
     //==========
@@ -77,11 +78,6 @@ function gameStart(){
     wR.backgroundColor = "orange";
     area.addChild(wR);
 
-    //var wT = new PhyBoxSprite(350*30, 32, enchant.box2d.STATIC_SPRITE);
-    //wT.x = 0; wT.y = 350*-7;
-    //wT.backgroundColor = "orange";
-    //area.addChild(wT);
-
     createTable(100, 280);
     
     createBonus(80,   -1000,  5,  5, 8, 10, "images/cf001/coin.png", 10);
@@ -89,18 +85,18 @@ function gameStart(){
     createBonus(1700, -1000,  5,  5, 8, 10, "images/cf001/coin.png", 10);
     createBonus(2000, -1500, 15, 15, 8, 10, "images/cf001/coin.png", 10);
     createBonus(2600, -1800, 15, 15, 8, 10, "images/cf001/coin.png", 10);
-    createBonus(3600, -1200, 30, 30, 8, 10, "images/cf001/coin.png", 10);
+    createBonus(3600, -1200, 20, 20, 8, 10, "images/cf001/coin.png", 10);
     createBonus(5200, -1800,  8,  8, 8, 10, "images/cf001/coin.png", 10);
     createBonus(5400, -2000,  5,  5, 8, 10, "images/cf001/coin.png", 10);
     createBonus(5450, -1800, 10, 10, 8, 10, "images/cf001/coin.png", 10);
-
-    createPlanet(300, -2000,
-                 48, 48, "images/cf001/pl_moon.png",
-                 32, 32, "images/cf001/musubi.png", 5000);
+    createBonus(5400, -2800, 20, 20, 8, 10, "images/cf001/coin.png", 10);
 
     createPlanet(5350, -1800,
                  72, 72, "images/cf001/pl_mars.png",
                  36, 60, "images/cf001/oshiruko.png", 10000);
+
+    createDots();
+    createLandmarks();
 
     var offX = 280;
     var offY = 280;
@@ -174,7 +170,16 @@ function gameStart(){
         fire();// Fire!!
     });
     area.addChild(cannon);
-
+    
+    // Logger
+    cannon.tl.delay(3);
+    cannon.tl.then(()=>{
+        let posX = Math.floor(bullet.centerX);
+        let posY = Math.floor(bullet.centerY);
+        poses += "[" + posX + ", " + posY + "],";
+    });
+    cannon.tl.loop();
+    
     var bar = new Sprite(320, 30);
     bar.backgroundColor = "black";
     scene.addChild(bar);
@@ -191,7 +196,7 @@ function gameStart(){
     tLabel.text = "TIME:" + time;
     scene.addChild(tLabel);
 
-    //scene.y = 350 * 9;// Test
+    scene.y = 350 * 9;// Test
 
     function createTable(x, y, iW=8, iH=10, iPath="", s=10, i=0){
         var podL = new Sprite(29, 53);
@@ -335,6 +340,9 @@ function gameStart(){
         var snd = core.assets["sounds/cf001/bgm_clear.mp3"].clone();
         snd.play();
         core.stop();
+
+        cannon.tl.unloop();
+        console.log(poses);
     }
 
     function gameOver(){
@@ -349,6 +357,60 @@ function gameStart(){
     function playSound(path){
         var sound = core.assets[path].clone();
         sound.play();
+    }
+
+    function createDots(){
+        for(let dot of dots){
+            let spr = new Sprite(16, 16);
+            spr.backgroundColor = "orange";
+            spr.x = dot[0]; spr.y = dot[1];
+            area.addChild(spr);
+        }
+    }
+
+    function createLandmarks(){
+
+        var teba = new Sprite(32, 32);
+        teba.image = core.assets["images/cf001/tebasaki.png"];
+        teba.centerX = 200; teba.centerY = -500;
+        teba.scale(5.0);
+        area.addChild(teba);
+
+        var musubi = new Sprite(32, 32);
+        musubi.image = core.assets["images/cf001/musubi.png"];
+        musubi.centerX = 1200; musubi.centerY = -1000;
+        musubi.scale(5.0);
+        area.addChild(musubi);
+
+        var basho = new Sprite(200, 181);
+        basho.image = core.assets["images/cf001/basho.png"];
+        basho.centerX = 5100; basho.centerY = -2700;
+        basho.scale(3.0);
+        area.addChild(basho);
+
+        var bear = new Sprite(85, 90);
+        bear.image = core.assets["images/cf001/bear.png"];
+        bear.centerX = 4500; bear.centerY = -2000;
+        bear.scale(3.0);
+        area.addChild(bear);
+
+        var sate = new Sprite(96, 54);
+        sate.image = core.assets["images/cf001/satelite.png"];
+        sate.centerX = 2000; sate.centerY = -2000;
+        sate.scale(3.0);
+        area.addChild(sate);
+
+        var moon = new Sprite(48, 48);
+        moon.image = core.assets["images/cf001/pl_moon.png"];
+        moon.centerX = 1200; moon.centerY = -2000;
+        moon.scale(5.0);
+        area.addChild(moon);
+
+        var earth = new Sprite(72, 72);
+        earth.image = core.assets["images/cf001/pl_earth.png"];
+        earth.centerX = 3300; earth.centerY = -2800;
+        earth.scale(5.0);
+        area.addChild(earth);
     }
 }
 
@@ -379,8 +441,8 @@ function titleStart(){
 var core;
 enchant();
 window.onload = function(){
-    core = new Core(320, 350);// Test
-    //core = new Core(320*18, 350*10);// Test
+    //core = new Core(320, 350);// Test
+    core = new Core(320*18, 350*10);// Test
     core.fps = 16;
     core.preload(assets);
     core.onload = function(){
@@ -401,11 +463,30 @@ var assets = [
     "images/cf001/tebasaki.png",  "images/cf001/musubi.png",
     "images/cf001/oshiruko.png",  "images/cf001/pl_earth.png",
     "images/cf001/pl_mars.png",   "images/cf001/pl_moon.png",
+    "images/cf001/basho.png", "images/cf001/bear.png",
+    "images/cf001/satelite.png",
     "sounds/cf001/medal.mp3",     "sounds/cf001/coin.mp3",
     "sounds/cf001/cannon.mp3",    "sounds/cf001/omg.mp3",
     "sounds/cf001/bgm_game.mp3", 
     "sounds/cf001/bgm_clear.mp3", "sounds/cf001/bgm_over.mp3",
 ];
+
+var dots = [[100, 231],[128, 174],[186, 61],[243, -50],[300, -159],[358, -266],
+    [415, -371],[473, -474],[530, -575],[587, -673],[645, -770],[702, -865],
+    [760, -958],[817, -1049],[874, -1138],[932, -1225],[989, -1310],[1047, -1393],
+    [1104, -1474],[1161, -1553],[1219, -1629],[1276, -1704],[1334, -1777],[1391, -1848],
+    [1448, -1917],[1506, -1984],[1563, -2049],[1621, -2112],[1678, -2173],[1735, -2232],
+    [1793, -2289],[1850, -2343],[1908, -2396],[1965, -2447],[2022, -2496],[2080, -2543],
+    [2137, -2588],[2195, -2631],[2252, -2672],[2309, -2711],[2367, -2748],[2424, -2783],
+    [2482, -2815],[2539, -2846],[2596, -2875],[2654, -2902],[2711, -2927],[2769, -2950],
+    [2826, -2971],[2883, -2990],[2941, -3007],[2998, -3022],[3055, -3035],[3113, -3045],
+    [3170, -3054],[3228, -3061],[3285, -3066],[3342, -3069],[3400, -3070],[3457, -3069],
+    [3515, -3066],[3572, -3061],[3629, -3054],[3687, -3045],[3744, -3033],[3802, -3020],
+    [3859, -3005],[3916, -2988],[3974, -2969],[4031, -2948],[4089, -2925],[4146, -2900],
+    [4203, -2873],[4261, -2844],[4318, -2813],[4376, -2779],[4433, -2744],[4490, -2707],
+    [4548, -2668],[4605, -2627],[4663, -2584],[4720, -2539],[4777, -2492],[4835, -2443],
+    [4892, -2392],[4950, -2339],[5007, -2283],[5064, -2226],[5122, -2167],[5179, -2106],
+    [5237, -2043],[5294, -1978],[5351, -1911]];
 
 /*
 
