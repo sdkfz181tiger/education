@@ -18,9 +18,12 @@ function gameStart(){
     // ここから
     //==========
 
+    // = ヒント =
+    // 1 ~ 100までの数字だよwww
+
     function fire(){
         console.log("Fire!!");
-        setImpulse(15, 30);
+        setImpulse(1, 1);
     }
 
     //==========
@@ -95,7 +98,7 @@ function gameStart(){
                  72, 72, "images/cf001/pl_mars.png",
                  36, 60, "images/cf001/oshiruko.png", 10000);
 
-    createDots();
+    //createDots();
     createLandmarks();
 
     var offX = 280;
@@ -119,7 +122,7 @@ function gameStart(){
 
     var bullet = createBox(100, 220, 18, 23, "images/cf001/bullet.png", 0, true);
     bullet.density = 3; bullet.friction = 0; bullet.restitution = 0;
-    bullet.angle = getRandom(0, 90);
+    //bullet.angle = getRandom(0, 90);
     bullet.setAwake(false);
     area.addChild(bullet);
     area.setScrollRange(bullet, 90, 90, 90, 90);
@@ -196,7 +199,7 @@ function gameStart(){
     tLabel.text = "TIME:" + time;
     scene.addChild(tLabel);
 
-    scene.y = 350 * 9;// Test
+    //scene.y = 350 * 9;// Test
 
     function createTable(x, y, iW=8, iH=10, iPath="", s=10, i=0){
         var podL = new Sprite(29, 53);
@@ -361,7 +364,7 @@ function gameStart(){
 
     function createDots(){
         for(let dot of dots){
-            let spr = new Sprite(16, 16);
+            let spr = new Sprite(6, 6);
             spr.backgroundColor = "orange";
             spr.x = dot[0]; spr.y = dot[1];
             area.addChild(spr);
@@ -373,13 +376,13 @@ function gameStart(){
         var teba = new Sprite(32, 32);
         teba.image = core.assets["images/cf001/tebasaki.png"];
         teba.centerX = 200; teba.centerY = -500;
-        teba.scale(5.0);
+        teba.scale(3.0);
         area.addChild(teba);
 
         var musubi = new Sprite(32, 32);
         musubi.image = core.assets["images/cf001/musubi.png"];
         musubi.centerX = 1200; musubi.centerY = -1000;
-        musubi.scale(5.0);
+        musubi.scale(3.0);
         area.addChild(musubi);
 
         var basho = new Sprite(200, 181);
@@ -402,14 +405,14 @@ function gameStart(){
 
         var moon = new Sprite(48, 48);
         moon.image = core.assets["images/cf001/pl_moon.png"];
-        moon.centerX = 1200; moon.centerY = -2000;
-        moon.scale(5.0);
+        moon.centerX = 1250; moon.centerY = -2000;
+        moon.scale(3.0);
         area.addChild(moon);
 
         var earth = new Sprite(72, 72);
         earth.image = core.assets["images/cf001/pl_earth.png"];
-        earth.centerX = 3300; earth.centerY = -2800;
-        earth.scale(5.0);
+        earth.centerX = 3300; earth.centerY = -2850;
+        earth.scale(3.0);
         area.addChild(earth);
     }
 }
@@ -441,8 +444,8 @@ function titleStart(){
 var core;
 enchant();
 window.onload = function(){
-    //core = new Core(320, 350);// Test
-    core = new Core(320*18, 350*10);// Test
+    core = new Core(320, 350);// Test
+    //core = new Core(320*18, 350*10);// Test
     core.fps = 16;
     core.preload(assets);
     core.onload = function(){
