@@ -7,8 +7,8 @@ const SOUND_VOLUME  = 1.0;// 音量: 0.0 ~ 1.0
 const TIME_TO_PIXEL = 50; // 1秒が何ピクセルか
 const TIME_TO_SPAN  = 0.5;// ブロック間隔(秒数)
 
-const CAM_X = 20; // カメラの座標
-const CAM_Y = 25;
+const CAM_X = 0; // カメラの座標
+const CAM_Y = 15;
 const CAM_Z = 15;
 
 const TGT_X = 0;  // カメラの向き

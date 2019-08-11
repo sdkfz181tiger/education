@@ -387,9 +387,9 @@ class FontLoader{
 		return label;
 	}
 
-	createText2D(str="***", font, size=4, h=1, x=0, y=4, z=0){
+	createText2D(str="***", font, size=4, h=1, x=0, y=0, z=0){
 
-		let shapes = font.generateShapes(str, 2);
+		let shapes = font.generateShapes(str, size);
 		let textGeo = new THREE.ShapeBufferGeometry(shapes);
 		textGeo.computeBoundingBox();
 		let color = new THREE.Color(0xffffff);
@@ -404,10 +404,12 @@ class FontLoader{
 		textMesh.position.x = x - width * 0.5;
 		textMesh.position.y = y + height;
 		textMesh.position.z = z;
+		textMesh.width  = width;
+		textMesh.height = height;
 		return textMesh;
 	}
 
-	createText3D(str="***", font, size=4, h=1, x=0, y=4, z=0){
+	createText3D(str="***", font, size=4, h=1, x=0, y=0, z=0){
 		let textGeo = new THREE.TextGeometry(str, {
 			font: font, size: size, height: h, curveSegments: 2,
 			bevelThickness: 1, bevelSize: 0.2, bevelEnabled: false
@@ -419,12 +421,13 @@ class FontLoader{
 			new THREE.MeshPhongMaterial({color: 0xffffff })
 		];
 		let width = (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x) * 0.5;
+		let height = (textGeo.boundingBox.max.y - textGeo.boundingBox.min.y);
 		let textMesh = new THREE.Mesh(textGeo, materials);
 		textMesh.position.x = x - width * 0.5;
 		textMesh.position.y = y;
 		textMesh.position.z = z;
-		textMesh.rotation.x = 0;
-		textMesh.rotation.y = Math.PI * 2;
+		textMesh.width  = width;
+		textMesh.height = height;
 		return textMesh;
 	}
 }
