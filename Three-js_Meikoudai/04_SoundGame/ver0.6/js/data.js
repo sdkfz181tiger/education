@@ -1,7 +1,5 @@
 console.log("data.js!!");
 
-
-
 const SKYBOX_SRC    = "./textures/skybox_space.png";
 const SOUND_BGM     = "./sounds/minuet_bach.mp3";
 const SOUND_VOLUME  = 1.0;// 音量: 0.0 ~ 1.0

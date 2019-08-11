@@ -387,7 +387,27 @@ class FontLoader{
 		return label;
 	}
 
-	createText(str="***", font, size=4, h=1, x=0, y=4, z=0){
+	createText2D(str="***", font, size=4, h=1, x=0, y=4, z=0){
+
+		let shapes = font.generateShapes(str, 2);
+		let textGeo = new THREE.ShapeBufferGeometry(shapes);
+		textGeo.computeBoundingBox();
+		let color = new THREE.Color(0xffffff);
+		let materials = new THREE.MeshBasicMaterial({
+			color: color, side: THREE.DoubleSide,
+			transparent: true, opacity: 1.0
+		});
+
+		let width  = (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x);
+		let height = (textGeo.boundingBox.max.y - textGeo.boundingBox.min.y);
+		let textMesh = new THREE.Mesh(textGeo, materials);
+		textMesh.position.x = x - width * 0.5;
+		textMesh.position.y = y + height;
+		textMesh.position.z = z;
+		return textMesh;
+	}
+
+	createText3D(str="***", font, size=4, h=1, x=0, y=4, z=0){
 		let textGeo = new THREE.TextGeometry(str, {
 			font: font, size: size, height: h, curveSegments: 2,
 			bevelThickness: 1, bevelSize: 0.2, bevelEnabled: false
@@ -398,9 +418,9 @@ class FontLoader{
 			new THREE.MeshPhongMaterial({color: 0xffffff, flatShading: true}),
 			new THREE.MeshPhongMaterial({color: 0xffffff })
 		];
-		let centerOffset = (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x) * 0.5;
+		let width = (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x) * 0.5;
 		let textMesh = new THREE.Mesh(textGeo, materials);
-		textMesh.position.x = x - centerOffset;
+		textMesh.position.x = x - width * 0.5;
 		textMesh.position.y = y;
 		textMesh.position.z = z;
 		textMesh.rotation.x = 0;
@@ -489,7 +509,7 @@ class Sensor{
 		this._group.add(this._clone);// Add to group!!
 		// Text
 		let font = fontLoader.findFonts("MisakiGothic");
-		let text = fontLoader.createText(this._text, font, 1.5, 0.5, 0, 0, 3);
+		let text = fontLoader.createText3D(this._text, font, 1.5, 0.5, 0, 0, 3);
 		text.rotation.set(-60*DEG_TO_RAD, 0, 0);
 		this._group.add(text);
 		// Motion
