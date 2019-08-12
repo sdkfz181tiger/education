@@ -158,36 +158,9 @@ class ThreeManager{
 
 	//==========
 	// Skybox
-	createSkybox(path, total, scale){
-		let textures = [];
-		for(let i=0; i<total; i++){
-			textures[i] = new THREE.Texture();
-		}
-		let img = new Image();
-		img.onload = ()=>{
-			let canvas, context;
-			let size = img.height;
-			for(let i=0; i < textures.length; i++){
-				canvas  = document.createElement("canvas");
-				context = canvas.getContext("2d");
-				canvas.width = size; canvas.height = size;
-				context.drawImage(
-					img, size*i, 0, size, size, 0, 0, size, size);
-				textures[i].image = canvas
-				textures[i].needsUpdate = true;
-			}
-		};
-		img.src = path;
-
-		let materials = [];
-		for(let i=0; i<textures.length; i++){
-			materials.push(new THREE.MeshBasicMaterial({map: textures[i]}));
-		}
-
-		let skybox = new THREE.Mesh(new THREE.BoxBufferGeometry(1, 1, 1), materials);
-		skybox.geometry.scale(scale, scale, -scale);
-		skybox.position.set(0, 0, 0);
-		return skybox;
+	setSkybox(){
+		this._scene.background = new THREE.CubeTextureLoader()
+			.setPath(SKYBOX_PATH).load(SKYBOX_FILES);
 	}
 
 	//==========

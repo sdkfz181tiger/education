@@ -56,10 +56,8 @@ function readyThreeJS(){
 	// Ready(Models)
 	function onReadyModels(){
 		console.log("You are ready to use models!!");
-		// Camera, Skybox
-		let cContainer = tm.getCameraContainer();
-		let skybox = tm.createSkybox(SKYBOX_SRC, 6, 300);
-		rootGroup.add(skybox);
+		// Skybox
+		tm.setSkybox();
 		// Raycaster
 		tm.setRaycasterListener((intersects)=>{
 			for(let target of intersects){
@@ -139,7 +137,7 @@ function readyThreeJS(){
 		setWire(cTime, tTime);       // Wire
 		setGUI(cTime, tTime);        // GUI
 		setScenery();                // Scenery
-		resetNotes();                // Reset
+		//resetNotes();                // Reset
 	}
 
 	function setWire(cTime, tTime){
@@ -249,31 +247,32 @@ function readyThreeJS(){
 	}
 }
 
-// ScoreCounter
-class ScoreCounter{
+// ScoreCounterManager
+class ScoreCounterManager{
 
-	constructor(rootNode, font, size=2, padding=2, digits=4){
-		this._rootNode = rootNode;
-		this._font     = font;
-		this._size     = size;
-		this._padding  = padding;
-		this._digits   = digits;
-		this._groups   = [];
-		this.init();
+	constructor(font, size=2, padding=2, digits=4){
+		this._font      = font;
+		this._size      = size;
+		this._padding   = padding;
+		this._digits    = digits;
+		this._rootGroup = new THREE.Group();
 	}
 
-	init(){
+	init(x=0, y=0, z=0, rX=0, rY=0, rZ=0){
+
+		this._rootGroup.position.x = x;
+		this._rootGroup.position.y = y;
+		this._rootGroup.position.z = z;
+		this._rootGroup.rotation.x = DEG_TO_RAD * rX;
+		this._rootGroup.rotation.y = DEG_TO_RAD * rY;
+		this._rootGroup.rotation.z = DEG_TO_RAD * rZ;
 
 		let midX = ((this._digits-1)*this._padding)*0.5;
 		for(let d=0; d<this._digits; d++){
 
 			let group = new THREE.Group();
 			group.position.x = this._padding * d - midX;
-			group.position.y = 5;
-			group.position.z = 12;
-			group.rotation.x = DEG_TO_RAD * -45;
-			this._rootNode.add(group);
-			this._groups.push(group);
+			this._rootGroup.add(group);
 
 			for(let i=0; i<10; i++){
 				let str = "" + i;
@@ -282,6 +281,8 @@ class ScoreCounter{
 				if(i != 0) label.visible = false;
 			}
 		}
+
+		return this._rootGroup;
 	}
 
 	setScore(num){
@@ -291,8 +292,8 @@ class ScoreCounter{
 			for(let i=0; i<this._digits-str.length; i++) pre += "0";
 			str = pre + str;
 		}
-		for(let d=0; d<this._groups.length; d++){
-			let group = this._groups[d];
+		for(let d=0; d<this._rootGroup.children.length; d++){
+			let group = this._rootGroup.children[d];
 			for(let i=0; i<group.children.length; i++){
 				group.children[i].visible = (i == Number(str[d]));
 			}
