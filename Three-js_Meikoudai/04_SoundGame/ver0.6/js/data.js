@@ -1,10 +1,11 @@
 console.log("data.js!!");
 
 // Skybox
-const SKYBOX_PATH  = "./textures/";
+const SKYBOX_PATH  = "./textures/sky1/";
 const SKYBOX_FILES = [
-	"dark-s_px.jpg", "dark-s_nx.jpg", "dark-s_py.jpg",
-	"dark-s_ny.jpg", "dark-s_pz.jpg", "dark-s_nz.jpg"];
+	"pos-x.png", "neg-x.png",
+	"pos-y.png", "neg-y.png",
+	"pos-z.png", "neg-z.png"];
 
 // Sound
 const SOUND_BGM     = "./sounds/minuet_bach.mp3";

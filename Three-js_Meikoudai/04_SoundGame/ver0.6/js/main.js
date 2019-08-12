@@ -4,10 +4,24 @@ function setScenery(){
 	console.log("setScenery");
 	let font = fontLoader.findFonts("MisakiGothic");
 
-	// ScoreCounterManager
-	let scManager = new ScoreCounterManager(font);
-	let sCounter = scManager.init(0, 5, 0, -45);
-	rootGroup.add(sCounter);
+	// カメラコンテナ
+	let cam = tm.getCameraContainer();
+	// タイムライン
+	let tl = new TimelineMax({repeat: -1, yoyo: false, onComplete:()=>{
+		console.log("Comp!!");
+	}});
+	tl.to(cam.position, 3.0,
+		{delay: 1.0, x: "+=5", y: "+=5", z: "+=5"});
+	tl.to(cam.position, 1.0,
+		{delay: 1.0, x: "-=5", y: "-=5", z: "-=5"});
+	tl.to(cam.position, 1.0,
+		{delay: 3.0, x: 20, y: 20, z: 20});
+	tl.to(cam.position, 1.0,
+		{delay: 3.0, x: 0, y: 0, z: 0});
+
+	// スコア
+	let scManager = new ScoreCounterManager(rootGroup, font);
+	scManager.init(0, 5, 0, -45);
 
 	// Trees
 	let areaX = 30;

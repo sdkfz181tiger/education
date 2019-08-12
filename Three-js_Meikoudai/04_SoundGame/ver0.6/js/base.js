@@ -250,7 +250,8 @@ function readyThreeJS(){
 // ScoreCounterManager
 class ScoreCounterManager{
 
-	constructor(font, size=2, padding=2, digits=4){
+	constructor(root, font, size=2, padding=2, digits=4){
+		this._root      = root;
 		this._font      = font;
 		this._size      = size;
 		this._padding   = padding;
@@ -266,6 +267,7 @@ class ScoreCounterManager{
 		this._rootGroup.rotation.x = DEG_TO_RAD * rX;
 		this._rootGroup.rotation.y = DEG_TO_RAD * rY;
 		this._rootGroup.rotation.z = DEG_TO_RAD * rZ;
+		this._root.add(this._rootGroup);
 
 		let midX = ((this._digits-1)*this._padding)*0.5;
 		for(let d=0; d<this._digits; d++){
@@ -281,8 +283,6 @@ class ScoreCounterManager{
 				if(i != 0) label.visible = false;
 			}
 		}
-
-		return this._rootGroup;
 	}
 
 	setScore(num){
