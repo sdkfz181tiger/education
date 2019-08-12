@@ -525,9 +525,8 @@ class Sensor{
 	jump(sX=0.0, sY=5.0, sZ=0.0){
 		if(this._jumpFlg == true) return;
 		this._jumpFlg = true;
-		//console.log("stepOut:" + sX + ", " + sY + ", " + sZ);
-		let timeUp   = 0.4;
-		let timeDown = 0.8;
+		let timeUp   = 0.1;
+		let timeDown = 0.2;
 		this._jumpTl = new TimelineMax({repeat: 0, yoyo: false, onComplete:()=>{
 			this._jumpFlg = false;
 		}});

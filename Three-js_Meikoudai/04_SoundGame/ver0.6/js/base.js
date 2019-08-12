@@ -113,15 +113,19 @@ function readyThreeJS(){
 		// Sensors x Markers
 		for(let s=sensors.length-1; 0<=s; s--){
 			for(let m=markers.length-1; 0<=m; m--){
-				let distance = Math.abs(noteGroup.position.z + markers[m].position.z);
-				if(10 < distance) continue;
+				let z = noteGroup.position.z + markers[m].position.z;
+				if(z < -10) continue;// Important
+				if(20 < z){
+					noteGroup.remove(markers[m]);
+					markers.splice(m, 1);
+					continue;
+				}
 				let box3A = new THREE.Box3().setFromObject(sensors[s].group);
 				let box3B = new THREE.Box3().setFromObject(markers[m]);
 				if(box3A.intersectsBox(box3B)){
-					soundLoader.playSound(markers[m].sound, 0.2);// Sound
-					sensors[s].jump();
-					noteGroup.remove(markers[m]);
-					markers.splice(m, 1);
+					onCollision(sensors[s], markers[m]);
+					noteGroup.remove(markers[m]);// Remove marker
+					markers.splice(m, 1);        // Splice marker
 				}
 			}
 		}
@@ -134,8 +138,8 @@ function readyThreeJS(){
 		let tTime = howl.duration(); // 終了時間
 		setWire(cTime, tTime);       // Wire
 		setGUI(cTime, tTime);        // GUI
-		resetNotes();                // Reset
 		setScenery();                // Scenery
+		resetNotes();                // Reset
 	}
 
 	function setWire(cTime, tTime){
@@ -242,5 +246,56 @@ function readyThreeJS(){
 
 	function onEnd(){
 		console.log("onEnd");
+	}
+}
+
+// ScoreCounter
+class ScoreCounter{
+
+	constructor(rootNode, font, size=2, padding=2, digits=4){
+		this._rootNode = rootNode;
+		this._font     = font;
+		this._size     = size;
+		this._padding  = padding;
+		this._digits   = digits;
+		this._groups   = [];
+		this.init();
+	}
+
+	init(){
+
+		let midX = ((this._digits-1)*this._padding)*0.5;
+		for(let d=0; d<this._digits; d++){
+
+			let group = new THREE.Group();
+			group.position.x = this._padding * d - midX;
+			group.position.y = 5;
+			group.position.z = 12;
+			group.rotation.x = DEG_TO_RAD * -45;
+			this._rootNode.add(group);
+			this._groups.push(group);
+
+			for(let i=0; i<10; i++){
+				let str = "" + i;
+				let label = fontLoader.createText2D(str, this._font, this._size);
+				group.add(label);
+				if(i != 0) label.visible = false;
+			}
+		}
+	}
+
+	setScore(num){
+		let str = String(Math.floor(num)).substr(-this._digits);
+		if(str.length < this._digits){
+			let pre = "";
+			for(let i=0; i<this._digits-str.length; i++) pre += "0";
+			str = pre + str;
+		}
+		for(let d=0; d<this._groups.length; d++){
+			let group = this._groups[d];
+			for(let i=0; i<group.children.length; i++){
+				group.children[i].visible = (i == Number(str[d]));
+			}
+		}
 	}
 }

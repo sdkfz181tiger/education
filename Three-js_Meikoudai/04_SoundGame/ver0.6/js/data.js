@@ -19,11 +19,11 @@ const MODEL_SCALE = 0.2;// モデルのスケール
 
 // Data
 const models = {data:[
-	{dir:"./models/obj/", mtl:"tree_1.mtl", obj:"tree_1.obj"},
-	{dir:"./models/obj/", mtl:"tree_2.mtl", obj:"tree_2.obj"},
-	{dir:"./models/obj/", mtl:"car_1.mtl",  obj:"car_1.obj"},
-	{dir:"./models/obj/", mtl:"car_2.mtl",  obj:"car_2.obj"},
-	{dir:"./models/obj/", mtl:"car_3.mtl",  obj:"car_3.obj"},
+	{dir:"./models/obj/", mtl:"tree_1.mtl",        obj:"tree_1.obj"},
+	{dir:"./models/obj/", mtl:"tree_2.mtl",        obj:"tree_2.obj"},
+	{dir:"./models/obj/", mtl:"car_1.mtl",         obj:"car_1.obj"},
+	{dir:"./models/obj/", mtl:"car_2.mtl",         obj:"car_2.obj"},
+	{dir:"./models/obj/", mtl:"car_3.mtl",         obj:"car_3.obj"},
 	{dir:"./models/obj/", mtl:"tanuki_run_1.mtl",  obj:"tanuki_run_1.obj"}
 ]};
 
