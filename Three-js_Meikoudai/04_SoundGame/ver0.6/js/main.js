@@ -14,12 +14,12 @@ function setScenery(){
 	// フォント
 	let font = fontLoader.findFonts("MisakiGothic");
 
-	// コンボマネージャー(サイズ, 間隔, 桁数)
+	// コンボマネージャー(サイズ, 間隔, 最大桁数)
 	comboMng = new CounterManager(rootGroup, font, 2, 2, 2);
 	comboMng.init(-5, 3, 8, -45);// x, y, z, x軸角度
 	comboMng.setNum(combo);// コンボ表示
 
-	// スコアマネージャー(サイズ, 間隔, 桁数)
+	// スコアマネージャー(サイズ, 間隔, 最大桁数)
 	scoreMng = new CounterManager(rootGroup, font, 2, 2, 4);
 	scoreMng.init(+5, 3, 8, -45);// x, y, z, x軸角度
 	scoreMng.setNum(score);// スコア表示
@@ -28,14 +28,10 @@ function setScenery(){
 	let cam = tm.getCameraContainer();
 	// アニメーションオブジェクト(繰り返し, ヨーヨー, 終了時関数)
 	let tl = createTimeline(-1, false, null);
-	tl.to(cam.position, 3.0,
-		{delay: 1.0, x: "+=5", y: "+=5", z: "+=5"});
-	tl.to(cam.position, 1.0,
-		{delay: 1.0, x: "-=5", y: "-=5", z: "-=5"});
-	tl.to(cam.position, 1.0,
-		{delay: 3.0, x: 20, y: 20, z: 20});
-	tl.to(cam.position, 1.0,
-		{delay: 3.0, x: 0, y: 0, z: 0});
+	tl.to(cam.position, 1.0, {delay: 3.0, x: 20, y: 20, z: 20});         // 絶対位置
+	tl.to(cam.position, 3.0, {delay: 1.0, x: "+=5", y: "+=5", z: "+=5"});// 相対位置
+	tl.to(cam.position, 1.0, {delay: 1.0, x: "-=5", y: "-=5", z: "-=5"});
+	tl.to(cam.position, 1.0, {delay: 3.0, x: 0, y: 0, z: 0});
 
 	// "noteGroup(譜面)"に配置する
 	for(let i=0; i<10; i++){
@@ -115,6 +111,15 @@ function onHit(sensor, marker){
 
 	// TODO: パーティクル
 }
+
+// コントローラー
+window.addEventListener("keydown", (e)=>{
+	let keyCode = e.keyCode;
+	console.log("keyDown:" + keyCode);
+	if(keyCode == 49) sensors[0].jump();// 1
+	if(keyCode == 50) sensors[1].jump();// 2
+	if(keyCode == 51) sensors[2].jump();// 3
+});
 
 // アニメーションオブジェクト生成
 function createTimeline(repeat=0, yoyo=false, onComplete=null){
