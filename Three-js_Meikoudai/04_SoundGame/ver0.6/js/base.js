@@ -71,7 +71,7 @@ function readyThreeJS(){
 		// Animation
 		tm._renderer.setAnimationLoop(animate);
 		// Howler
-		howl.on("play", onPlay);
+		howl.on("seek", onSeek);
 		howl.on("end",  onEnd);
 		checkLoaders();// Check
 	}
@@ -114,6 +114,7 @@ function readyThreeJS(){
 				let z = noteGroup.position.z + markers[m].position.z;
 				if(z < -10) continue;// Important
 				if(20 < z){
+					onMissed(sensors[s], markers[m]);// Missed...
 					noteGroup.remove(markers[m]);
 					markers.splice(m, 1);
 					continue;
@@ -121,7 +122,7 @@ function readyThreeJS(){
 				let box3A = new THREE.Box3().setFromObject(sensors[s].group);
 				let box3B = new THREE.Box3().setFromObject(markers[m]);
 				if(box3A.intersectsBox(box3B)){
-					onCollision(sensors[s], markers[m]);
+					onHit(sensors[s], markers[m]);// Hit!!
 					noteGroup.remove(markers[m]);// Remove marker
 					markers.splice(m, 1);        // Splice marker
 				}
@@ -239,8 +240,8 @@ function readyThreeJS(){
 	}
 }
 
-// ScoreCounterManager
-class ScoreCounterManager{
+// CounterManager
+class CounterManager{
 
 	constructor(root, font, size=2, padding=2, digits=4){
 		this._root      = root;
@@ -277,7 +278,7 @@ class ScoreCounterManager{
 		}
 	}
 
-	setScore(num){
+	setNum(num){
 		let str = String(Math.floor(num)).substr(-this._digits);
 		if(str.length < this._digits){
 			let pre = "";
