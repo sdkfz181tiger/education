@@ -209,11 +209,15 @@ class ObjLoader{
 		});
 	}
 
-	findModels(name){
+	findModels(name, scale){
 		for(let i=0; i<this._models.length; i++){
 			if(this._models[i].name != name) continue;
 			let clone = this._models[i];
-			clone.scale.set(MODEL_SCALE, MODEL_SCALE, MODEL_SCALE);
+			if(scale){
+				clone.scale.set(scale, scale, scale);
+			}else{
+				clone.scale.set(MODEL_SCALE, MODEL_SCALE, MODEL_SCALE);
+			}
 			return this._models[i].clone();
 		}
 		return null;

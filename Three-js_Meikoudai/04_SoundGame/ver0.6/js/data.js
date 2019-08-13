@@ -26,12 +26,10 @@ const MODEL_SCALE = 0.2;// モデルのスケール
 
 // Data
 const models = {data:[
-	{dir:"./models/obj/", mtl:"tree_1.mtl",        obj:"tree_1.obj"},
-	{dir:"./models/obj/", mtl:"tree_2.mtl",        obj:"tree_2.obj"},
-	{dir:"./models/obj/", mtl:"car_1.mtl",         obj:"car_1.obj"},
-	{dir:"./models/obj/", mtl:"car_2.mtl",         obj:"car_2.obj"},
-	{dir:"./models/obj/", mtl:"car_3.mtl",         obj:"car_3.obj"},
-	{dir:"./models/obj/", mtl:"tanuki_run_1.mtl",  obj:"tanuki_run_1.obj"}
+	{dir:"./models/obj/", mtl:"4x4x4.mtl",    obj:"4x4x4.obj"},
+	{dir:"./models/obj/", mtl:"6x6x6.mtl",    obj:"6x6x6.obj"},
+	{dir:"./models/obj/", mtl:"8x8x8.mtl",    obj:"8x8x8.obj"},
+	{dir:"./models/obj/", mtl:"10x10x10.mtl", obj:"10x10x10.obj"}
 ]};
 
 const sounds = {data:[
@@ -48,10 +46,10 @@ const fonts = {data:[
 ]};
 
 const noteData = [
-	{name: "t1", sensor: "tanuki_run_1.obj", marker: "car_1.obj", sound: "tap.mp3", key: "A", x: -10, y: 5, 
+	{name: "t1", sensor: "4x4x4.obj", marker: "6x6x6.obj", sound: "tap.mp3", key: "A", x: -10, y: 5, 
 		z: [0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0]},
-	{name: "t1", sensor: "tanuki_run_1.obj", marker: "car_2.obj", sound: "tap.mp3", key: "B", x:   0, y: 5, 
+	{name: "t1", sensor: "4x4x4.obj", marker: "6x6x6.obj", sound: "tap.mp3", key: "B", x:   0, y: 5, 
 		z: [0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0]},
-	{name: "t1", sensor: "tanuki_run_1.obj", marker: "car_3.obj", sound: "tap.mp3", key: "C", x: +10, y: 5, 
+	{name: "t1", sensor: "4x4x4.obj", marker: "6x6x6.obj", sound: "tap.mp3", key: "C", x: +10, y: 5, 
 		z: [0,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1]}
 ];
