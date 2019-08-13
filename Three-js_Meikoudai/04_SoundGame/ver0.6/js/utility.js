@@ -272,6 +272,7 @@ class SoundLoader{
 	}
 
 	playSound(name, volume=1.0){
+		console.log("playSound:" + name);
 		for(let i=0; i<this._sounds.length; i++){
 			if(this._sounds[i].name != name) continue;
 			this._sounds[i].setVolume(volume);

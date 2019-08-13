@@ -237,14 +237,6 @@ function readyThreeJS(){
 			markers.push(marker);
 		}
 	}
-
-	function onPlay(){
-		console.log("onPlay");
-	}
-
-	function onEnd(){
-		console.log("onEnd");
-	}
 }
 
 // ScoreCounterManager
