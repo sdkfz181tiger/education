@@ -13,9 +13,10 @@ let objLoader   = null;
 let soundLoader = null;
 let fontLoader  = null;
 let totalLoader = null;
-// Sensors, Markers
+// Sensors, Markers, Fireworks
 let sensors     = [];
 let markers     = [];
+let fireworks   = [];
 
 window.onload = function(){
 	console.log("OnLoad");
@@ -102,6 +103,16 @@ function readyThreeJS(){
 	function animate(){
 		tm.update();   // Manager
 		ctlVR.update();// Controller
+		// Fireworks
+		for(let i=fireworks.length-1; 0<=i; i--){
+			console.log("fire");
+			if(fireworks[i].isFinished()){
+				fireworks[i].removeFromParent();
+				fireworks.splice(i, 1);
+				continue;
+			}
+			fireworks[i].update();
+		}
 		// Howler
 		if(!howl || !howl.playing()) return;
 		let cTime = howl.seek() || 0;
@@ -291,5 +302,63 @@ class CounterManager{
 				group.children[i].visible = (i == Number(str[d]));
 			}
 		}
+	}
+}
+
+// Fireworks
+class Fireworks{
+
+	constructor(root, x, y, z, area, total){
+		console.log("Fireworks");
+		this._root = root;
+		this._dsts = [];
+		this.init(x, y, z, area, total);
+	}
+
+	init(x, y, z, area, total){
+		// Geometry, Material
+		this._geometry = new THREE.Geometry();
+		this._material = new THREE.PointsMaterial({
+			size: 0.5, color: 0xffffff, vertexColors: true, 
+			transparent: true, opacity: 1
+		});
+		for(let i=0; i<total; i++){
+			let from = new THREE.Vector3(
+				THREE.Math.randInt(x-1, x+1),
+				THREE.Math.randInt(y-1, y+1),
+				THREE.Math.randInt(z-1, z+1)
+			);
+			let to = new THREE.Vector3(
+				THREE.Math.randInt(x-area, x+area),
+				THREE.Math.randInt(y-area, y+area),
+				THREE.Math.randInt(z-area, z+area)
+			);
+			this._geometry.vertices.push(from);
+			this._dsts.push(to);
+			let color = new THREE.Color(Math.random() * 0xffff00);
+			this._geometry.colors.push(color);
+		}
+		this._points = new THREE.Points(this._geometry, this._material);
+		this._root.add(this._points);
+	}
+
+	update(){
+		for(let i=0; i<this._geometry.vertices.length; i++){
+			this._geometry.vertices[i].x += (this._dsts[i].x - this._geometry.vertices[i].x) / 40;
+			this._geometry.vertices[i].y += (this._dsts[i].y - this._geometry.vertices[i].y) / 40;
+			this._geometry.vertices[i].z += (this._dsts[i].z - this._geometry.vertices[i].z) / 40;
+			this._geometry.verticesNeedUpdate = true;
+		}
+		this._material.opacity -= 0.015;
+		this._material.colorsNeedUpdate = true;
+	}
+
+	isFinished(){
+		if(this._material.opacity < 0) return true;
+		return false;
+	}
+
+	removeFromParent(){
+		this._root.remove(this._points);
 	}
 }

@@ -1,7 +1,7 @@
 console.log("main.js!!");
 
-let font = null;    // フォント
-let cam  = null;    // カメラコンテナ
+let font     = null;    // フォント
+let cam      = null;    // カメラコンテナ
 
 let combo    = 0;   // コンボ
 let comboMng = null;// コンボマネージャー
@@ -73,13 +73,20 @@ function onHit(sensor, marker){
 	let distance = noteGroup.position.z + marker.position.z;
 	console.log("ヒット距離:" + distance);
 
+	let x = sensor.position.x;
+	let y = sensor.position.y;
+	let z = sensor.position.z;
+
 	// Great!!, Good!!, Bad...
 	if(distance < 0.8){
-		showPopup(sensor.position, "logo_great.obj");// Great!!
+		showPopup(x, y, z, "logo_great.obj");// Great!!
+		showFireworks(x, y, z);
 	}else if(distance < 2.5){
-		showPopup(sensor.position, "logo_good.obj"); // Good!!
+		showPopup(x, y, z, "logo_good.obj"); // Good!!
+		showFireworks(x, y, z);
 	}else{
-		showPopup(sensor.position, "logo_bad.obj");  // Bad...
+		showPopup(x, y, z, "logo_bad.obj");  // Bad...
+		showFireworks(x, y, z);
 	}
 	
 	soundLoader.playSound(marker.sound, 0.2);// Sound
@@ -107,24 +114,6 @@ function onHit(sensor, marker){
 	}
 }
 
-// Great!!, Good!!, Bad...
-function showPopup(position, obj){
-
-	let logo = objLoader.findModels(obj, 2.0);
-	logo.position.set(position.x, position.y, position.z);
-	rootGroup.add(logo);
-
-	// アニメーションオブジェクト(繰り返し, ヨーヨー, 終了時関数)
-	let tl = createTimeline(0, false, ()=>{
-		// アニメーション終了時
-		soundLoader.playSound("tap.mp3", 1.0);// Sound
-		// ロゴを削除
-		rootGroup.remove(logo);
-	});
-	// "logo"オブジェクトを3.0秒の時間をかけて、1.0秒後に+0, +3, +0の座標に移動する
-	tl.to(logo.position, 0.8, {delay: 0, x: "+=0", y: "+=3", z: "+=0"});
-}
-
 // ゲームクリア
 function onEnd(){
 	console.log("onEnd");
@@ -149,10 +138,34 @@ function onEnd(){
 	tl.to(logo.position, 10.0, {});
 }
 
+// Great!!, Good!!, Bad...
+function showPopup(x, y, z, obj){
+
+	let logo = objLoader.findModels(obj, 2.0);
+	logo.position.set(x, y, z);
+	rootGroup.add(logo);
+
+	// アニメーションオブジェクト(繰り返し, ヨーヨー, 終了時関数)
+	let tl = createTimeline(0, false, ()=>{
+		// アニメーション終了時
+		soundLoader.playSound("tap.mp3", 1.0);// Sound
+		// ロゴを削除
+		rootGroup.remove(logo);
+	});
+	// "logo"オブジェクトを3.0秒の時間をかけて、1.0秒後に+0, +3, +0の座標に移動する
+	tl.to(logo.position, 0.8, {delay: 0, x: "+=0", y: "+=3", z: "+=0"});
+}
+
+// Fireworks
+function showFireworks(x, y, z, area=10, total=30){
+	let fw = new Fireworks(rootGroup, x, y, z, area, total);
+	fireworks.push(fw);
+}
+
 // コントローラー
 window.addEventListener("keydown", (e)=>{
 	let keyCode = e.keyCode;
-	console.log("keyDown:" + keyCode);
+	//console.log("keyDown:" + keyCode);
 	if(keyCode == 49) sensors[0].jump();// 1
 	if(keyCode == 50) sensors[1].jump();// 2
 	if(keyCode == 51) sensors[2].jump();// 3
