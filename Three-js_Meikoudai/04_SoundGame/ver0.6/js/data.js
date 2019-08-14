@@ -24,14 +24,19 @@ const TGT_Z = -10;
 
 const MODEL_SCALE = 0.2;// モデルのスケール
 
-// Data
+// 読み込む3Dモデリングデータ
 const models = {data:[
-	{dir:"./models/obj/", mtl:"4x4x4.mtl",    obj:"4x4x4.obj"},
-	{dir:"./models/obj/", mtl:"6x6x6.mtl",    obj:"6x6x6.obj"},
-	{dir:"./models/obj/", mtl:"8x8x8.mtl",    obj:"8x8x8.obj"},
-	{dir:"./models/obj/", mtl:"10x10x10.mtl", obj:"10x10x10.obj"}
+	{dir:"./models/obj/", mtl:"4x4x4.mtl",       obj:"4x4x4.obj"},
+	{dir:"./models/obj/", mtl:"6x6x6.mtl",       obj:"6x6x6.obj"},
+	{dir:"./models/obj/", mtl:"8x8x8.mtl",       obj:"8x8x8.obj"},
+	{dir:"./models/obj/", mtl:"10x10x10.mtl",    obj:"10x10x10.obj"},
+	{dir:"./models/obj/", mtl:"logo_great.mtl",  obj:"logo_great.obj"},
+	{dir:"./models/obj/", mtl:"logo_good.mtl",   obj:"logo_good.obj"},
+	{dir:"./models/obj/", mtl:"logo_bad.mtl",    obj:"logo_bad.obj"},
+	{dir:"./models/obj/", mtl:"logo_finish.mtl", obj:"logo_finish.obj"},
 ]};
 
+// 読み込むサウンドデータ
 const sounds = {data:[
 	{dir:"./sounds/", mp3:"tap.mp3"},
 	{dir:"./sounds/", mp3:"piano1_do.mp3"}, {dir:"./sounds/", mp3:"piano1_re.mp3"},
@@ -40,11 +45,13 @@ const sounds = {data:[
 	{dir:"./sounds/", mp3:"piano1_si.mp3"}, {dir:"./sounds/", mp3:"piano2_do.mp3"}
 ]};
 
+// 読み込むフォントデータ
 const fonts = {data:[
 	{dir:"./fonts/", font:"MisakiGothic_Regular.json"},
 	{dir:"./fonts/", font:"MisakiMincho_Regular.json"}
 ]};
 
+// 譜面データ
 const noteData = [
 	{name: "t1", sensor: "4x4x4.obj", marker: "6x6x6.obj", sound: "tap.mp3", key: "A", x: -10, y: 5, 
 		z: [0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0]},

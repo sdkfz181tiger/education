@@ -33,7 +33,7 @@ function setScenery(){
 	// tl.to(cam.position, 1.0, {delay: 0.2, x: 0,  y: 15, z: 15});// "0, 0, 0"はカメラ初期位置
 	// tl.to(cam.position, 1.0, {delay: 3.0, x: +20, y: 20, z: 20}); 
 	// tl.to(cam.position, 1.0, {delay: 3.0, x: -20, y: 20, z: 20});
-	// tl.to(cam.position, 1.5, {});
+	// tl.to(cam.position, 1.5, {});// 1.5秒何もしない
 	//tl.to(cam.position, 3.0, {delay: 1.0, x: "+=5", y: "+=5", z: "+=5"});// 相対位置
 	//tl.to(cam.position, 1.0, {delay: 1.0, x: "-=5", y: "-=5", z: "-=5"});
 
@@ -74,9 +74,9 @@ function onEnd(){
 	console.log("onEnd");
 
 	// ゲームクリアロゴ
-	let logo = objLoader.findModels("10x10x10.obj");
+	let logo = objLoader.findModels("logo_finish.obj");
 	logo.position.set(0, 5, 0);
-	logo.name = "10x10x10";
+	logo.name = "logo_finish";
 	rootGroup.add(logo);
 
 	// アニメーションオブジェクト(繰り返し, ヨーヨー, 終了時関数)
@@ -113,6 +113,26 @@ function onHit(sensor, marker){
 	soundLoader.playSound(marker.sound, 0.2);// Sound
 
 	// Great!!, Good!!, Bad!!
+	showEffect(sensor.position "logo_great.obj")
+}
+
+// Great!!
+function showEffect(position, obj){
+
+	let logo = objLoader.findModels(obj);
+	logo.position.set(position.x, position.y, position.z);
+	rootGroup.add(logo);
+
+	// アニメーションオブジェクト(繰り返し, ヨーヨー, 終了時関数)
+	let tl = createTimeline(0, false, ()=>{
+		// アニメーション終了時
+		soundLoader.playSound("tap.mp3", 1.0);// Sound
+		// ロゴを削除
+		rootGroup.remove(logo);
+	});
+	// "logo"オブジェクトを3.0秒の時間をかけて、1.0秒後に0, 0, 0の座標に移動する
+	tl.to(logo.position, 0.8,
+		{delay: 0, x: "+=0", y: "+=5", z: "+=0"});
 }
 
 // コントローラー
