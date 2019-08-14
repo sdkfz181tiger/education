@@ -8,6 +8,10 @@ let comboMng = null;// コンボマネージャー
 let score    = 0;   // スコア
 let scoreMng = null;// スコアマネージャー
 
+let comboChecker = [2, 4, 6, 8];
+let scoreChecker = [100, 200, 300, 400];
+
+// 背景の準備
 function setScenery(){
 	console.log("setScenery");
 
@@ -34,34 +38,20 @@ function setScenery(){
 	// tl.to(cam.position, 1.0, {delay: 3.0, x: +20, y: 20, z: 20}); 
 	// tl.to(cam.position, 1.0, {delay: 3.0, x: -20, y: 20, z: 20});
 	// tl.to(cam.position, 1.5, {});// 1.5秒何もしない
-	//tl.to(cam.position, 3.0, {delay: 1.0, x: "+=5", y: "+=5", z: "+=5"});// 相対位置
-	//tl.to(cam.position, 1.0, {delay: 1.0, x: "-=5", y: "-=5", z: "-=5"});
-
-	// "noteGroup(譜面)"に配置する
-	for(let i=0; i<10; i++){
-		let x = 0;
-		let y = 7;
-		let z = i * -100;
-		let tree = objLoader.findModels("4x4x4.obj");
-		tree.position.set(x, y, z);
-		tree.name = "4x4x4";
-		noteGroup.add(tree);// 譜面に追加
-	}
+	// tl.to(cam.position, 3.0, {delay: 1.0, x: "+=5", y: "+=5", z: "+=5"});// 相対位置
+	// tl.to(cam.position, 1.0, {delay: 1.0, x: "-=5", y: "-=5", z: "-=5"});
 
 	// "rootGroup(背景)"に配置する
-	let areaX = 30;
-	let areaZ = 100;
-	for(let i=0; i<100; i++){
-		let x = Math.floor(Math.random() * areaX) - areaX*0.5;
-		let z = Math.floor(Math.random() * areaZ) * -1.0;
-		let tree = objLoader.findModels("8x8x8.obj");
-		tree.position.set(x, 0, z);
-		tree.name = "8x8x8";
-		rootGroup.add(tree);// 背景に追加
-	}
+	let obj2 = objLoader.findModels("8x8x8.obj", 1.0);
+	obj2.position.set(0, 0, -30);
+	obj2.name = "noname";
+	rootGroup.add(obj2);// 譜面に追加
 
-	console.log("譜面グループ総数:" + noteGroup.children.length);
-	console.log("背景グループ総数:" + rootGroup.children.length);
+	// "noteGroup(譜面)"に配置する
+	let obj1 = objLoader.findModels("8x8x8.obj", 1.0);
+	obj1.position.set(0, 5, -30);
+	obj1.name = "noname";
+	noteGroup.add(obj1);// 譜面に追加
 }
 
 // 音楽再生時
@@ -69,29 +59,9 @@ function onSeek(){
 	console.log("onSeek");
 }
 
-// 音楽終了時
-function onEnd(){
-	console.log("onEnd");
-
-	// ゲームクリアロゴ
-	let logo = objLoader.findModels("logo_finish.obj");
-	logo.position.set(0, 5, 0);
-	logo.name = "logo_finish";
-	rootGroup.add(logo);
-
-	// アニメーションオブジェクト(繰り返し, ヨーヨー, 終了時関数)
-	let tl = createTimeline(0, false, ()=>{
-		// アニメーション終了時
-		soundLoader.playSound("tap.mp3", 1.0);// Sound
-	});
-	// "logo"オブジェクトを3.0秒の時間をかけて、1.0秒後に0, 0, 0の座標に移動する
-	tl.to(logo.position, 3.0,
-		{delay: 1.0, x: 0, y: 0, z: 0});
-}
-
 // ミス!!
 function onMissed(sensor, marker){
-	// コンボ
+	// コンボ(リセット)
 	combo = 0;
 	comboMng.setNum(combo);// スコア表示
 }
@@ -99,27 +69,48 @@ function onMissed(sensor, marker){
 // ヒット!!
 function onHit(sensor, marker){
 
+	// センサーとマーカーの反応
+	let distance = noteGroup.position.z + marker.position.z;
+	console.log("ヒット距離:" + distance);
+
+	// Great!!, Good!!, Bad...
+	if(distance < 0.8){
+		showPopup(sensor.position, "logo_great.obj");// Great!!
+	}else if(distance < 2.5){
+		showPopup(sensor.position, "logo_good.obj"); // Good!!
+	}else{
+		showPopup(sensor.position, "logo_bad.obj");  // Bad...
+	}
+	
+	soundLoader.playSound(marker.sound, 0.2);// Sound
+
 	// コンボ
 	combo += 1;
 	comboMng.setNum(combo);// スコア表示
+
 	// スコア
 	score += 10 + combo;
 	scoreMng.setNum(score);// スコア表示
 
-	// センサーとマーカーの反応
-	sensor.jump();// ジャンプ(テスト)
-	console.log(sensor.position);// センサーの座標
-	console.log(marker.position);// マーカーの座標
-	soundLoader.playSound(marker.sound, 0.2);// Sound
+	// 記録更新(コンボ)
+	if(comboChecker[0] <= combo){
+		console.log("コンボ更新:" + comboChecker[0]);
+		comboChecker.splice(0, 1);
+		// TODO: コンボ更新でオブジェクトを配置する!!
+	}
 
-	// Great!!, Good!!, Bad!!
-	showEffect(sensor.position "logo_great.obj")
+	// 記録更新(スコア)
+	if(0 < scoreChecker.length && scoreChecker[0] <= score){
+		console.log("スコア更新:" + scoreChecker[0]);
+		scoreChecker.splice(0, 1);
+		// TODO: スコア更新でオブジェクトを配置する!!
+	}
 }
 
-// Great!!
-function showEffect(position, obj){
+// Great!!, Good!!, Bad...
+function showPopup(position, obj){
 
-	let logo = objLoader.findModels(obj);
+	let logo = objLoader.findModels(obj, 2.0);
 	logo.position.set(position.x, position.y, position.z);
 	rootGroup.add(logo);
 
@@ -130,9 +121,32 @@ function showEffect(position, obj){
 		// ロゴを削除
 		rootGroup.remove(logo);
 	});
-	// "logo"オブジェクトを3.0秒の時間をかけて、1.0秒後に0, 0, 0の座標に移動する
-	tl.to(logo.position, 0.8,
-		{delay: 0, x: "+=0", y: "+=5", z: "+=0"});
+	// "logo"オブジェクトを3.0秒の時間をかけて、1.0秒後に+0, +3, +0の座標に移動する
+	tl.to(logo.position, 0.8, {delay: 0, x: "+=0", y: "+=3", z: "+=0"});
+}
+
+// ゲームクリア
+function onEnd(){
+	console.log("onEnd");
+
+	// TODO: 通常クリア、パーフェクトで演出を工夫する!!
+
+	// ゲームクリアロゴ
+	let logo = objLoader.findModels("logo_finish.obj", 2.0);
+	logo.position.set(0, 0, 0);
+	logo.name = "logo_finish";
+	rootGroup.add(logo);
+
+	// アニメーションオブジェクト(繰り返し, ヨーヨー, 終了時関数)
+	let tl = createTimeline(0, false, ()=>{
+		// アニメーション終了時
+		soundLoader.playSound("tap.mp3", 1.0);// Sound
+		// ロゴを削除
+		rootGroup.remove(logo);
+	});
+	// "logo"オブジェクトを2.0秒の時間をかけて、0.2秒後に0, 10, 0の座標に移動する
+	tl.to(logo.position, 2.0, {delay: 0.2, x: 0, y: 10, z: 0});
+	tl.to(logo.position, 10.0, {});
 }
 
 // コントローラー
@@ -142,6 +156,9 @@ window.addEventListener("keydown", (e)=>{
 	if(keyCode == 49) sensors[0].jump();// 1
 	if(keyCode == 50) sensors[1].jump();// 2
 	if(keyCode == 51) sensors[2].jump();// 3
+	if(keyCode == 52) sensors[3].jump();// 4
+	if(keyCode == 53) sensors[4].jump();// 5
+	if(keyCode == 54) sensors[5].jump();// 6
 });
 
 // アニメーションオブジェクト生成

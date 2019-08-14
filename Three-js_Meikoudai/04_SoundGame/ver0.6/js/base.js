@@ -172,8 +172,8 @@ function readyThreeJS(){
 			this.seek  = 0;
 		};
 		let gui    = new dat.GUI();
+		gui.close();
 		let guiCtl = new GuiCtl();
-
 		let folder = gui.addFolder("Controller");
 		folder.add(guiCtl, "toggle");
 		folder.add(guiCtl, "reset");
