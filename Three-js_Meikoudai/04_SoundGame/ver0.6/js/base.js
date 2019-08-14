@@ -319,7 +319,7 @@ class Fireworks{
 		// Geometry, Material
 		this._geometry = new THREE.Geometry();
 		this._material = new THREE.PointsMaterial({
-			size: 0.5, color: 0xffffff, vertexColors: true, 
+			size: 0.3, color: 0xffffff, vertexColors: true, 
 			transparent: true, opacity: 1
 		});
 		for(let i=0; i<total; i++){
@@ -335,7 +335,8 @@ class Fireworks{
 			);
 			this._geometry.vertices.push(from);
 			this._dsts.push(to);
-			let color = new THREE.Color(Math.random() * 0xffff00);
+			let color = new THREE.Color();
+			color.setHSL(THREE.Math.randFloat(0.1, 0.9), 1, 0.5);
 			this._geometry.colors.push(color);
 		}
 		this._points = new THREE.Points(this._geometry, this._material);

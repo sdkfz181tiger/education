@@ -80,13 +80,10 @@ function onHit(sensor, marker){
 	// Great!!, Good!!, Bad...
 	if(distance < 0.8){
 		showPopup(x, y, z, "logo_great.obj");// Great!!
-		showFireworks(x, y, z);
 	}else if(distance < 2.5){
 		showPopup(x, y, z, "logo_good.obj"); // Good!!
-		showFireworks(x, y, z);
 	}else{
 		showPopup(x, y, z, "logo_bad.obj");  // Bad...
-		showFireworks(x, y, z);
 	}
 	
 	soundLoader.playSound(marker.sound, 0.2);// Sound
@@ -118,8 +115,6 @@ function onHit(sensor, marker){
 function onEnd(){
 	console.log("onEnd");
 
-	// TODO: 通常クリア、パーフェクトで演出を工夫する!!
-
 	// ゲームクリアロゴ
 	let logo = objLoader.findModels("logo_finish.obj", 2.0);
 	logo.position.set(0, 0, 0);
@@ -136,6 +131,9 @@ function onEnd(){
 	// "logo"オブジェクトを2.0秒の時間をかけて、0.2秒後に0, 10, 0の座標に移動する
 	tl.to(logo.position, 2.0, {delay: 0.2, x: 0, y: 10, z: 0});
 	tl.to(logo.position, 10.0, {});
+
+	// パーフェクト花火演出
+	showFireworks(0, 5, 0, 10, 30);
 }
 
 // Great!!, Good!!, Bad...
