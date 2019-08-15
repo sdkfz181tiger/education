@@ -7,16 +7,18 @@ console.log("main.js!!");
 // みんなでワイワイ3人プレイ
 // 激ムズ6人対戦プレイモード
 
-// TODO: コントローラー
 // TODO: プレイヤーそれぞれのスコアリング
 
-let font     = null;    // フォント
-let cam      = null;    // カメラコンテナ
+let font     = null;// フォント
+let cam      = null;// カメラコンテナ
 
 let combo    = 0;   // コンボ
-let comboMng = null;// コンボマネージャー
 let score    = 0;   // スコア
+let points   = [];  // 各ノートのスコア
+
+let comboMng = null;// コンボマネージャー
 let scoreMng = null;// スコアマネージャー
+let pointMng = null;// ポイントマネージャー
 
 let comboChecker = [2, 4, 6, 8];
 let scoreChecker = [100, 200, 300, 400];
@@ -29,8 +31,10 @@ function setScenery(){
 	font = fontLoader.findFonts("MisakiGothic");
 	cam = tm.getCameraContainer();
 
-	score = 0;// リセット(スコア)
-	combo = 0;// リセット(コンボ)
+	combo  = 0; // リセット(コンボ)
+	score  = 0; // リセット(スコア)
+	points = [];// リセット(ポイント)
+	for(let i=0; i<noteData.length; i++) points.push(0);
 
 	// コンボマネージャー(サイズ, 間隔, 最大桁数)
 	comboMng = new CounterManager(rootGroup, font, 2, 2, 2);
@@ -41,6 +45,11 @@ function setScenery(){
 	scoreMng = new CounterManager(rootGroup, font, 2, 2, 4);
 	scoreMng.init(+5, 3, 8, -45);// x, y, z, x軸角度
 	scoreMng.setNum(score);// スコア表示
+
+	// ポイントマネージャー
+	pointMng = new PointManager();
+	pointMng.init();
+	pointMng.setNum(points);
 
 	// アニメーションオブジェクト(繰り返し, ヨーヨー, 終了時関数)
 	let tl = createTimeline(-1, false, null);
@@ -56,8 +65,8 @@ function setScenery(){
 	tl.to(cam.position, 2.0, {delay: 0.0, x: "+=5"});
 
 	// z軸中心にカメラ位置ぐるっと1回転(360度 == 3.14 * 2)
-	tl.to(cam.rotation, 3.0, {delay: 0.0, z: "+=6.28"});
-	tl.to(cam.rotation, 3.0, {delay: 0.0, z: "-=6.28"});
+	tl.to(cam.rotation, 30.0, {delay: 0.0, z: "+=6.28"});
+	tl.to(cam.rotation, 30.0, {delay: 0.0, z: "-=6.28"});
 
 	// "rootGroup(背景)"に配置する
 	let obj2 = objLoader.findModels("8x8x8.obj", 1.0);
@@ -85,7 +94,7 @@ function onMissed(sensor, marker){
 }
 
 // ヒット!!
-function onHit(sensor, marker){
+function onHit(sensor, s, marker, m){
 
 	// センサーとマーカーの反応
 	let distance = noteGroup.position.z + marker.position.z;
@@ -114,6 +123,10 @@ function onHit(sensor, marker){
 	score += 10 + combo;
 	scoreMng.setNum(score);// スコア表示
 
+	// ポイント
+	points[s] += 1;
+	pointMng.setNum(points);
+
 	// 記録更新(コンボ)
 	if(comboChecker[0] <= combo){
 		console.log("コンボ更新:" + comboChecker[0]);
@@ -129,7 +142,7 @@ function onHit(sensor, marker){
 	}
 }
 
-// ゲームクリア
+// 音楽が終わった時
 function onEnd(){
 	console.log("onEnd");
 
@@ -180,14 +193,6 @@ function showFireworks(x, y, z, area=10, total=30){
 
 // コントローラー(Gamepad)
 let gpHelper = new GamepadHelper();
-gpHelper.setAxesXListener((key, num)=>{
-	// ボタン(左右)
-	console.log("X[" + key + "]:" + num);
-});
-gpHelper.setAxesYListener((key, num)=>{
-	// ボタン(上下)
-	console.log("Y[" + key + "]:" + num);
-});
 gpHelper.setButtonsListener((key, i, flg)=>{
 	// ボタン(A,B,X,Y,L,R)
 	console.log("Button[" + key + "]:" + i + "_" + flg);

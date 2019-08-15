@@ -468,10 +468,10 @@ class CtlVR{
 
 class Sensor{
 
-	constructor(x, y, z, name, text){
+	constructor(x, y, z, name){
 		console.log("Sensor");
 		this._x = x; this._y = y; this._z = z;
-		this._name = name; this._text = text;
+		this._name = name;
 		this.init();
 	}
 
@@ -484,11 +484,6 @@ class Sensor{
 		this._clone = objLoader.findModels(this._name);
 		this._clone.scale.set(MODEL_SCALE, MODEL_SCALE, MODEL_SCALE);
 		this._group.add(this._clone);// Add to group!!
-		// Text
-		let font = fontLoader.findFonts("MisakiGothic");
-		let text = fontLoader.createText3D(this._text, font, 1.5, 0.5, 0, 0, 3);
-		text.rotation.set(-60*DEG_TO_RAD, 0, 0);
-		this._group.add(text);
 		// Motion
 		this._jumpFlg = false; this._jumpTl = null;
 	}

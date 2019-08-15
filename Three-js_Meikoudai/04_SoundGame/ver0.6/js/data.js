@@ -18,7 +18,7 @@ const CAM_X = 0; // カメラの座標
 const CAM_Y = 15;
 const CAM_Z = 15;
 
-const TGT_X = 0;  // カメラの向き
+const TGT_X = 0; // カメラの向き
 const TGT_Y = 0;
 const TGT_Z = -10;
 
@@ -53,10 +53,10 @@ const fonts = {data:[
 
 // 譜面データ
 const noteData = [
-	{name: "t1", sensor: "4x4x4.obj", marker: "10x10x10.obj", sound: "tap.mp3", key: "1", x: -10, y: 5, 
+	{name: "t1", sensor: "4x4x4.obj", marker: "10x10x10.obj", sound: "tap.mp3", x: -10, y: 5, 
 		z: [0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0]},
-	{name: "t1", sensor: "4x4x4.obj", marker: "10x10x10.obj", sound: "tap.mp3", key: "2", x:   0, y: 5, 
+	{name: "t1", sensor: "4x4x4.obj", marker: "10x10x10.obj", sound: "tap.mp3", x:   0, y: 5, 
 		z: [0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0]},
-	{name: "t1", sensor: "4x4x4.obj", marker: "10x10x10.obj", sound: "tap.mp3", key: "3", x: +10, y: 5, 
+	{name: "t1", sensor: "4x4x4.obj", marker: "10x10x10.obj", sound: "tap.mp3", x: +10, y: 5, 
 		z: [0,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1]}
 ];

@@ -124,9 +124,9 @@ function readyThreeJS(){
 				let box3A = new THREE.Box3().setFromObject(sensors[s].group);
 				let box3B = new THREE.Box3().setFromObject(markers[m]);
 				if(box3A.intersectsBox(box3B)){
-					onHit(sensors[s], markers[m]);// Hit!!
-					noteGroup.remove(markers[m]);// Remove marker
-					markers.splice(m, 1);        // Splice marker
+					onHit(sensors[s], s, markers[m], m);// Hit!!
+					noteGroup.remove(markers[m]); // Remove marker
+					markers.splice(m, 1);         // Splice marker
 				}
 			}
 		}
@@ -221,7 +221,7 @@ function readyThreeJS(){
 	function putSensors(note){
 		console.log("putSensors");
 		// Sensor
-		let sensor = new Sensor(note.x, 0, 0, note.sensor, note.key);
+		let sensor = new Sensor(note.x, 0, 0, note.sensor);
 		sensors.push(sensor);
 	}
 
@@ -296,6 +296,23 @@ class CounterManager{
 	}
 }
 
+// PointManager
+class PointManager{
+
+	constructor(){
+	
+	}
+
+	init(){
+		$("#st_params").text("Ready");
+	}
+
+	setNum(nums){
+		let str = nums.join("_");
+		$("#st_params").text(str);
+	}
+}
+
 // Fireworks
 class Fireworks{
 
@@ -355,6 +372,7 @@ class Fireworks{
 	}
 }
 
+// Gamepad
 class GamepadHelper{
 
 	constructor(){
