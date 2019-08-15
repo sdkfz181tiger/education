@@ -53,10 +53,10 @@ const fonts = {data:[
 
 // 譜面データ
 const noteData = [
-	{name: "t1", sensor: "4x4x4.obj", marker: "10x10x10.obj", sound: "tap.mp3", x: -10, y: 5, 
-		z: [0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0]},
-	{name: "t1", sensor: "4x4x4.obj", marker: "10x10x10.obj", sound: "tap.mp3", x:   0, y: 5, 
-		z: [0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0]},
-	{name: "t1", sensor: "4x4x4.obj", marker: "10x10x10.obj", sound: "tap.mp3", x: +10, y: 5, 
-		z: [0,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1]}
+	{name: "t1", sensor: "4x4x4.obj", marker: "10x10x10.obj", sound: "tap.mp3", 
+		x: -10, y: 5, z: "-1--1--1--1--1--1--1--1--1--1--"},
+	{name: "t1", sensor: "4x4x4.obj", marker: "10x10x10.obj", sound: "tap.mp3",
+		x:   0, y: 5, z: "--1--1--1--1--1--1--1--1--1--1-"},
+	{name: "t1", sensor: "4x4x4.obj", marker: "10x10x10.obj", sound: "tap.mp3", 
+		x: +10, y: 5, z: "---1--1--1--1--1--1--1--1--1--1"}
 ];

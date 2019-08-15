@@ -230,7 +230,7 @@ function readyThreeJS(){
 		let geometry = new THREE.BoxGeometry(2, 2, 2);
 		let material = new THREE.MeshNormalMaterial();
 		for(let i=0; i<note.z.length; i++){
-			if(note.z[i] == 0) continue;
+			if(note.z[i] != 1) continue;
 			let marker = objLoader.findModels(note.marker);
 			marker.position.set(note.x, note.y, 
 				i*TIME_TO_PIXEL*TIME_TO_SPAN*-1.0);
