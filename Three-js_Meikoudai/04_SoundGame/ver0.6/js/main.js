@@ -1,5 +1,15 @@
 console.log("main.js!!");
 
+//==========
+// 協力音ゲー
+// マリオパーティー
+// https://youtu.be/9-pbJTSERZs?t=3942
+// みんなでワイワイ3人プレイ
+// 激ムズ6人対戦プレイモード
+
+// TODO: コントローラー
+// TODO: プレイヤーそれぞれのスコアリング
+
 let font     = null;    // フォント
 let cam      = null;    // カメラコンテナ
 
@@ -33,23 +43,31 @@ function setScenery(){
 	scoreMng.setNum(score);// スコア表示
 
 	// アニメーションオブジェクト(繰り返し, ヨーヨー, 終了時関数)
-	// let tl = createTimeline(-1, true, null);
+	let tl = createTimeline(-1, false, null);
 	// tl.to(cam.position, 1.0, {delay: 0.2, x: 0,  y: 15, z: 15});// "0, 0, 0"はカメラ初期位置
 	// tl.to(cam.position, 1.0, {delay: 3.0, x: +20, y: 20, z: 20}); 
 	// tl.to(cam.position, 1.0, {delay: 3.0, x: -20, y: 20, z: 20});
 	// tl.to(cam.position, 1.5, {});// 1.5秒何もしない
-	// tl.to(cam.position, 3.0, {delay: 1.0, x: "+=5", y: "+=5", z: "+=5"});// 相対位置
-	// tl.to(cam.position, 1.0, {delay: 1.0, x: "-=5", y: "-=5", z: "-=5"});
+
+	// 左右にユラユラ
+	tl.to(cam.position, 2.0, {delay: 0.0, x: "+=5"});// 相対位置
+	tl.to(cam.position, 2.0, {delay: 0.0, x: "-=5"});
+	tl.to(cam.position, 2.0, {delay: 0.0, x: "-=5"});// 相対位置
+	tl.to(cam.position, 2.0, {delay: 0.0, x: "+=5"});
+
+	// z軸中心にカメラ位置ぐるっと1回転(360度 == 3.14 * 2)
+	tl.to(cam.rotation, 3.0, {delay: 0.0, z: "+=6.28"});
+	tl.to(cam.rotation, 3.0, {delay: 0.0, z: "-=6.28"});
 
 	// "rootGroup(背景)"に配置する
 	let obj2 = objLoader.findModels("8x8x8.obj", 1.0);
-	obj2.position.set(0, 0, -30);
+	obj2.position.set(0, 0, -30);// 座標をセット
 	obj2.name = "noname";
 	rootGroup.add(obj2);// 譜面に追加
 
 	// "noteGroup(譜面)"に配置する
 	let obj1 = objLoader.findModels("8x8x8.obj", 1.0);
-	obj1.position.set(0, 5, -30);
+	obj1.position.set(0, 5, -30);// 座標をセット
 	obj1.name = "noname";
 	noteGroup.add(obj1);// 譜面に追加
 }
@@ -160,7 +178,24 @@ function showFireworks(x, y, z, area=10, total=30){
 	fireworks.push(fw);
 }
 
-// コントローラー
+// コントローラー(Gamepad)
+let gpHelper = new GamepadHelper();
+gpHelper.setAxesXListener((key, num)=>{
+	// ボタン(左右)
+	console.log("X[" + key + "]:" + num);
+});
+gpHelper.setAxesYListener((key, num)=>{
+	// ボタン(上下)
+	console.log("Y[" + key + "]:" + num);
+});
+gpHelper.setButtonsListener((key, i, flg)=>{
+	// ボタン(A,B,X,Y,L,R)
+	console.log("Button[" + key + "]:" + i + "_" + flg);
+	if(!flg) return;
+	if(sensors[i]) sensors[i].jump();// コントローラー[0]テスト
+});
+
+// コントローラー(PC)
 window.addEventListener("keydown", (e)=>{
 	let keyCode = e.keyCode;
 	//console.log("keyDown:" + keyCode);
