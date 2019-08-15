@@ -8,7 +8,7 @@ const SKYBOX_FILES = [
 	"pos-z.png", "neg-z.png"];
 
 // Sound
-const SOUND_BGM     = "./sounds/minuet_bach.mp3";
+const SOUND_BGM     = "./sounds/minuet_bach.mp3";// 課題曲
 const SOUND_VOLUME  = 1.0;// 音量: 0.0 ~ 1.0
 
 const TIME_TO_PIXEL = 50; // 1秒が何ピクセルか

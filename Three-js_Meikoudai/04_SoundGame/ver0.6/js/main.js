@@ -7,8 +7,6 @@ console.log("main.js!!");
 // みんなでワイワイ3人プレイ
 // 激ムズ6人対戦プレイモード
 
-// TODO: プレイヤーそれぞれのスコアリング
-
 let font     = null;// フォント
 let cam      = null;// カメラコンテナ
 
