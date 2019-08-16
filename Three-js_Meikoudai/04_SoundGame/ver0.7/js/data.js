@@ -1,18 +1,12 @@
 console.log("data.js!!");
 
-// Skybox
-const SKYBOX_PATH  = "./textures/sky1/";
-const SKYBOX_FILES = [
-	"pos-x.png", "neg-x.png",
-	"pos-y.png", "neg-y.png",
-	"pos-z.png", "neg-z.png"];
-
 // Sound
 const SOUND_BGM     = "./sounds/minuet_bach.mp3";// 課題曲
 const SOUND_VOLUME  = 1.0;// 音量: 0.0 ~ 1.0
 
-const TIME_TO_PIXEL = 50; // 1秒が何ピクセルか
-const TIME_TO_SPAN  = 0.5;// ブロック間隔(秒数)
+const OFFSET_Z_PIXEL = 0;  // 最初のブロックのz位置(開始位置を調整する時に変更)
+const TIME_TO_PIXEL  = 50; // 1秒が何ピクセルか
+const TIME_TO_SPAN   = 0.5;// ブロック間隔(秒数)
 
 const CAM_X = 0; // カメラの座標
 const CAM_Y = 15;

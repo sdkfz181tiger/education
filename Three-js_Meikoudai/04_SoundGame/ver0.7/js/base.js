@@ -1,5 +1,11 @@
 console.log("base.js!!");
 
+// Skybox
+const SKYBOX_PATH  = "./textures/sky1/";
+const SKYBOX_FILES = [
+	"pos-x.png", "neg-x.png", "pos-y.png",
+	"neg-y.png", "pos-z.png", "neg-z.png"];
+
 // Howler
 let howl        = null;
 // ThreeManager
@@ -153,13 +159,13 @@ function readyThreeJS(){
 			let v = new THREE.Geometry();
 			let x = noteData[c].x;
 			let y = noteData[c].y;
-			let z = TIME_TO_PIXEL * TIME_TO_SPAN * rows * -1.0;
+			let z = TIME_TO_PIXEL * TIME_TO_SPAN * rows * -1.0 + OFFSET_Z_PIXEL;
 			v.vertices.push(new THREE.Vector3(x, y, 0));
 			v.vertices.push(new THREE.Vector3(x, y, z));
 			noteGroup.add(new THREE.Line(v, material));
 			for(let r=0; r<rows; r++){
 				let h = new THREE.Geometry();
-				z = TIME_TO_PIXEL * TIME_TO_SPAN * r * -1.0;
+				z = TIME_TO_PIXEL * TIME_TO_SPAN * r * -1.0 + OFFSET_Z_PIXEL;
 				h.vertices.push(new THREE.Vector3(x-2, y, z));
 				h.vertices.push(new THREE.Vector3(x+2, y, z));
 				noteGroup.add(new THREE.Line(h, material));
@@ -234,7 +240,7 @@ function readyThreeJS(){
 			if(note.z[i] != 1) continue;
 			let marker = objLoader.findModels(note.marker);
 			marker.position.set(note.x, note.y, 
-				i*TIME_TO_PIXEL*TIME_TO_SPAN*-1.0);
+				i*TIME_TO_PIXEL*TIME_TO_SPAN*-1.0 + OFFSET_Z_PIXEL);
 			marker.name  = note.name;
 			marker.sound = note.sound;
 			noteGroup.add(marker);
