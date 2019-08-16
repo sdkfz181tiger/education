@@ -1,12 +1,5 @@
 console.log("main.js!!");
 
-//==========
-// 協力音ゲー
-// マリオパーティー
-// https://youtu.be/9-pbJTSERZs?t=3942
-// みんなでワイワイ3人プレイ
-// 激ムズ6人対戦プレイモード
-
 let font     = null;// フォント
 let cam      = null;// カメラコンテナ
 
@@ -25,6 +18,21 @@ let scoreChecker = [100, 200, 300, 400];
 function setScenery(){
 	console.log("setScenery");
 
+	// "rootGroup(背景)"に配置する
+	let obj2 = objLoader.findModels("8x8x8.obj", 1.0);
+	obj2.position.set(0, 0, -30);// 座標をセット
+	obj2.name = "noname";
+	rootGroup.add(obj2);// 譜面に追加
+
+	// "noteGroup(譜面)"に配置する
+	let obj1 = objLoader.findModels("8x8x8.obj", 1.0);
+	obj1.position.set(0, 5, -30);// 座標をセット
+	obj1.name = "noname";
+	noteGroup.add(obj1);// 譜面に追加
+}
+
+// カメラ、ステータス
+function setStats(){
 	// フォント, カメラ
 	font = fontLoader.findFonts("MisakiGothic");
 	cam = tm.getCameraContainer();
@@ -49,7 +57,7 @@ function setScenery(){
 	pointMng.init();
 	pointMng.setNum(points);
 
-	// アニメーションオブジェクト(繰り返し, ヨーヨー, 終了時関数)
+	// アニメーションオブジェクト(繰り返し"ループは-1", ヨーヨー, 終了時関数)
 	let tl = createTimeline(-1, false, null);
 	// tl.to(cam.position, 1.0, {delay: 0.2, x: 0,  y: 15, z: 15});// "0, 0, 0"はカメラ初期位置
 	// tl.to(cam.position, 1.0, {delay: 3.0, x: +20, y: 20, z: 20}); 
@@ -57,26 +65,14 @@ function setScenery(){
 	// tl.to(cam.position, 1.5, {});// 1.5秒何もしない
 
 	// 左右にユラユラ
-	tl.to(cam.position, 2.0, {delay: 0.0, x: "+=5"});// 相対位置
-	tl.to(cam.position, 2.0, {delay: 0.0, x: "-=5"});
-	tl.to(cam.position, 2.0, {delay: 0.0, x: "-=5"});// 相対位置
-	tl.to(cam.position, 2.0, {delay: 0.0, x: "+=5"});
+	// tl.to(cam.position, 2.0, {delay: 0.0, x: "+=5"});// 相対位置
+	// tl.to(cam.position, 2.0, {delay: 0.0, x: "-=5"});
+	// tl.to(cam.position, 2.0, {delay: 0.0, x: "-=5"});// 相対位置
+	// tl.to(cam.position, 2.0, {delay: 0.0, x: "+=5"});
 
 	// z軸中心にカメラ位置ぐるっと1回転(360度 == 3.14 * 2)
-	tl.to(cam.rotation, 30.0, {delay: 0.0, z: "+=6.28"});
-	tl.to(cam.rotation, 30.0, {delay: 0.0, z: "-=6.28"});
-
-	// "rootGroup(背景)"に配置する
-	let obj2 = objLoader.findModels("8x8x8.obj", 1.0);
-	obj2.position.set(0, 0, -30);// 座標をセット
-	obj2.name = "noname";
-	rootGroup.add(obj2);// 譜面に追加
-
-	// "noteGroup(譜面)"に配置する
-	let obj1 = objLoader.findModels("8x8x8.obj", 1.0);
-	obj1.position.set(0, 5, -30);// 座標をセット
-	obj1.name = "noname";
-	noteGroup.add(obj1);// 譜面に追加
+	// tl.to(cam.rotation, 30.0, {delay: 0.0, z: "+=6.28"});
+	// tl.to(cam.rotation, 30.0, {delay: 0.0, z: "-=6.28"});
 }
 
 // 音楽再生時
@@ -102,7 +98,7 @@ function onHit(sensor, s, marker, m){
 	let y = sensor.position.y;
 	let z = sensor.position.z;
 
-	// Great!!, Good!!, Bad...
+	// 当たり判定をする -> Great!!, Good!!, Bad...
 	if(distance < 0.8){
 		showPopup(x, y, z, "logo_great.obj");// Great!!
 	}else if(distance < 2.5){
@@ -129,14 +125,14 @@ function onHit(sensor, s, marker, m){
 	if(comboChecker[0] <= combo){
 		console.log("コンボ更新:" + comboChecker[0]);
 		comboChecker.splice(0, 1);
-		// TODO: コンボ更新でオブジェクトを配置する!!
+		// TODO: コンボ更新でオブジェクトを配置!?
 	}
 
 	// 記録更新(スコア)
 	if(0 < scoreChecker.length && scoreChecker[0] <= score){
 		console.log("スコア更新:" + scoreChecker[0]);
 		scoreChecker.splice(0, 1);
-		// TODO: スコア更新でオブジェクトを配置する!!
+		// TODO: スコア更新でオブジェクトを配置!?
 	}
 }
 
@@ -152,14 +148,15 @@ function onEnd(){
 
 	// アニメーションオブジェクト(繰り返し, ヨーヨー, 終了時関数)
 	let tl = createTimeline(0, false, ()=>{
-		// アニメーション終了時
-		soundLoader.playSound("tap.mp3", 1.0);// Sound
 		// ロゴを削除
 		rootGroup.remove(logo);
 	});
 	// "logo"オブジェクトを2.0秒の時間をかけて、0.2秒後に0, 10, 0の座標に移動する
 	tl.to(logo.position, 2.0, {delay: 0.2, x: 0, y: 10, z: 0});
 	tl.to(logo.position, 10.0, {});
+
+	// サウンド再生
+	soundLoader.playSound("tap.mp3", 1.0);// Sound
 
 	// パーフェクト花火演出
 	showFireworks(0, 5, 0, 10, 30);
@@ -174,13 +171,14 @@ function showPopup(x, y, z, obj){
 
 	// アニメーションオブジェクト(繰り返し, ヨーヨー, 終了時関数)
 	let tl = createTimeline(0, false, ()=>{
-		// アニメーション終了時
-		soundLoader.playSound("tap.mp3", 1.0);// Sound
 		// ロゴを削除
 		rootGroup.remove(logo);
 	});
 	// "logo"オブジェクトを3.0秒の時間をかけて、1.0秒後に+0, +3, +0の座標に移動する
 	tl.to(logo.position, 0.8, {delay: 0, x: "+=0", y: "+=3", z: "+=0"});
+
+	// アニメーション終了時
+	soundLoader.playSound("tap.mp3", 1.0);// Sound
 }
 
 // Fireworks

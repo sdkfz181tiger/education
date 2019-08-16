@@ -140,6 +140,7 @@ function readyThreeJS(){
 		setWire(cTime, tTime);       // Wire
 		setGUI(cTime, tTime);        // GUI
 		setScenery();                // Scenery
+		setStats();                  // Stats
 		//resetNotes();                // Reset
 	}
 
