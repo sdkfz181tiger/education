@@ -27,7 +27,7 @@ const models = {data:[
 	{dir:"./models/obj/", mtl:"logo_great.mtl",  obj:"logo_great.obj"},
 	{dir:"./models/obj/", mtl:"logo_good.mtl",   obj:"logo_good.obj"},
 	{dir:"./models/obj/", mtl:"logo_bad.mtl",    obj:"logo_bad.obj"},
-	{dir:"./models/obj/", mtl:"logo_finish.mtl", obj:"logo_finish.obj"},
+	{dir:"./models/obj/", mtl:"logo_finish.mtl", obj:"logo_finish.obj"}
 ]};
 
 // 読み込むサウンドデータ
@@ -48,9 +48,9 @@ const fonts = {data:[
 // 譜面データ
 const noteData = [
 	{name: "t1", sensor: "4x4x4.obj", marker: "10x10x10.obj", sound: "tap.mp3", 
-		x: -10, y: 5, z: "-1--1--1--1--1--1--1--1--1--1--"},
-	{name: "t1", sensor: "4x4x4.obj", marker: "10x10x10.obj", sound: "tap.mp3",
-		x:   0, y: 5, z: "--1--1--1--1--1--1--1--1--1--1-"},
+		x: -10, y: 5, z: "1--1--1--1--1--1--1--1--1--1--1--1--1--"},
 	{name: "t1", sensor: "4x4x4.obj", marker: "10x10x10.obj", sound: "tap.mp3", 
-		x: +10, y: 5, z: "---1--1--1--1--1--1--1--1--1--1"}
+		x:   0, y: 5, z: "-1--1--1--1--1--1--1--1--1--1--1--1--1-1-"},
+	{name: "t1", sensor: "4x4x4.obj", marker: "10x10x10.obj", sound: "tap.mp3", 
+		x: +10, y: 5, z: "--1--1--1--1--1--1--1--1--1--1--1--1--1"},
 ];
