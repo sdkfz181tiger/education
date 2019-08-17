@@ -39,7 +39,7 @@ class ThreeManager{
 
 		// Camera
 		this._camera = new THREE.PerspectiveCamera(
-			75, window.innerWidth/window.innerHeight, 1, 1000);
+			75, window.innerWidth/window.innerHeight, 1, 300);
 		this._camera.fov = 90;
 
 		// Container(for VR)
@@ -68,7 +68,7 @@ class ThreeManager{
 		this._scene.add(this._dirLightHelper);
 
 		// Renderer
-		this._renderer = new THREE.WebGLRenderer({antialias: true});
+		this._renderer = new THREE.WebGLRenderer({antialias: false});
 		this._renderer.setSize(window.innerWidth, window.innerHeight);
 		this._renderer.setPixelRatio(window.devicePixelRatio);
 		this._renderer.setClearColor(0x666666);

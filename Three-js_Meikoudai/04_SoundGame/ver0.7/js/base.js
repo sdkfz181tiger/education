@@ -228,7 +228,7 @@ function readyThreeJS(){
 	function putSensors(note){
 		console.log("putSensors");
 		// Sensor
-		let sensor = new Sensor(note.x, 0, 0, note.sensor);
+		let sensor = new Sensor(note.x, note.y-4, 0, note.sensor);
 		sensors.push(sensor);
 	}
 
