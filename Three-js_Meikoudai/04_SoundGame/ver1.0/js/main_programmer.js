@@ -11,8 +11,16 @@ let comboMng = null;// コンボマネージャー
 let scoreMng = null;// スコアマネージャー
 let pointMng = null;// ポイントマネージャー
 
-let comboChecker = [2, 4, 6, 8];
-let scoreChecker = [100, 200, 300, 400];
+let comboChecker = [2, 4, 6, 8];        // コンボ判定タイミング
+let scoreChecker = [100, 200, 300, 400];// スコア判定タイミング
+
+//==========
+// Three.jsライブラリを使って3Dオブジェクトを表示しています
+//     https://threejs.org/docs/index.html#manual/en/introduction/Creating-a-scene
+//
+// TimelineMaxライブラリを使ってオブジェクトを動かそう
+//     https://greensock.com/docs/TimelineMax
+//     https://www.webprofessional.jp/greensock-beginners-part-2-gsaps-timeline/
 
 // カメラ、ステータス
 function setStats(){
@@ -40,22 +48,12 @@ function setStats(){
 	pointMng.init();
 	pointMng.setNum(points);
 
+	//==========
+	// TODO1: カメラワーク
+
 	// アニメーションオブジェクト(繰り返し"ループは-1", ヨーヨー, 終了時関数)
 	let tl = createTimeline(-1, false, null);
-	// tl.to(cam.position, 1.0, {delay: 0.2, x: 0,  y: 15, z: 15});// "0, 0, 0"はカメラ初期位置
-	// tl.to(cam.position, 1.0, {delay: 3.0, x: +20, y: 20, z: 20}); 
-	// tl.to(cam.position, 1.0, {delay: 3.0, x: -20, y: 20, z: 20});
-	// tl.to(cam.position, 1.5, {});// 1.5秒何もしない
-
-	// 左右にユラユラ
-	// tl.to(cam.position, 2.0, {delay: 0.0, x: "+=5"});// 相対位置
-	// tl.to(cam.position, 2.0, {delay: 0.0, x: "-=5"});
-	// tl.to(cam.position, 2.0, {delay: 0.0, x: "-=5"});// 相対位置
-	// tl.to(cam.position, 2.0, {delay: 0.0, x: "+=5"});
-
-	// z軸中心にカメラ位置ぐるっと1回転(360度 == 3.14 * 2)
-	// tl.to(cam.rotation, 3.0, {delay: 0.0, z: "+=6.28"});
-	// tl.to(cam.rotation, 3.0, {delay: 0.0, z: "-=6.28"});
+	
 }
 
 // 音楽再生時
@@ -74,29 +72,17 @@ function onMissed(sensor, marker){
 function onHit(sensor, s, marker, m){
 
 	//==========
-	// ヒット
+	// TODO2: ヒット
 
 	// センサーとマーカーの反応
 	let distance = noteGroup.position.z + marker.position.z;
 	console.log("ヒット距離:" + distance);
 
-	let x = sensor.position.x;
-	let y = sensor.position.y;
-	let z = sensor.position.z;
-
 	// 当たり判定をする -> Great!!, Good!!, Bad...
-	if(distance < 0.8){
-		showPopup(x, y, z, "logo_great.obj");// Great!!
-	}else if(distance < 2.5){
-		showPopup(x, y, z, "logo_good.obj"); // Good!!
-	}else{
-		showPopup(x, y, z, "logo_bad.obj");  // Bad...
-	}
 	
-	soundLoader.playSound(marker.sound, 0.2);// Sound
 
 	//==========
-	// コンボ / スコア
+	// TODO3: コンボ / スコア
 
 	// コンボ
 	combo += 1;
@@ -114,20 +100,23 @@ function onHit(sensor, s, marker, m){
 	if(comboChecker[0] <= combo){
 		console.log("コンボ更新:" + comboChecker[0]);
 		comboChecker.splice(0, 1);
-		// TODO: コンボ更新でオブジェクトを配置!?
+		// TODO?: コンボ更新でオブジェクトを配置!?
 	}
 
 	// 記録更新(スコア)
 	if(0 < scoreChecker.length && scoreChecker[0] <= score){
 		console.log("スコア更新:" + scoreChecker[0]);
 		scoreChecker.splice(0, 1);
-		// TODO: スコア更新でオブジェクトを配置!?
+		// TODO?: スコア更新でオブジェクトを配置!?
 	}
 }
 
-// 音楽が終わった時
+// 音楽終了時
 function onEnd(){
 	console.log("onEnd");
+
+	//==========
+	// TODO4: 音楽終了時演出
 
 	// ゲームクリアロゴ
 	let logo = objLoader.findModels("logo_finish.obj", 2.0);

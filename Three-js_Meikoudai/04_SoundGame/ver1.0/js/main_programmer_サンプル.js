@@ -11,8 +11,13 @@ let comboMng = null;// コンボマネージャー
 let scoreMng = null;// スコアマネージャー
 let pointMng = null;// ポイントマネージャー
 
-let comboChecker = [2, 4, 6, 8];
-let scoreChecker = [100, 200, 300, 400];
+let comboChecker = [2, 4, 6, 8];        // コンボ判定タイミング
+let scoreChecker = [100, 200, 300, 400];// スコア判定タイミング
+
+//==========
+// TimelineMaxライブラリを使ってオブジェクトを動かそう
+//     https://greensock.com/docs/TimelineMax
+//     https://www.webprofessional.jp/greensock-beginners-part-2-gsaps-timeline/
 
 // カメラ、ステータス
 function setStats(){
@@ -39,6 +44,9 @@ function setStats(){
 	pointMng = new PointManager();
 	pointMng.init();
 	pointMng.setNum(points);
+
+	//==========
+	// TODO1: カメラワーク
 
 	// アニメーションオブジェクト(繰り返し"ループは-1", ヨーヨー, 終了時関数)
 	let tl = createTimeline(-1, false, null);
@@ -74,15 +82,11 @@ function onMissed(sensor, marker){
 function onHit(sensor, s, marker, m){
 
 	//==========
-	// ヒット
+	// TODO2: ヒット
 
 	// センサーとマーカーの反応
 	let distance = noteGroup.position.z + marker.position.z;
 	console.log("ヒット距離:" + distance);
-
-	let x = sensor.position.x;
-	let y = sensor.position.y;
-	let z = sensor.position.z;
 
 	// 当たり判定をする -> Great!!, Good!!, Bad...
 	if(distance < 0.8){
@@ -96,7 +100,7 @@ function onHit(sensor, s, marker, m){
 	soundLoader.playSound(marker.sound, 0.2);// Sound
 
 	//==========
-	// コンボ / スコア
+	// TODO3: コンボ / スコア
 
 	// コンボ
 	combo += 1;
@@ -114,20 +118,23 @@ function onHit(sensor, s, marker, m){
 	if(comboChecker[0] <= combo){
 		console.log("コンボ更新:" + comboChecker[0]);
 		comboChecker.splice(0, 1);
-		// TODO: コンボ更新でオブジェクトを配置!?
+		// TODO?: コンボ更新でオブジェクトを配置!?
 	}
 
 	// 記録更新(スコア)
 	if(0 < scoreChecker.length && scoreChecker[0] <= score){
 		console.log("スコア更新:" + scoreChecker[0]);
 		scoreChecker.splice(0, 1);
-		// TODO: スコア更新でオブジェクトを配置!?
+		// TODO?: スコア更新でオブジェクトを配置!?
 	}
 }
 
-// 音楽が終わった時
+// 音楽終了時
 function onEnd(){
 	console.log("onEnd");
+
+	//==========
+	// TODO4: 音楽終了時演出
 
 	// ゲームクリアロゴ
 	let logo = objLoader.findModels("logo_finish.obj", 2.0);
