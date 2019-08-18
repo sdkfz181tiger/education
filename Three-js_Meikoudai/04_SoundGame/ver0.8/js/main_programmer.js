@@ -54,8 +54,8 @@ function setStats(){
 	// tl.to(cam.position, 2.0, {delay: 0.0, x: "+=5"});
 
 	// z軸中心にカメラ位置ぐるっと1回転(360度 == 3.14 * 2)
-	// tl.to(cam.rotation, 30.0, {delay: 0.0, z: "+=6.28"});
-	// tl.to(cam.rotation, 30.0, {delay: 0.0, z: "-=6.28"});
+	// tl.to(cam.rotation, 3.0, {delay: 0.0, z: "+=6.28"});
+	// tl.to(cam.rotation, 3.0, {delay: 0.0, z: "-=6.28"});
 }
 
 // 音楽再生時
@@ -72,6 +72,9 @@ function onMissed(sensor, marker){
 
 // ヒット!!
 function onHit(sensor, s, marker, m){
+
+	//==========
+	// ヒット
 
 	// センサーとマーカーの反応
 	let distance = noteGroup.position.z + marker.position.z;
@@ -91,6 +94,9 @@ function onHit(sensor, s, marker, m){
 	}
 	
 	soundLoader.playSound(marker.sound, 0.2);// Sound
+
+	//==========
+	// コンボ / スコア
 
 	// コンボ
 	combo += 1;
@@ -141,7 +147,7 @@ function onEnd(){
 	// サウンド再生
 	soundLoader.playSound("tap.mp3", 1.0);// Sound
 
-	// パーフェクト花火演出
+	// 判定後パーフェクト花火演出!?
 	showFireworks(0, 5, 0, 10, 30);
 }
 
@@ -174,9 +180,12 @@ function showFireworks(x, y, z, area=10, total=30){
 let gpHelper = new GamepadHelper();
 gpHelper.setButtonsListener((key, i, flg)=>{
 	// ボタン(A,B,X,Y,L,R)
-	console.log("Button[" + key + "]:" + i + "_" + flg);
+	console.log("コントローラー[" + key + "]:" + i + "_" + flg);
 	if(!flg) return;
-	if(sensors[i]) sensors[i].jump();// コントローラー[0]テスト
+	if(key == 0 && i == 0) sensors[0].jump();// コントローラー[0]のA(0)ボタン
+	if(key == 1 && i == 0) sensors[1].jump();// コントローラー[1]のA(0)ボタン
+	if(key == 2 && i == 0) sensors[2].jump();// コントローラー[2]のA(0)ボタン
+	if(key == 3 && i == 0) sensors[3].jump();// コントローラー[3]のA(0)ボタン
 });
 
 // コントローラー(PC)

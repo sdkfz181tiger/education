@@ -27,7 +27,8 @@ const models = {data:[
 	{dir:"./models/obj/", mtl:"logo_great.mtl",  obj:"logo_great.obj"},
 	{dir:"./models/obj/", mtl:"logo_good.mtl",   obj:"logo_good.obj"},
 	{dir:"./models/obj/", mtl:"logo_bad.mtl",    obj:"logo_bad.obj"},
-	{dir:"./models/obj/", mtl:"logo_finish.mtl", obj:"logo_finish.obj"}
+	{dir:"./models/obj/", mtl:"logo_finish.mtl", obj:"logo_finish.obj"},
+	{dir:"./models/obj/", mtl:"test2.mtl",       obj:"test2.obj"}
 ]};
 
 // 読み込むサウンドデータ
