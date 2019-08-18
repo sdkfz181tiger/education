@@ -9,6 +9,9 @@ function setScenery(){
 
 //==========
 // モデリングデータの使い方
+// MagicaVoxel参考動画
+//     https://www.youtube.com/watch?v=MQPENfEOJJg
+//
 // 1, 3Dモデリングデータは、./models/obj/フォルダに格納しよう
 // 2, モデルデータの読み込みは、"data.js"に記述しよう(models)
 // 3, 背景に配置する場合は"setSceneryRoot()"関数に記述しよう
