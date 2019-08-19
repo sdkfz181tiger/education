@@ -2,6 +2,7 @@
 function setScenery(){
 	console.log("setScenery");
 
+	setSceneryRoot0();
 	setSceneryRoot1();
 	setSceneryRoot2();
 	setSceneryRoot3();
@@ -9,6 +10,7 @@ function setScenery(){
 	setSceneryRoot5();
 	setSceneryRoot6();
 
+	setSceneryRoot0();
 	setSceneryNote1();
 	setSceneryNote2();
 	setSceneryNote3();
