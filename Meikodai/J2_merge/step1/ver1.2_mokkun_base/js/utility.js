@@ -504,4 +504,9 @@ class Sensor{
 		this._jumpTl.to(this._group.position, timeDown, 
 			{x: "+="+sX, y: "-="+sY, z: "+="+sZ, ease: Bounce.easeOut});
 	}
+
+	hide(){
+		console.log("hide!!");
+		this._group.visible = false;
+	}
 }

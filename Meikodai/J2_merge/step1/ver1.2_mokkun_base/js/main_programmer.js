@@ -113,9 +113,50 @@ function onHit(sensor, s, marker, m){
 			let tl2 = createTimeline(0, false, null);
             tl2.to(cam.position, 2.0, {delay: 0.2, x: 0, y: "-=10", z: "-=10"});
 	    	tl2.to(cam.rotation, 2.0, {delay: 0.2 ,y: "+=3.14"});
-	    	tl2.to(cam.position, 2.0, {delay: 0, x: "+=0", y: "-=2" ,z: "-=10"});
+	    	tl2.to(cam.position, 2.0, {delay: 0, x: "+=0", y: "+=3" ,z: "+=10"});
+	    	tl2.add(()=>{
+	    		geroAction();
+	    	});
 		}
     	setGeroParam(""+gero);
+	}
+
+	// げろあくしょん
+	function geroAction(){
+
+		sensors[0].hide();
+		sensors[1].hide();
+		sensors[2].hide();
+
+		// 屋台
+		let obj0 = objLoader.findModels("odennnoyatai.obj", 0.5);
+		obj0.position.set(0, 20, 0);// 座標をセット
+		rootGroup.add(obj0);// 背景に追加
+
+		let tl0 = createTimeline(0, false, null);
+        tl0.to(obj0.position, 1.0, {delay: 0, y: "-=20"});
+
+        // げろさん1
+        let gero1 = objLoader.findModels("gero.obj", 1.5);
+		gero1.position.set(-16, -5, 5);// 座標をセット
+		rootGroup.add(gero1);// 背景に追加
+
+        let gero2 = objLoader.findModels("gero.obj", 1.5);
+		gero2.position.set(-6, -5, 5);// 座標をセット
+		rootGroup.add(gero2);// 背景に追加
+
+        let gero3 = objLoader.findModels("gero.obj", 1.5);
+		gero3.position.set(6, -5, 5);// 座標をセット
+		rootGroup.add(gero3);// 背景に追加
+
+		// ゲームオーバー
+		let go = objLoader.findModels("gameover.obj", 1.0);
+		go.position.set(10, 25, 5);
+		rootGroup.add(go);// 背景に追加
+
+		let tl1 = createTimeline(0, false, null);
+        tl1.to(go.rotation, 0.1, {delay: 0, y: 3.14/2});
+        tl1.to(go.position, 1.0, {delay: 0, y: "-=20"});
 	}
 
 	// 新機能( data.jsの、"markerType"を参照の事 )
