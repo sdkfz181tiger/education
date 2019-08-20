@@ -154,6 +154,10 @@ function onHit(sensor, s, marker, m){
 	}
 }
 
+function getRandom(start, end) {
+    return start + Math.floor( Math.random() * (end - start + 1));
+}
+
 // 音楽終了時
 function onEnd(){
 	console.log("onEnd");
@@ -166,6 +170,56 @@ function onEnd(){
 	logo.position.set(0, 0, 0);
 	logo.name = "logo_finish";
 	rootGroup.add(logo);
+
+	var cubes = [];
+	for(let i=0;i<50;i++){
+		var num = getRandom(0, 4);
+		var files = [
+			"cube1.obj",
+			"cube2.obj",
+			"cube3.obj",
+			"cube4.obj"
+		];
+		var cube;
+		if(num == 0){
+			var geometry = new THREE.CubeGeometry(2, 2, 2);
+			var material = new THREE.MeshNormalMaterial();
+			cube = new THREE.Mesh(geometry, material);
+			rootGroup.add(cube);
+		}else if(num == 1){
+			cube = objLoader.findModels(files[0], 0.01);
+			rootGroup.add(cube);
+		}else if(num == 2){
+			cube = objLoader.findModels(files[1], 0.01);
+			rootGroup.add(cube);
+		}else if(num == 3){
+			cube = objLoader.findModels(files[2], 0.01);
+			rootGroup.add(cube);
+		}else{
+			cube = objLoader.findModels(files[3], 0.01);
+			rootGroup.add(cube);
+		}
+		cubes[i] = cube;
+		cube._y = 20;
+		cube._x = getRandom(-20, 20);
+
+		let tl2 = createTimeline(0, false, null);
+		tl2.add("hoge");
+		tl2.to(cube.position, 1, {delay: 0.2, x: cube._x, y: cube._y, z: 0}, "hoge");
+		tl2.to(cube.rotation, 1, {delay : 0.2, y : Math.PI * 2}, "hoge");
+
+	}
+
+	onkeyup = function(){
+		if(event.keyCode == 32){
+			rootGroup.remove(logo);
+			titleStart();
+			onkeyup = null;
+			for(let i=0;i<cubes.length;i++){
+				rootGroup.remove(cubes[i]);
+			}
+		}
+	}
 
 	// アニメーションオブジェクト(繰り返し, ヨーヨー, 終了時関数)
 	let tl = createTimeline(0, false, ()=>{
