@@ -211,14 +211,10 @@ function readyThreeJS(){
 		rootGroup.add(title);
 
 		let tl1 = createTimeline(0, false, null);
-	
-		// position 左右ユラユラ
 		tl1.to(title.position, 1.0, {delay: 0.0, y: "+=10"});// 相対位置
 		tl1.to(title.position, 1.0, {delay: 0.0});// 相対位置
-		
-		// 途中で何かする
 		tl1.add(()=>{
-			rootGroup.remove(title);
+			rootGroup.remove(title);// 消す
 			resetNotes();// いよいよスタート!!
 		});
 		/*

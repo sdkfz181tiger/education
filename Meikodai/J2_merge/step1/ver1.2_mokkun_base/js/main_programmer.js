@@ -200,8 +200,8 @@ function onEnd(){
 			rootGroup.add(cube);
 		}
 		cubes[i] = cube;
-		cube._y = 20;
-		cube._x = getRandom(-20, 20);
+		cube._y = getRandom(10, 15); // こっちもやる!?
+		cube._x = getRandom(-20, 20);// 流石やるね!!
 
 		let tl2 = createTimeline(0, false, null);
 		tl2.add("hoge");
