@@ -45,7 +45,7 @@ function setStats(){
 	pointMng.init();
 	pointMng.setNum(points);
 
-    setGeroParam(""+gero);
+	setGeroParam(""+gero);
 
 	//==========
 	// TODO1: カメラワーク
@@ -103,22 +103,25 @@ function onHit(sensor, s, marker, m){
 		showPopup(x, y, z, "umai.obj" , Math.PI/-2);// Great!! 
 
 		gero = gero -2 >= -2 ? gero -2 :-2;
-    setGeroParam(""+gero);	   
+	setGeroParam(""+gero);	   
 	}else if(distance < 0.2){
 		showPopup(x, y, z, "maamaa.obj",0); // Good!!
 	}else{
 		showPopup(x, y, z, "mazui.obj",0);  // Bad...
 		gero += 10;
 		if(gero >= 10) {
+
+			// let scene = tm.getScene();
 			let tl2 = createTimeline(0, false, null);
-            tl2.to(cam.position, 2.0, {delay: 0.2, x: 0, y: "-=10", z: "-=10"});
-	    	tl2.to(cam.rotation, 2.0, {delay: 0.2 ,y: "+=3.14"});
-	    	tl2.to(cam.position, 2.0, {delay: 0, x: "+=0", y: "+=3" ,z: "+=10"});
-	    	tl2.add(()=>{
-	    		geroAction();
-	    	});
+			tl2.to(rootGroup.position, 2.0, {delay: 0.2, x: 0, y: "+=10", z: "+=5"});
+			tl2.to(rootGroup.rotation, 2.0, {delay: 0.2, x: 0, y: "+=3.14"});
+			tl2.to(rootGroup.position, 2.0, {delay: 0.2, x: 0, y: "-=5", z: "-=2"});
+			tl2.add(()=>{
+				geroAction();
+				howl.pause();// 音楽停止
+			});
 		}
-    	setGeroParam(""+gero);
+		setGeroParam(""+gero);
 	}
 
 	// げろあくしょん
@@ -130,33 +133,33 @@ function onHit(sensor, s, marker, m){
 
 		// 屋台
 		let obj0 = objLoader.findModels("odennnoyatai.obj", 0.5);
-		obj0.position.set(0, 20, 0);// 座標をセット
+		obj0.position.set(0, 20, 3);// 座標をセット
 		rootGroup.add(obj0);// 背景に追加
 
 		let tl0 = createTimeline(0, false, null);
-        tl0.to(obj0.position, 1.0, {delay: 0, y: "-=20"});
+		tl0.to(obj0.position, 1.0, {delay: 0, y: "-=20"});
 
-        // げろさん1
-        let gero1 = objLoader.findModels("gero.obj", 1.5);
-		gero1.position.set(-16, -5, 5);// 座標をセット
+		// げろさん1
+		let gero1 = objLoader.findModels("gero.obj", 1.3);
+		gero1.position.set(-16, -3, 5);// 座標をセット
 		rootGroup.add(gero1);// 背景に追加
 
-        let gero2 = objLoader.findModels("gero.obj", 1.5);
-		gero2.position.set(-6, -5, 5);// 座標をセット
+		let gero2 = objLoader.findModels("gero.obj", 1.3);
+		gero2.position.set(-5, -3, 5);// 座標をセット
 		rootGroup.add(gero2);// 背景に追加
 
-        let gero3 = objLoader.findModels("gero.obj", 1.5);
-		gero3.position.set(6, -5, 5);// 座標をセット
+		let gero3 = objLoader.findModels("gero.obj", 1.3);
+		gero3.position.set(6, -3, 5);// 座標をセット
 		rootGroup.add(gero3);// 背景に追加
 
 		// ゲームオーバー
-		let go = objLoader.findModels("gameover.obj", 1.0);
-		go.position.set(10, 25, 5);
+		let go = objLoader.findModels("gameover.obj", 0.8);
+		go.position.set(8, 20, -6);
 		rootGroup.add(go);// 背景に追加
 
 		let tl1 = createTimeline(0, false, null);
-        tl1.to(go.rotation, 0.1, {delay: 0, y: 3.14/2});
-        tl1.to(go.position, 1.0, {delay: 0, y: "-=20"});
+		tl1.to(go.rotation, 0.1, {delay: 0, y: 3.14/2});
+		tl1.to(go.position, 1.0, {delay: 0, y: "-=25"});
 	}
 
 	// 新機能( data.jsの、"markerType"を参照の事 )
@@ -196,7 +199,7 @@ function onHit(sensor, s, marker, m){
 }
 
 function getRandom(start, end) {
-    return start + Math.floor( Math.random() * (end - start + 1));
+	return start + Math.floor( Math.random() * (end - start + 1));
 }
 
 // 音楽終了時
