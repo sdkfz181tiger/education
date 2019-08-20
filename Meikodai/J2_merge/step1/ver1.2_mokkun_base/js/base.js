@@ -1,5 +1,7 @@
 console.log("base.js!!");
 
+var titleStart;
+
 // Skybox
 const SKYBOX_PATH  = "./textures/sky1/";
 const SKYBOX_FILES = [
@@ -89,7 +91,10 @@ function readyThreeJS(){
 
 	function checkLoaders(){
 		loaderCounter--;
-		if(loaderCounter <= 0) readyNotes();
+		if(loaderCounter <= 0){
+			readyNotes();
+			//titleStart();
+		}
 	}
 
 	// Error
@@ -177,7 +182,7 @@ function readyThreeJS(){
 		console.log("setGUI");
 		let GuiCtl = function(){
 			this.toggle = ()=>{toggleNotes();};
-			this.reset  = ()=>{resetNotes();};
+			this.reset  = ()=>{titleStart();}; // resetNotes();
 			this.seek  = 0;
 		};
 		let gui    = new dat.GUI();
@@ -198,6 +203,38 @@ function readyThreeJS(){
 		}else{
 			howl.pause();
 		}
+	}
+
+	titleStart = function(){
+
+		var title = objLoader.findModels("kanpa-i.obj", 2);
+		rootGroup.add(title);
+
+		let tl1 = createTimeline(0, false, null);
+	
+		// position 左右ユラユラ
+		tl1.to(title.position, 1.0, {delay: 0.0, y: "+=10"});// 相対位置
+		tl1.to(title.position, 1.0, {delay: 0.0});// 相対位置
+		
+		// 途中で何かする
+		tl1.add(()=>{
+			rootGroup.remove(title);
+			resetNotes();// いよいよスタート!!
+		});
+		/*
+		onkeydown = function(){
+			if(event.keyCode == 32)resetNotes();
+			var INTERVAL = setInterval(function(){
+				title.position.y += 0.1;
+				if(title.position.y >= 100){
+					clearInterval(INTERVAL);
+					rootGroup.remove(title);
+					resetNotes();// いよいよスタート!!
+				}
+			}, 1);
+			onkeydown = null;
+		}
+		*/
 	}
 
 	function resetNotes(seek=0.0){

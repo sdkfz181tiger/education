@@ -42,8 +42,6 @@ const models = {data:[
 	{dir:"./models/obj/", mtl:"cube2.mtl",       obj:"cube2.obj"},
 	{dir:"./models/obj/", mtl:"cube3.mtl",       obj:"cube3.obj"},
 	{dir:"./models/obj/", mtl:"cube4.mtl",       obj:"cube4.obj"}
-
-
 ]};
 
 // 読み込むサウンドデータ

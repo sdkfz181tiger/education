@@ -283,13 +283,18 @@ gpHelper.setButtonsListener((key, i, flg)=>{
 // コントローラー(PC)
 window.addEventListener("keydown", (e)=>{
 	let keyCode = e.keyCode;
-	//console.log("keyDown:" + keyCode);
+	console.log("keyDown:" + keyCode);
+	if(keyCode == 65) sensors[0].jump();// A
+	if(keyCode == 83) sensors[1].jump();// S
+	if(keyCode == 68) sensors[2].jump();// D
+	/*
 	if(keyCode == 65) sensors[0].jump();// 1
 	if(keyCode == 83) sensors[1].jump();// 2
 	if(keyCode == 68) sensors[2].jump();// 3
 	if(keyCode == 52) sensors[3].jump();// 4
 	if(keyCode == 53) sensors[4].jump();// 5
 	if(keyCode == 54) sensors[5].jump();// 6
+	*/
 });
 
 // アニメーションオブジェクト生成
