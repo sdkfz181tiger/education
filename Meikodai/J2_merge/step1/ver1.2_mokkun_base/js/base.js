@@ -182,7 +182,10 @@ function readyThreeJS(){
 		console.log("setGUI");
 		let GuiCtl = function(){
 			this.toggle = ()=>{toggleNotes();};
-			this.reset  = ()=>{titleStart();}; // resetNotes();
+			this.reset  = ()=>{
+				gui.close();
+				titleStart();
+			}; // resetNotes();
 			this.seek  = 0;
 		};
 		let gui    = new dat.GUI();
