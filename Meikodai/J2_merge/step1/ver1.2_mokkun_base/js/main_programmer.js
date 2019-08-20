@@ -111,14 +111,18 @@ function onHit(sensor, s, marker, m){
 		gero += 10;
 		if(gero >= 10) {
 
+			howl.pause();// 音楽停止
+
+			// サウンド再生
+			soundLoader.playSound("cheer_j2.mp3", 1.0);// Sound
+
 			// let scene = tm.getScene();
 			let tl2 = createTimeline(0, false, null);
-			tl2.to(rootGroup.position, 2.0, {delay: 0.2, x: 0, y: "+=10", z: "+=5"});
-			tl2.to(rootGroup.rotation, 2.0, {delay: 0.2, x: 0, y: "+=3.14"});
-			tl2.to(rootGroup.position, 2.0, {delay: 0.2, x: 0, y: "-=5", z: "-=2"});
+			tl2.to(rootGroup.position, 1.0, {delay: 0.2, x: 0, y: "+=10", z: "+=5"});
+			tl2.to(rootGroup.rotation, 1.0, {delay: 0.2, x: 0, y: "+=3.14"});
+			tl2.to(rootGroup.position, 1.0, {delay: 0.2, x: 0, y: "-=5", z: "-=2"});
 			tl2.add(()=>{
 				geroAction();
-				howl.pause();// 音楽停止
 			});
 		}
 		setGeroParam(""+gero);
@@ -126,6 +130,9 @@ function onHit(sensor, s, marker, m){
 
 	// げろあくしょん
 	function geroAction(){
+
+		// サウンド再生
+		soundLoader.playSound("gameover.mp3", 1.0);// Sound
 
 		sensors[0].hide();
 		sensors[1].hide();
@@ -275,7 +282,7 @@ function onEnd(){
 	tl.to(logo.position, 10.0, {});
 
 	// サウンド再生
-	soundLoader.playSound("tap.mp3", 1.0);// Sound
+	soundLoader.playSound("cheer_j2.mp3", 1.0);// Sound
 
 	// 判定後パーフェクト花火演出!?
 	showFireworks(0, 5, 0, 10, 30);

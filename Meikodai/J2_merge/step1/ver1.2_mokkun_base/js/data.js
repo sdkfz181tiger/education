@@ -52,7 +52,8 @@ const sounds = {data:[
 	{dir:"./sounds/", mp3:"piano1_mi.mp3"}, {dir:"./sounds/", mp3:"piano1_fa.mp3"},
 	{dir:"./sounds/", mp3:"piano1_so.mp3"}, {dir:"./sounds/", mp3:"piano1_ra.mp3"},
 	{dir:"./sounds/", mp3:"piano1_si.mp3"}, {dir:"./sounds/", mp3:"piano2_do.mp3"},
-	{dir:"./sounds/", mp3:"ongakusa.mp3"}
+	{dir:"./sounds/", mp3:"ongakusa.mp3"}, {dir:"./sounds/", mp3:"gameover.mp3"},
+	{dir:"./sounds/", mp3:"cheer_j1.mp3"}, {dir:"./sounds/", mp3:"cheer_j2.mp3"}
 ]};
 
 // 読み込むフォントデータ
