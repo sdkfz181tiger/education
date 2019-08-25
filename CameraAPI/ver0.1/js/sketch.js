@@ -1,7 +1,7 @@
 console.log("Hello p5.js!!");
 
-const POST_URL  = "./php/index.php";
-const POST_NAME = "data";
+const POST_URL  = "./php/index.php";// POST送信先URL
+const POST_NAME = "data";           // POSTデータ名
  
 window.onload = ()=>{
 	log("onload!!");
