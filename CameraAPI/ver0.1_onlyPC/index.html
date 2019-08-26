@@ -1,0 +1,32 @@
+<html>
+<head>
+	<meta charset="UTF-8">
+	<!-- Framework -->
+	<script src="./libs/jquery/jquery-3.4.1.min.js"></script>
+	<script src="./libs/p5/p5.min.js"></script>
+	<script src="./libs/p5/addons/p5.dom.min.js"></script>
+	<script src="./libs/p5/addons/p5.sound.min.js"></script>
+	<script src="./libs/p5/addons/p5.play.js"></script>
+	<!-- Sketch -->
+	<script src="./js/sketch.js"></script>
+	<!-- Style -->
+	<style type="text/css">
+		#my_shutter{
+			width: auto; height: auto;
+			padding: 5px; margin: 5px;
+		}
+		#my_video, #my_canvas{
+			width: 240px; height: auto;
+			padding: 0px; margin: 5px;
+			background: #999999;
+		}
+	</style>
+</head>
+<body>
+	<!-- <input type="file" id="my_picture" accept="image/*"> -->
+	<button id="my_shutter">Capture</button><br/>
+	<video  id="my_video" autoplay playsinline="true"></video><br/>
+	<canvas id="my_canvas"></canvas><hr>
+	<div id="my_log"></div>
+</body>
+</html>
