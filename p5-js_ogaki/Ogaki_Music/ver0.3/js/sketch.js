@@ -23,15 +23,15 @@ const noteData = [
 
 function setScene(){
 
-	let space = createChara(width*0.5, height*0.5, "space.png");
+	createChara(240, 160, "space.png");
 
-	let mochi = createChara(400, 270, "mochi01.png");
+	createChara(400, 270, "mochi01.png");
 
-	let girl1 = createChara(40, 260, "girl_r01.png");
+	createChara(40, 260, "girl_r01.png");
 
-	let girl2 = createChara(80, 270, "girl_g02.png");
+	createChara(80, 270, "girl_g02.png");
 
-	let girl3 = createChara(120, 260, "girl_b02.png");
+	createChara(120, 260, "girl_b02.png");
 }
 
 function onHit(){
