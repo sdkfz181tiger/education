@@ -1,0 +1,13 @@
+/* Custom */
+
+body{
+	width:100%; height:100%;
+	padding:0; margin:0; overflow:hidden;
+}
+
+.label{
+	margin: 0px; padding: 0px;
+	font-size: 0.5rem; font-weight: bold;
+	text-align: center; text-decoration: none;
+	line-height: 1.1rem; color: #ffffff;
+}
