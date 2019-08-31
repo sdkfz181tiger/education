@@ -1,0 +1,24 @@
+<html>
+<head>
+	<meta charset="UTF-8"/>
+	<title>Hello Vue.js!!</title>
+	<!-- CSS -->
+	<link href="./css/custom.css"/>
+	<!-- JavaScript -->
+	<script src="./libs/vue-js/vue.min.js" defer></script>
+	<script src="./libs/howler-js/howler.min.js"></script>
+	<!-- Main -->
+	<script src="./js/utility.js" defer></script>
+	<script src="./js/main.js" defer></script>
+</head>
+<body>
+	<h1>Vue.js</h1>
+	<div id="app">
+		<p v-html="info"></p>
+		<ol v-html="infos"></ol>
+	</div>
+	<hr/>
+	<input type="text" onInput="doInput(event);">
+	<button onClick="doAction();">Click</button>
+</body>
+</html>
