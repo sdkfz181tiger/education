@@ -1,8 +1,12 @@
 console.log("main.js!!");
 
-// let app = new Vue({
-// 	el: "#app",
-// 	data: {
-// 		message: "Hello Vue!!"
-// 	}
-// });
+// Data
+let data = {
+	msg: "Hello Vue!!"
+}
+
+// Vue
+let app = new Vue({
+	el: "#app",
+	data: data
+});
