@@ -14,12 +14,11 @@
 <body>
 	<h1>Vue.js</h1>
 	<div id="app">
-		<font v-bind:size="fSize" v-bind:color="fColor">
-			{{data.fStr}}
-		</font>
+		<p v-bind:class="cName">
+			{{data.cName}}
+		</p>
 		<hr/>
-		<input type="text" v-bind:value="fSize" onInput="doInputSize(event);">
-		<input type="text" v-bind:value="fColor" onInput="doInputColor(event);">
+		<input type="text" onInput="doInputClass(event);">
 	</div>
 </body>
 </html>
