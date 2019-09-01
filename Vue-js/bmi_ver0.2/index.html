@@ -1,0 +1,45 @@
+<html>
+<head>
+	<meta charset="UTF-8"/>
+	<title>Hello Vue.js!!</title>
+	<!-- CSS -->
+	<link href="./css/custom.css" rel="stylesheet" type="text/css"/>
+	<!-- JavaScript -->
+	<script src="./libs/vue-js/vue.min.js" defer></script>
+	<!-- Main -->
+	<script src="./js/utility.js" defer></script>
+	<script src="./js/main.js" defer></script>
+</head>
+<body>
+	<h1>Vue.js</h1>
+	<div id="app">
+		<div><c_disp/></div>
+		<div><c_weight/></div>
+		<div><c_height/></div>
+		<div v-if="myData.errFlg==false"><c_ctl_enabled/></div>
+		<div v-else><c_ctl_disabled/></div>
+		<div class="error" v-if="myData.errFlg==true">{{myData.errMsg}}</div>
+		<hr/>
+		<table>
+			<tr>
+				<th>Index</th>
+				<th>Weight</th>
+				<th>Height</th>
+				<th>Result</th>
+			</tr>
+			<tr v-for="(log, id) in logs" v-if="id%2==0" class="tr-even">
+				<td>{{id}}</td>
+				<td>{{log.weight}}</td>
+				<td>{{log.height}}</td>
+				<td>{{log.result}}</td>
+			</tr>
+			<tr v-else class="tr-odd">
+				<td>{{id}}</td>
+				<td>{{log.weight}}</td>
+				<td>{{log.height}}</td>
+				<td>{{log.result}}</td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>
