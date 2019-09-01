@@ -8,8 +8,8 @@ let classObj = {
 	danger:  false
 }
 
-// BMI
-let bmiData = {
+// MyData
+let myData = {
 	nWeight: 60,
 	nHeight: 160,
 	nResult: 0,
@@ -21,13 +21,13 @@ let bmiData = {
 // Vue
 let app = new Vue({
 	el: "#app",
-	data: bmiData,
+	data: myData,
 	components: {
 		"c_disp":{
-			template: '<p v-bind:class="bmiData.classes">BMI:{{bmiData.nResult}}</p>'
+			template: '<div v-bind:class="myData.classes">BMI:{{myData.nResult}}</div>'
 		},
 		"c_weight":{
-			template: '<input v-on:input="doCheck" v-model="bmiData.nWeight"/>',
+			template: '<input v-on:input="doCheck" v-model="myData.nWeight"/>',
 			methods: {
 				doCheck: function(e){
 					checkData(e.target.value);
@@ -35,15 +35,23 @@ let app = new Vue({
 			}
 		},
 		"c_height":{
-			template: '<input v-on:input="doCheck" v-model="bmiData.nHeight"/>',
+			template: '<input v-on:input="doCheck" v-model="myData.nHeight"/>',
 			methods: {
 				doCheck: function(e){
 					checkData(e.target.value);
 				}
 			}
 		},
-		"c_ctl":{
-			template: '<button v-on:click="doCalc">Calc</button>',
+		"c_ctl_enabled":{
+			template: '<button v-on:click="doCalc" enabled>Calc</button>',
+			methods: {
+				doCalc: function(e){
+					calcBmi();
+				}
+			}
+		},
+		"c_ctl_disabled":{
+			template: '<button v-on:click="doCalc" disabled>Calc</button>',
 			methods: {
 				doCalc: function(e){
 					calcBmi();
@@ -56,25 +64,25 @@ let app = new Vue({
 function checkData(value){
 
 	if(value == ""){
-		bmiData.errFlg = true;
-		bmiData.errMsg = "データを入力してください";
+		myData.errFlg = true;
+		myData.errMsg = "データを入力してください";
 		return false;
 	}
 
 	if(!isFinite(value)){
-		bmiData.errFlg = true;
-		bmiData.errMsg = "数値データを入力してください";
+		myData.errFlg = true;
+		myData.errMsg = "数値データを入力してください";
 		return false;
 	}
 
 	if(value <= 0){
-		bmiData.errFlg = true;
-		bmiData.errMsg = "正しいデータを入力してください";
+		myData.errFlg = true;
+		myData.errMsg = "正しいデータを入力してください";
 		return false;
 	}
 
-	bmiData.errFlg = false;
-	bmiData.errMsg = "***";
+	myData.errFlg = false;
+	myData.errMsg = "***";
 	return true;
 }
 
@@ -82,18 +90,18 @@ function calcBmi(){
 	console.log("calcBmi!!");
 
 	// Calc
-	bmiData.nResult = bmiData.nWeight / Math.pow(bmiData.nHeight*0.01, 2);
-	bmiData.nResult = Math.floor(bmiData.nResult * 100) * 0.01;
+	myData.nResult = myData.nWeight / Math.pow(myData.nHeight*0.01, 2);
+	myData.nResult = Math.floor(myData.nResult * 100) * 0.01;
 	
 	classObj.default = false;
 	classObj.normal  = false;
 	classObj.warning = false;
 	classObj.danger  = false;
-	if(bmiData.nResult < 18){
+	if(myData.nResult < 18){
 		classObj.danger  = true;
-	}else if(bmiData.nResult < 25){
+	}else if(myData.nResult < 25){
 		classObj.normal  = true;
-	}else if(bmiData.nResult < 35){
+	}else if(myData.nResult < 35){
 		classObj.warning = true;
 	}else{
 		classObj.danger  = true;
