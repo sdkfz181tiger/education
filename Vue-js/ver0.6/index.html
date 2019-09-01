@@ -14,11 +14,9 @@
 <body>
 	<h1>Vue.js</h1>
 	<div id="app">
-		<p v-bind:class="cName">
-			{{data.cName}}
-		</p>
+		<p v-bind:class="classes">{{data.msg}}</p>
 		<hr/>
-		<input type="text" onInput="doInputClass(event);">
+		<button onClick="doAction();">Click</button>
 	</div>
 </body>
 </html>

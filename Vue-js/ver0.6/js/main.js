@@ -1,8 +1,15 @@
 console.log("main.js!!");
 
+// ClassObj
+let classObj = {
+	clzRed: true,
+	clzBlue: false
+}
+
 // Data
 let data = {
-	cName: "testA"
+	msg: "Hello vue.js!!",
+	classes: classObj// ClassObj
 }
 
 // Vue
@@ -11,6 +18,7 @@ let app = new Vue({
 	data: data
 });
 
-function doInputClass(e){
-	data.cName = e.target.value;
+function doAction(){
+	classObj.clzRed  = !classObj.clzRed;
+	classObj.clzBlue = !classObj.clzBlue;
 }
