@@ -1,0 +1,20 @@
+/* Custom */
+
+body{
+	width: 100%; height: 100%;
+	padding:0; margin:0; overflow:hidden;
+}
+
+.OK{
+	color: green;
+	font-size: 24px;
+	font-style: bold;
+	background-color: lightgreen;
+}
+
+.NG{
+	color: orange;
+	font-size: 24px;
+	font-style: bold;
+	background-color: darkred;
+}
