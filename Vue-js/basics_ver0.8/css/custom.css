@@ -1,0 +1,29 @@
+/* Custom */
+
+body{
+	width: 100%; height: 100%;
+	padding:0; margin:0; overflow:hidden;
+}
+
+table{
+	margin: 0px; padding: 0px;
+}
+
+th{
+	margin: 0px; padding: 3px;
+	color: white;
+	background: darkred;
+}
+
+td{
+	margin: 0px; padding: 3px;
+	color: black;
+}
+
+.trEven{
+	background: gray;
+}
+
+.trOdd{
+	background: silver;
+}
