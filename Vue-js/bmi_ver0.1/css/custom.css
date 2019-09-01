@@ -5,23 +5,23 @@ body{
 	padding:0; margin:0; overflow:hidden;
 }
 
-table{
-	margin: 0px; padding: 0px;
-}
-
-th{
-	margin: 0px; padding: 3px;
-	color: white;
-	background: darkred;
-}
-
-td{
-	margin: 0px; padding: 3px;
+.default{
 	color: black;
-	background: silver;
 }
 
-.over{
+.normal{
+	color: blue;
+}
+
+.warning{
+	color: orange;
+}
+
+.danger{
+	color: red;
+}
+
+.error{
 	color: red;
 	background-color: darkred;
 }
