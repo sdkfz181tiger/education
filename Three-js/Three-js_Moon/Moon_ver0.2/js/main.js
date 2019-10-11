@@ -3,11 +3,13 @@
 // -> https://threejs.org/
 
 import * as THREE from '../libs/three-js/build/three.module.js';
-import Stats from '../libs/three-js/jsm/libs/stats.module.js';
+import Stats from '../libs/three-js/modules/jsm/libs/stats.module.js';
+
+import { OrbitControls } from '../libs/three-js/modules/jsm/controls/OrbitControls.js';
 
 console.log("Hello Three.js!!");
 
-var camera, scene, renderer;
+var camera, scene, renderer, controls;
 var light1, light2, light3, light4;
 var moon;
 
@@ -20,6 +22,7 @@ function init() {
 				camera.position.z = 100;
 
 	scene = new THREE.Scene();
+
 	scene.add(new THREE.AmbientLight(0x333333));
 	var light = new THREE.DirectionalLight(0xffffff, 1);
 	light.position.set(5,3,5);
@@ -64,6 +67,21 @@ function init() {
 	renderer.setSize( window.innerWidth, window.innerHeight );
 	document.body.appendChild( renderer.domElement );
 
+	// Controls
+	controls = new OrbitControls( camera, renderer.domElement );
+
+	//controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
+
+	controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+	controls.dampingFactor = 0.05;
+
+	controls.screenSpacePanning = false;
+
+	controls.minDistance = 30;
+	controls.maxDistance = 500;
+
+	controls.maxPolarAngle = Math.PI;
+
 	window.addEventListener( 'resize', onWindowResize, false );
 
 }
@@ -99,6 +117,8 @@ function animate() {
 	light4.position.x = Math.sin( time * 0.3 ) * 30;
 	light4.position.y = Math.cos( time * 0.7 ) * 40;
 	light4.position.z = Math.sin( time * 0.5 ) * 30;
+
+	controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
 
 	renderer.render( scene, camera );
 }
