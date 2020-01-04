@@ -21,7 +21,7 @@ function gameStart(){
 
     var btnB = new Sprite(32, 32);
     btnB.backgroundColor = "lime";
-    btnB.centerX = 80;
+    btnB.centerX = 280;
     btnB.centerY = 250;
     scene.addChild(btnB);
 
@@ -31,17 +31,38 @@ function gameStart(){
     });
 
     btnB.on(Event.TOUCH_START, function(){
-        startFriend(2, 6, 4);
+        startEnemy(2, 6, 4);
     });
 
-    var friendGroup = new Group();
-    scene.addChild(friendGroup);
+    // 敵グループ
+    var enemyGroup = new Group();
+    scene.addChild(enemyGroup);
+
+    // 味方増援
     function startFriend(speed, hp, power, color){
         var friend = new Sprite(32, 32);
         friend.backgroundColor = "orange";
         friend.centerX = 40;
         friend.centerY = 160;
-        friendGroup.addChild(friend);
+        scene.addChild(friend);
+
+        friend.tl.moveBy(320, 0, 64);
+
+        friend.addCollision(enemyGroup);
+        friend.addEventListener(Event.COLLISION, function(){
+            console.log("Hit");
+        });
+    }
+
+    // 敵増援
+    function startEnemy(speed, hp, power, color){
+        var enemy = new Sprite(32, 32);
+        enemy.backgroundColor = "orange";
+        enemy.centerX = 280;
+        enemy.centerY = 160;
+        enemyGroup.addChild(enemy);
+
+        enemy.tl.moveBy(-320, 0, 64);
     }
     
     //==========
