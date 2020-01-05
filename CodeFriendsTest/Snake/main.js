@@ -72,10 +72,43 @@ function gameStart(){
     scene.tl.clear();
     scene.tl.delay(16);
     scene.tl.then(function(){
-        head.centerX += head.vX * 16;
-        head.centerY += head.vY * 16;
+        moveSnake();
     });
     scene.tl.loop();
+
+    // 尻尾グループ
+    var tailGroup = new Group();
+    scene.addChild(tailGroup);
+
+    for(var i=0; i<3; i++){
+        var size = getRandom(8, 16);
+        var tail = new Sprite(size, size);
+        tail.backgroundColor = "orange";
+        tail.centerX = 160;
+        tail.centerY = 160;
+        tailGroup.addChild(tail);
+    }
+
+    function moveSnake() {
+
+        console.log(tailGroup.childNodes.length);
+
+        // 尻尾の2番目から1つづつ移動する
+        for(var t=tailGroup.childNodes.length-1; t>0; t--){
+            var front = tailGroup.childNodes[t-1];
+            var back = tailGroup.childNodes[t];
+            back.centerX = front.centerX;
+            back.centerY = front.centerY;
+        }
+
+        // 尻尾の先頭を頭と同じ座標にする
+        tailGroup.childNodes[0].centerX = head.centerX;
+        tailGroup.childNodes[0].centerY = head.centerY;
+
+        // スネークを1歩移動する
+        head.centerX += head.vX * 16;
+        head.centerY += head.vY * 16;
+    }
     
     //==========
     // ここまで
