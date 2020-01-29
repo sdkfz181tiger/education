@@ -1,5 +1,8 @@
 console.log("custom.js");
 
+// Noby API
+// https://webapi.cotogoto.ai/
+
 const appUrl = "https://www.cotogoto.ai/webapi/noby.json";
 const appKey = "2162b705a12b3356ac7a7488c9adc6c2";
 
