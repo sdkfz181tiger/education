@@ -12,20 +12,21 @@ function gameStart(){
 	
 	scene.backgroundColor = "darkblue";
 
-	const size = 4;
-	var board = [
-		[2, 2, 0, 0],
-		[0, 0, 0, 0],
-		[0, 0, 0, 0],
-		[0, 0, 0, 0]
-	];
+	// const size = 4;
+	// var board = [
+	// 	[0, 0, 0, 0],
+	// 	[0, 0, 0, 0],
+	// 	[0, 0, 0, 0],
+	// 	[0, 0, 0, 0]
+	// ];
 
-	showBoard();
+	// randomPut();
+	// showBoard();
 
-	scene.on(Event.LEFT_BUTTON_DOWN, slideLeft);
-	scene.on(Event.RIGHT_BUTTON_DOWN, slideRight);
-	scene.on(Event.UP_BUTTON_DOWN, slideUp);
-	scene.on(Event.DOWN_BUTTON_DOWN, slideDown);
+	// scene.on(Event.LEFT_BUTTON_DOWN, slideLeft);
+	// scene.on(Event.RIGHT_BUTTON_DOWN, slideRight);
+	// scene.on(Event.UP_BUTTON_DOWN, slideUp);
+	// scene.on(Event.DOWN_BUTTON_DOWN, slideDown);	
 
 	function slideLeft(){
 		for(let r=0; r<size; r++){
@@ -136,9 +137,30 @@ function gameStart(){
 
 	function randomPut(){
 
+		let arr = [];
+		for(let r=0; r<size; r++){
+			for(let c=0; c<size; c++){
+				let n = board[r][c];
+				if(n == 0) arr.push({r:r, c:c});
+			}
+		}
+
+		if(arr.length <= 0) return false;
+		let i = Math.floor(Math.random() * arr.length);
+		let r = arr[i].r;
+		let c = arr[i].c;
+		board[r][c] = 2;
+
+		return true;
 	}
 
 	function showBoard(){
+
+		if(!randomPut()){
+			console.log("GAME OVER!!");
+			return;
+		}
+
 		let line = "-------------\n";
 		for(let r=0; r<size; r++){
 			line += "|";
@@ -152,6 +174,47 @@ function gameStart(){
 		line += "-------------"
 		console.log(line);
 	}
+
+	let my2048 = new My2048();
+	my2048.randomPut();
+	my2048.randomPut();
+	my2048.checkBoard();
+
+	scene.on(Event.LEFT_BUTTON_DOWN, ()=>{
+		my2048.slideLeft();
+		if(my2048.randomPut()){
+			my2048.checkBoard();
+		}else{
+			console.log("GAME OVER!!");
+		}
+	});
+
+	scene.on(Event.RIGHT_BUTTON_DOWN, ()=>{
+		my2048.slideRight();
+		if(my2048.randomPut()){
+			my2048.checkBoard();
+		}else{
+			console.log("GAME OVER!!");
+		}
+	});
+
+	scene.on(Event.UP_BUTTON_DOWN, ()=>{
+		my2048.slideUp();
+		if(my2048.randomPut()){
+			my2048.checkBoard();
+		}else{
+			console.log("GAME OVER!!");
+		}
+	});
+
+	scene.on(Event.DOWN_BUTTON_DOWN, ()=>{
+		my2048.slideDown();
+		if(my2048.randomPut()){
+			my2048.checkBoard();
+		}else{
+			console.log("GAME OVER!!");
+		}
+	});
 	
 	//==========
 	// ここまで
@@ -178,3 +241,167 @@ window.onload = function(){
 	core.onload = function(){gameStart();};
 	core.start();
 };
+
+
+class My2048{
+
+	constructor(size=4){
+		console.log("My2048!!");
+		this._size = size;
+		this._last = null;
+		this._board = [];
+		for(let r=0; r<size; r++){
+			let line = [];
+			for(let c=0; c<size; c++){
+				line.push(0);
+			}
+			this._board.push(line);
+		}
+	}
+
+	slideLeft(){
+		let size = this._size;
+		for(let r=0; r<size; r++){
+			for(let c=0; c<size-1; c++){
+				if(this._board[r][c] == 0){
+					for(let i=c+1; i<size; i++){
+						if(this._board[r][i] == 0) continue;
+						this.swapCells(r, i, r, c);
+						break;
+					}
+				}
+				for(let i=c+1; i<size; i++){
+					if(this._board[r][i] == 0) continue;
+					if(this._board[r][i] == this._board[r][c]){
+						this.combineCells(r, i, r, c);
+					}else{
+						this.swapCells(r, i, r, c+1);
+					}
+					break;
+				}
+			}
+		}
+	}
+
+	slideRight(){
+		let size = this._size;
+		for(let r=0; r<size; r++){
+			for(let c=size-1; 0<c; c--){
+				if(this._board[r][c] == 0){
+					for(let i=c-1; 0<=i; i--){
+						if(this._board[r][i] == 0) continue;
+						this.swapCells(r, i, r, c);
+						break;
+					}
+				}
+				for(let i=c-1; 0<=i; i--){
+					if(this._board[r][i] == 0) continue;
+					if(this._board[r][i] == this._board[r][c]){
+						this.combineCells(r, i, r, c);
+					}else{
+						this.swapCells(r, i, r, c-1);
+					}
+					break;
+				}
+			}
+		}
+	}
+
+	slideUp(){
+		let size = this._size;
+		for(let c=0; c<size; c++){
+			for(let r=0; r<size-1; r++){
+				if(this._board[r][c] == 0){
+					for(let i=r+1; i<size; i++){
+						if(this._board[i][c] == 0) continue;
+						this.swapCells(i, c, r, c);
+						break;
+					}
+				}
+				for(let i=r+1; i<size; i++){
+					if(this._board[i][c] == 0) continue;
+					if(this._board[i][c] == this._board[r][c]){
+						this.combineCells(i, c, r, c);
+					}else{
+						this.swapCells(i, c, r+1, c);
+					}
+					break;
+				}
+			}
+		}
+	}
+
+	slideDown(){
+		let size = this._size;
+		for(let c=0; c<size; c++){
+			for(let r=size-1; 0<r; r--){
+				if(this._board[r][c] == 0){
+					for(let i=r-1; 0<=i; i--){
+						if(this._board[i][c] == 0) continue;
+						this.swapCells(i, c, r, c);
+						break;
+					}
+				}
+				for(let i=r-1; 0<=i; i--){
+					if(this._board[i][c] == 0) continue;
+					if(this._board[i][c] == this._board[r][c]){
+						this.combineCells(i, c, r, c);
+					}else{
+						this.swapCells(i, c, r-1, c);
+					}
+					break;
+				}
+			}
+		}
+	}
+
+	combineCells(fromR, fromC, toR, toC){
+		this._board[toR][toC] += this._board[fromR][fromC];
+		this._board[fromR][fromC] = 0;
+	}
+
+	swapCells(fromR, fromC, toR, toC){
+		let tmp = this._board[toR][toC];
+		this._board[toR][toC] = this._board[fromR][fromC];
+		this._board[fromR][fromC] = tmp;
+	}
+
+	randomPut(){
+		let size = this._size;
+		let arr = [];
+		for(let r=0; r<size; r++){
+			for(let c=0; c<size; c++){
+				let n = this._board[r][c];
+				if(n == 0) arr.push({r:r, c:c});
+			}
+		}
+		if(arr.length <= 0) return false;
+		let i = Math.floor(Math.random() * arr.length);
+		let r = arr[i].r;
+		let c = arr[i].c;
+		this._last = {r:r, c:c};
+		this._board[r][c] = 2;
+		return true;
+	}
+
+	checkBoard(){
+		let line = "-------------\n";
+		for(let r=0; r<this._size; r++){
+			line += "|";
+			for(let c=0; c<this._size; c++){
+				let n = this._board[r][c];
+				line += (n < 10) ? " " + n : n;
+				if(c < this._size-1) line += ",";
+			}
+			line += "|\n";
+		}
+		line += "-------------"
+		console.log(line);
+	}
+}
+
+
+
+
+
+
