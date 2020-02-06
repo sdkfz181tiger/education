@@ -30,7 +30,6 @@ function gameStart(){
 	function slideLeft(){
 		for(let r=0; r<size; r++){
 			for(let c=0; c<size-1; c++){
-
 				if(board[r][c] == 0){
 					for(let i=c+1; i<size; i++){
 						if(board[r][i] == 0) continue;
@@ -125,17 +124,11 @@ function gameStart(){
 	}
 
 	function combineCells(fromR, fromC, toR, toC){
-		// console.log("combine:[", 
-		// 	fromR, ",", fromC, "]:", board[fromR][fromC], "<-> [", 
-		// 	toR, ",", toC, "]:", board[toR][toC]);
 		board[toR][toC] += board[fromR][fromC];
 		board[fromR][fromC] = 0;
 	}
 
 	function swapCells(fromR, fromC, toR, toC){
-		// console.log("swap:[", 
-		// 	fromR, ",", fromC, "]:", board[fromR][fromC], "<-> [", 
-		// 	toR, ",", toC, "]:", board[toR][toC]);
 		let tmp = board[toR][toC];
 		board[toR][toC] = board[fromR][fromC];
 		board[fromR][fromC] = tmp;
