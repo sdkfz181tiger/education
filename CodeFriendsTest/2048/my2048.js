@@ -3,7 +3,6 @@
 class My2048{
 
 	constructor(size=4){
-		console.log("My2048!!");
 		this._size = size;
 		this._last = null;
 		this._board = [];
@@ -16,24 +15,29 @@ class My2048{
 		}
 	}
 
-	slideLeft(){
-		return this.slideX(1);
-	}
+	slideLeft(){return this.slideX(1);}
 
-	slideRight(){
-		return this.slideX(-1);
-	}
+	slideRight(){return this.slideX(-1);}
 
-	slideUp(){
-		return this.slideY(1);
-	}
+	slideUp(){return this.slideY(1);}
 
-	slideDown(){
-		return this.slideY(-1);
+	slideDown(){return this.slideY(-1);}
+
+	getBoard(){return this._board;}
+
+	getScore(){
+		let size = this._size;
+		let score = 0;
+		for(let r=0; r<size; r++){
+			for(let c=0; c<size; c++){
+				score += this._board[r][c];
+			}
+		}
+		return score;
 	}
 
 	slideX(offset){
-		if(offset == 0) return false;
+		if(offset != 1 && offset != -1) return false;
 		let size = this._size;
 		let start = (0 < offset) ? 0:size-1;
 		let flg = false;
@@ -61,12 +65,12 @@ class My2048{
 	}
 
 	slideY(offset){
-		if(offset == 0) return false;
+		if(offset != 1 && offset != -1) return false;
 		let size = this._size;
 		let start = (0 < offset) ? 0:size-1;
 		let flg = false;
-		for(let c=0; c<size; c++){
-			for(let r=start; this.isInside(r); r+=offset){
+		for(let r=start; this.isInside(r); r+=offset){
+			for(let c=0; c<size; c++){
 				if(this._board[r][c] == 0){
 					for(let i=r+offset; this.isInside(i); i+=offset){
 						if(this._board[i][c] == 0) continue;
@@ -146,17 +150,25 @@ class My2048{
 	}
 
 	checkBoard(){
-		let line = "-------------\n";
+		let line = "SCORE:" + this.getScore();
+		while(line.length < 17) line = "-" + line + "-";
+		line += "\n";
 		for(let r=0; r<this._size; r++){
 			line += "|";
 			for(let c=0; c<this._size; c++){
 				let n = this._board[r][c];
-				line += (n < 10) ? " " + n : n;
+				if(n < 10){
+					line += "  " + n;
+				}else if(n < 100){
+					line += " " + n;
+				}else{
+					line += n;
+				}
 				if(c < this._size-1) line += ",";
 			}
 			line += "|\n";
 		}
-		line += "-------------"
+		line += "-----------------";
 		console.log(line);
 	}
 }
