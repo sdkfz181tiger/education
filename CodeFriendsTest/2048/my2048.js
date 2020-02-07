@@ -151,7 +151,10 @@ class My2048{
 
 	checkBoard(){
 		let line = "SCORE:" + this.getScore();
-		while(line.length < 17) line = "-" + line + "-";
+		while(line.length < 17){
+			line = line + "-";
+			if(line.length < 17) line = "-" + line;
+		}
 		line += "\n";
 		for(let r=0; r<this._size; r++){
 			line += "|";
