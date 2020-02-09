@@ -60,6 +60,8 @@ class Smz2048{
 		return this.isChanged();
 	}
 
+	getSize(){return this._size;}
+	
 	getBoard(){return this._board;}
 
 	getScore(){
