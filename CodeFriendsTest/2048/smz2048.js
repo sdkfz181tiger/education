@@ -25,10 +25,12 @@ class Smz2048{
 			[0, 0, 0, 0],
 			[0, 0, 0, 0]
 		];
+		this._moves = [];
 		this.copyBoard();
 	}
 
 	slideLeft(){
+		this._moves = [];
 		this.copyBoard();
 		for(let r=0; r<this._size; r++){
 			this.slideCells(r, 0, 0, 1);
@@ -37,6 +39,7 @@ class Smz2048{
 	}
 
 	slideRight(){
+		this._moves = [];
 		this.copyBoard();
 		for(let r=0; r<this._size; r++){
 			this.slideCells(r, this._size-1, 0, -1);
@@ -45,6 +48,7 @@ class Smz2048{
 	}
 
 	slideUp(){
+		this._moves = [];
 		this.copyBoard();
 		for(let c=0; c<this._size; c++){
 			this.slideCells(0, c, 1, 0);
@@ -53,6 +57,7 @@ class Smz2048{
 	}
 
 	slideDown(){
+		this._moves = [];
 		this.copyBoard();
 		for(let c=0; c<this._size; c++){
 			this.slideCells(this._size-1, c, -1, 0);
@@ -61,7 +66,7 @@ class Smz2048{
 	}
 
 	getSize(){return this._size;}
-	
+
 	getBoard(){return this._board;}
 
 	getScore(){
@@ -73,6 +78,14 @@ class Smz2048{
 			}
 		}
 		return score;
+	}
+
+	getMove(r, c){
+		for(let i=0; i<this._moves.length; i++){
+			let move = this._moves[i];
+			if(move.tR == r && move.tC == c) return move;
+		}
+		return null;
 	}
 
 	slideCells(r, c, dR, dC){
@@ -90,28 +103,30 @@ class Smz2048{
 	}
 
 	browCells(r, c, dR, dC){
-		let nR = r + dR;
-		let nC = c + dC;
-		while(this.isInside(nR) && this.isInside(nC)){
+		let tR = r + dR;
+		let tC = c + dC;
+		while(this.isInside(tR) && this.isInside(tC)){
 			if(this._board[r][c] == 0){
-				if(this._board[nR][nC] != 0){
-					//console.log("swap[", nR, nC, "]->[", r, c, "]");
-					this.swapCells(nR, nC, r, c);
+				if(this._board[tR][tC] != 0){
+					//console.log("swap[", tR, tC, "]->[", r, c, "]");
+					this.swapCells(tR, tC, r, c);
+					this._moves.push({gR:r-tR, gC:c-tC, tR:tR, tC:tC});
 					return true;
 				}
 			}else{
-				if(this._board[r][c] == this._board[nR][nC]){
-					//console.log("combine[", nR, nC, "]->[", r, c, "]");
-					this.combineCells(nR, nC, r, c);
+				if(this._board[r][c] == this._board[tR][tC]){
+					//console.log("combine[", tR, tC, "]->[", r, c, "]");
+					this.combineCells(tR, tC, r, c);
+					this._moves.push({gR:r-tR, gC:c-tC, tR:tR, tC:tC});
 					return false;
 				}
-				if(this._board[nR][nC] != 0){
-					//console.log("pass[", nR, nC, "]->[", r, c, "]");
+				if(this._board[tR][tC] != 0){
+					//console.log("pass[", tR, tC, "]->[", r, c, "]");
 					return false;
 				}
 			}
-			nR += dR;
-			nC += dC;
+			tR += dR;
+			tC += dC;
 		}
 		return false;
 	}
@@ -189,7 +204,7 @@ class Smz2048{
 		return true;
 	}
 
-	checkBoard(){
+	consoleBoard(){
 		let size = this._size;
 		let line = "SCORE:" + this.getScore();
 		while(line.length < 17){
