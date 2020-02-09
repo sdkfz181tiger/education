@@ -83,7 +83,7 @@ function gameStart(){
 				cell.c = c;
 				cell.opacity = 0;
 				cellGroup.addChild(cell);
-				cell.tl.delay(2);
+				cell.tl.delay(4);
 				cell.tl.then(function(){
 					this.opacity = 1;
 				});
@@ -100,7 +100,9 @@ function gameStart(){
 			let dist = cell.width;
 			let move = my2048.getMove(cell.r, cell.c);
 			if(move != null){
-				cell.tl.moveBy(dist*move.gC, dist*move.gR, 2);
+				cell.tl.moveBy(dist*move.gC, dist*move.gR, 4);
+			}else{
+				cell.tl.delay(4);
 			}
 			cell.tl.then(function(){
 				this.remove();
