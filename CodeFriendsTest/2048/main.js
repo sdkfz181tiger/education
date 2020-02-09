@@ -82,9 +82,9 @@ window.onload = function(){
 */
 
 // Test
-let my2048 = new My2048();
-my2048.randomPut();
-my2048.randomPut();
+let my2048 = new Smz2048();
+my2048.randomPut(2);
+my2048.randomPut(2);
 my2048.checkBoard();
 
 window.addEventListener("keydown", (event)=>{
