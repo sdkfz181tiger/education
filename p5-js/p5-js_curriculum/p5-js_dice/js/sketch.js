@@ -1,32 +1,34 @@
 console.log("Hello p5.js!!");
 
-var num;
-var dice;
-var dImg0;
-var dImg1;
-var dImg2;
-var dImg3;
+let font;
+let num;
+let dice;
+let dImg1;
+let dImg2;
+let dImg3;
+let dImg4;
+let dImg5;
+let dImg6;
 
-var array;
+let array;
 
 function preload(){
 
 	// Font
-	var font = loadFont("assets/misaki_gothic.ttf");
-	textSize(64);
-	textFont(font);
+	font = loadFont("assets/misaki_gothic.ttf");
 
 	// Images
-	dImg0 = loadImage("assets/dice_0.png");
 	dImg1 = loadImage("assets/dice_1.png");
 	dImg2 = loadImage("assets/dice_2.png");
 	dImg3 = loadImage("assets/dice_3.png");
+	dImg4 = loadImage("assets/dice_4.png");
+	dImg5 = loadImage("assets/dice_5.png");
+	dImg6 = loadImage("assets/dice_6.png");
 
-	// 配列を用意する
-	array = [dImg0, dImg1, dImg2, dImg3];
+	// Array
+	array = [dImg1, dImg2, dImg3, dImg4, dImg5, dImg6];
 }
 
-// 初期化
 function setup(){
 	console.log("setup");
 	createCanvas(480, 320);
@@ -35,16 +37,19 @@ function setup(){
 	frameRate(8);
 	noStroke();// No stroke
 
-	// 数値
-	num = 0;
+	// Font
+	textSize(64);
+	textFont(font);
 
-	// サイコロ
+	// Number
+	num = 1;
+
+	// Dice
 	dice = createSprite(240, 160, 50, 50);
 	dice.scale = 0.4;
-	dice.addImage(dImg0);
+	dice.addImage(dImg1);
 }
 
-// 連続処理
 function draw(){
 	console.log("draw");
 	background(0);
@@ -57,18 +62,16 @@ function draw(){
 	drawSprites();
 }
 
-// マウスが押されたら
 function mousePressed(){
 	console.log("mousePressed");
 
-	// 乱数を決定する
-	num = getRandom(1, 3);
-	dice.addImage(array[num]);
+	// Random
+	num = getRandom(1, 6);
+	dice.addImage(array[num-1]);
 }
 
-// ランダム値を生成する
 function getRandom(min, max){
-	var range = max + 1 - min;
-	var result = Math.floor(Math.random() * range + min);
+	let range = max - min + 1;
+	let result = Math.floor(Math.random() * range + min);
 	return result;
 }

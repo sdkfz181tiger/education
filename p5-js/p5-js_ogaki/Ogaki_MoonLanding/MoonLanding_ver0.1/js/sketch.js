@@ -18,7 +18,6 @@ function preload(){
 
 	// Font
 	let font = loadFont("fonts/misaki_gothic.ttf");
-	textFont(font);
 }
 
 function setup(){
@@ -26,6 +25,9 @@ function setup(){
 	frameRate(32);
 	noFill();
 	noStroke();
+	
+	//Font
+	textFont(font);
 
 	// Rocket
 	rocket = new Rocket(width*0.5, height*0.2, 0, -90);

@@ -1,7 +1,5 @@
 console.log("Hello p5.js!!");
 
-const title = "Pegeon Simulator_ver1.0.0";
-
 let img;
 
 const AA_WIDTH  = 100;
@@ -42,7 +40,8 @@ function setup(){
 
 	// Text
 	textFont("monospace", 8);
-	textAlign(CENTER, CENTER); textStyle(NORMAL);
+	textAlign(CENTER, CENTER); 
+	textStyle(NORMAL);
 	fill(255); noStroke();
 
 	typeArr2d(asciiArr, this);

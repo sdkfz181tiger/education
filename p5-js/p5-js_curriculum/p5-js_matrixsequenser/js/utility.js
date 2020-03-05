@@ -2,7 +2,6 @@ console.log("Hello utility.js!!");
 
 function showWaves(){
 
-	// データを少なくする
 	let waveform = myFft.waveform();
 	let data = new Array();
 	for(let i=0; i<waveform.length; i+=32){
