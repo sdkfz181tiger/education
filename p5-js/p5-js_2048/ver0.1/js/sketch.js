@@ -19,6 +19,7 @@ const TILE_COLS    = 4;
 let my2048;
 let tiles;
 let sX, sY;
+let lockFlg;
 
 function setup(){
 	createCanvas(DISP_W, DISP_H);
@@ -29,33 +30,23 @@ function setup(){
 	my2048 = new Smz2048();
 	my2048.randomPut();
 	my2048.randomPut();
-	my2048.randomPut();
-	my2048.randomPut();
 	my2048.consoleBoard();
 
-	// Tiles
 	sX = DISP_W / 2 - TILE_PADDING * TILE_COLS / 2;
 	sY = DISP_H / 2 - TILE_PADDING * TILE_ROWS / 2;
-	let tC = color(33, 66, 99, 100);
-	let board = my2048.getBoard();
-	tiles = [];
-	for(let r=0; r<TILE_ROWS; r++){
-		let line = [];
-		for(let c=0; c<TILE_COLS; c++){
-			let n = board[r][c];
-			let x = sX + TILE_PADDING * c;
-			let y = sY + TILE_PADDING * r;
-			line.push(new Tile(n, x, y, tC));
-		}
-		tiles.push(line);
-	}
+	lockFlg = false;
+
+	// Reflesh
+	this.refleshBoard();
 }
 
 function draw(){
 	background(33, 33, 33);
+	noStroke(); fill(22, 22, 22);
+	square(sX, sY, TILE_PADDING*TILE_COLS, TILE_CORNER);
 	for(let r=0; r<TILE_ROWS; r++){
 		for(let c=0; c<TILE_COLS; c++){
-			tiles[r][c].draw();
+			if(tiles[r][c]) tiles[r][c].draw();
 		}
 	}
 }
@@ -68,42 +59,73 @@ function keyPressed(){
 }
 
 function actionLeft(){
+	if(lockFlg) return;
 	if(!my2048.slideLeft()) return;
+	lockFlg = true;
 	my2048.consoleBoard();
 	updateBoard();
 }
 
 function actionRight(){
+	if(lockFlg) return;
 	if(!my2048.slideRight()) return;
+	lockFlg = true;
 	my2048.consoleBoard();
 	updateBoard();
 }
 
 function actionUp(){
+	if(lockFlg) return;
 	if(!my2048.slideUp()) return;
+	lockFlg = true;
 	my2048.consoleBoard();
 	updateBoard();
 }
 
 function actionDown(){
+	if(lockFlg) return;
 	if(!my2048.slideDown()) return;
+	lockFlg = true;
 	my2048.consoleBoard();
 	updateBoard();
 }
 
-function updateBoard(){
+function refleshBoard(){
+	lockFlg = false;
+	let tC = color(33, 66, 99, 100);
 	let board = my2048.getBoard();
+	tiles = [];
+	for(let r=0; r<TILE_ROWS; r++){
+		let line = [];
+		for(let c=0; c<TILE_COLS; c++){
+			let n = board[r][c];
+			let x = sX + TILE_PADDING * c;
+			let y = sY + TILE_PADDING * r;
+			if(n != 0){
+				line.push(new Tile(n, x, y, tC));
+			}else{
+				line.push(null);
+			}
+		}
+		tiles.push(line);
+	}
+}
+
+function updateBoard(){
+	// Move
 	for(let r=0; r<TILE_ROWS; r++){
 		for(let c=0; c<TILE_COLS; c++){
 			let move = my2048.getMove(r, c);
-			if(move != null){
-				console.log("to move:", move);
-				tiles[r][c].moveTo(move.gR, move.gC);
-			}
+			if(move == null) continue;
+			tiles[r][c].moveTo(move.gR, move.gC);
 		}
 	}
-	// TODO: interval
-	// my2048.randomPut();
+	// Reflesh
+	setTimeout(()=>{
+		console.log("unlock!!");
+		my2048.randomPut();
+		refleshBoard();
+	}, 250);
 }
 
 class Tile{
@@ -138,8 +160,8 @@ class Tile{
 			this._x = this._dX;
 			this._y = this._dY;
 		}else{
-			this._x += (this._dX - this._x) / 3;
-			this._y += (this._dY - this._y) / 3;
+			this._x += (this._dX - this._x) / 2;
+			this._y += (this._dY - this._y) / 2;
 		}
 		if(this._n == 0) return;
 		// Background
