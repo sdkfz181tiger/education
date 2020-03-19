@@ -122,7 +122,6 @@ function updateBoard(){
 	}
 	// Reflesh
 	setTimeout(()=>{
-		console.log("unlock!!");
 		my2048.randomPut();
 		refleshBoard();
 	}, 250);
