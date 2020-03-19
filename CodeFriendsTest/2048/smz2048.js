@@ -26,6 +26,7 @@ class Smz2048{
 			[0, 0, 0, 0]
 		];
 		this._moves = [];
+		this._history = [];
 		this.copyBoard();
 	}
 
@@ -202,6 +203,36 @@ class Smz2048{
 			}
 		}
 		return true;
+	}
+
+	pushHistory(){
+		let arr = [
+			[0, 0, 0, 0],
+			[0, 0, 0, 0],
+			[0, 0, 0, 0],
+			[0, 0, 0, 0]
+		];
+		let size = this._size;
+		for(let r=0; r<size; r++){
+			for(let c=0; c<size; c++){
+				arr[r][c] = this._board[r][c];
+			}
+		}
+		this._history.push(arr);
+	}
+
+	popHistory(){
+		if(this._history.length < 2) return;
+		this._history.pop();
+		let arr = this._history.pop();
+		let size = this._size;
+		for(let r=0; r<size; r++){
+			for(let c=0; c<size; c++){
+				this._board[r][c] = arr[r][c];
+			}
+		}
+		this.pushHistory();
+		this.consoleBoard();
 	}
 
 	consoleBoard(){

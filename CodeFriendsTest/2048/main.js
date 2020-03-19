@@ -16,26 +16,46 @@ function gameStart(){
 	let my2048 = new Smz2048();
 	my2048.randomPut(2);
 	my2048.randomPut(2);
+	my2048.pushHistory();
 	my2048.consoleBoard();
 
 	scene.on(Event.LEFT_BUTTON_DOWN, ()=>{
 		if(!my2048.slideLeft()) return;
+		my2048.pushHistory();
 		nextCells();
 	});
 
 	scene.on(Event.RIGHT_BUTTON_DOWN, ()=>{
 		if(!my2048.slideRight()) return;
+		my2048.pushHistory();
 		nextCells();
 	});
 
 	scene.on(Event.UP_BUTTON_DOWN, ()=>{
 		if(!my2048.slideUp()) return;
+		my2048.pushHistory();
 		nextCells();
 	});
 
 	scene.on(Event.DOWN_BUTTON_DOWN, ()=>{
 		if(!my2048.slideDown()) return;
 		nextCells();
+	});
+
+	// バックキー
+	var btnBack = new Sprite(32, 32);
+	btnBack.backgroundColor = "orange";
+	btnBack.x = 5;
+	btnBack.y = 5;
+	scene.addChild(btnBack);
+
+	btnBack.on(Event.TOUCH_START, ()=>{
+		my2048.popHistory();
+		var size = cellGroup.childNodes.length;
+		for(var i=size-1; 0<=i; i--){
+			let cell = cellGroup.childNodes[i].remove();
+		}
+		refleshCells();
 	});
 
 	// ラベル  
