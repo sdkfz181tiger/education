@@ -11,14 +11,16 @@
  */
 class MineSweeper{
 
-	constructor(rows, cols){
+	constructor(rows, cols, boms){
 		this._rows = rows;
 		this._cols = cols;
+		this._boms = boms;
 		this._board = [];
-		this.init();
+		this.init(boms);
 	}
 
-	init(){
+	init(boms){
+
 		this._board = [];
 		for(let r=0; r<this._rows; r++){
 			let line = [];
@@ -27,28 +29,28 @@ class MineSweeper{
 			}
 			this._board.push(line);
 		}
-		this.consoleBoard();
-	}
 
-	putBoms(num){
-
-		let boms = [];
+		let arr = [];
 		let total = this._rows*this._cols;
 		for(let b=0; b<total; b++){
-			if(b < num){
-				boms.push(1);
+			if(b < boms){
+				arr.push(1);
 			}else{
-				boms.push(0);
+				arr.push(0);
 			}
 		}
-		console.log(boms);
 		for(let b=total-1; 0<b; b--){
 			let rdm = Math.floor(Math.random() * (b-1));
-			let tmp = boms[rdm];
-			boms[rdm] = boms[b];
-			boms[b] = tmp;
+			let tmp = arr[rdm];
+			arr[rdm] = arr[b];
+			arr[b] = tmp;
 		}
-		console.log(boms);
+		for(let b=0; b<total; b++){
+			let r = Math.floor(b / this._cols);
+			let c = Math.floor(b % this._cols);
+			this._board[r][c] = arr[b];
+		}
+		this.consoleBoard();
 	}
 
 	consoleBoard(){
