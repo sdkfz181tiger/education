@@ -15,8 +15,9 @@ function setup(){
 	colorMode(HSB);
 
 	// MineSweeper
-	ms = new MineSweeper(3, 3);
-	ms.putBoms(3);
+	ms = new MineSweeper(4, 4, 8);
+	ms.search(1, 1);
+	ms.consoleAll();
 }
 
 function draw(){

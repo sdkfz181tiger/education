@@ -15,21 +15,27 @@ class MineSweeper{
 		this._rows = rows;
 		this._cols = cols;
 		this._boms = boms;
-		this._board = [];
-		this.init(boms);
+		this._tblTrap = [];
+		this._tblSensor = [];
+		this._tblSearch = [];
+		this.initTrap(boms);
+		this.initSensor();
+		this.initSearch();
 	}
 
-	init(boms){
+	getTrap(){return this._tblTrap;}
+	getSensor(){return this._tblSensor;}
+	getSearch(){return this._tblSearch;}
 
-		this._board = [];
+	initTrap(boms){
+		this._tblTrap = [];
 		for(let r=0; r<this._rows; r++){
 			let line = [];
 			for(let c=0; c<this._cols; c++){
 				line.push(0);
 			}
-			this._board.push(line);
+			this._tblTrap.push(line);
 		}
-
 		let arr = [];
 		let total = this._rows*this._cols;
 		for(let b=0; b<total; b++){
@@ -48,19 +54,101 @@ class MineSweeper{
 		for(let b=0; b<total; b++){
 			let r = Math.floor(b / this._cols);
 			let c = Math.floor(b % this._cols);
-			this._board[r][c] = arr[b];
+			this._tblTrap[r][c] = arr[b];
 		}
-		this.consoleBoard();
 	}
 
-	consoleBoard(){
+	initSensor(){
+		this._tblSensor = [];
+		for(let r=0; r<this._rows; r++){
+			let line = [];
+			for(let c=0; c<this._cols; c++){
+				line.push(0);
+			}
+			this._tblSensor.push(line);
+		}
+		for(let r=0; r<this._rows; r++){
+			for(let c=0; c<this._cols; c++){
+				if(this.checkTrap(r, c, -1, -1)) this._tblSensor[r][c]++;
+				if(this.checkTrap(r, c, -1, 0))  this._tblSensor[r][c]++;
+				if(this.checkTrap(r, c, -1, 1))  this._tblSensor[r][c]++;
+				if(this.checkTrap(r, c, 0, -1))  this._tblSensor[r][c]++;
+				if(this.checkTrap(r, c, 0, 1))   this._tblSensor[r][c]++;
+				if(this.checkTrap(r, c, 1, -1))  this._tblSensor[r][c]++;
+				if(this.checkTrap(r, c, 1, 0))   this._tblSensor[r][c]++;
+				if(this.checkTrap(r, c, 1, 1))   this._tblSensor[r][c]++;
+			}
+		}
+	}
+
+	initSearch(){
+		this._tblSearch = [];
+		for(let r=0; r<this._rows; r++){
+			let line = [];
+			for(let c=0; c<this._cols; c++){
+				line.push(0);
+			}
+			this._tblSearch.push(line);
+		}
+	}
+
+	search(r, c){
+		console.log("search:", r, c);
+		this.initSearch();
+		if(this._tblTrap[r][c] == 1) return true;
+		this.recursive(r, c);
+		return false;
+	}
+
+	recursive(r, c){
+		if(this._tblSearch[r][c] == 1) return;
+		this._tblSearch[r][c] = 1;
+		if(this.checkSpace(r, c, 1, 0))  this.recursive(r+1, c);
+		if(this.checkSpace(r, c, -1, 0)) this.recursive(r-1, c);
+		if(this.checkSpace(r, c, 0, 1))  this.recursive(r, c+1);
+		if(this.checkSpace(r, c, 0, -1)) this.recursive(r, c-1);
+	}
+
+	checkSpace(r, c, x, y){
+		let gR = r + x;
+		let gC = c + y;
+		if(gR < 0) return false;
+		if(gC < 0) return false;
+		if(this._rows <= gR) return false;
+		if(this._cols <= gC) return false;
+		if(this._tblTrap[gR][gC] == 1) return false;
+		return true;
+	}
+
+	checkTrap(r, c, x, y){
+		let gR = r + x;
+		let gC = c + y;
+		if(gR < 0) return false;
+		if(gC < 0) return false;
+		if(this._rows <= gR) return false;
+		if(this._cols <= gC) return false;
+		if(this._tblTrap[r][c] == 1) return false;
+		if(this._tblTrap[gR][gC] == 0) return false;
+		return true;
+	}
+
+	consoleAll(){
+		console.log("=Trap=");
+		this.consoleTable(this._tblTrap);
+		console.log("=Sensor=");
+		this.consoleTable(this._tblSensor);
+		console.log("=Search=");
+		this.consoleTable(this._tblSearch);
+	}
+
+	consoleTable(table){
 		let line = "";
 		for(let c=0; c<this._cols*2; c++) line += "-";
 		line += "-\n";
 		for(let r=0; r<this._rows; r++){
 			line += "|";
 			for(let c=0; c<this._cols; c++){
-				let n = this._board[r][c];
+				let n = table[r][c];
 				line += n;
 				if(c < this._cols-1) line += ",";
 			}
