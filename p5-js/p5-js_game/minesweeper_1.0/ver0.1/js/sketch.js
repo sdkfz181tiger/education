@@ -4,18 +4,18 @@
 
 console.log("Hello p5.js!!");
 
-const DISP_W = 380;
+const DISP_W = 520;
 const DISP_H = 380;
 
-const MS_ROWS = 5;
-const MS_COLS = 5;
+const MS_ROWS = 10;
+const MS_COLS = 14;
 const MS_MINES = 10;
 
-const TILE_SIZE = 64;
-const TILE_PAD  = 68;
+const TILE_SIZE = 32;
+const TILE_PAD  = 34;
 const TILE_CNR  = 5;
 
-const FONT_SIZE = 52;
+const FONT_SIZE = 24;
 
 let ms;
 let tiles;
@@ -27,6 +27,7 @@ function setup(){
 
 	// MineSweeper
 	ms = new MineSweeper(MS_ROWS, MS_COLS, MS_MINES);
+	ms.consoleAll();
 
 	// Tiles
 	tiles = [];
@@ -116,14 +117,13 @@ class Tile{
 
 	drawClosed(){
 		// Background
-		let tColor = color(33, 66, 77);
-		fill(tColor); noStroke();
+		fill(33, 66, 77); noStroke();
 		square(this._x, this._y, TILE_SIZE, TILE_SIZE, TILE_CNR);
 	}
 
 	drawOpened(){
 		// Background
-		let tColor = (this._m == 1) ? color(0, 66, 99) : color(33, 66, 77);
+		let tColor = (this._m == 1) ? color(0, 66, 99) : color(33, 66, 99);
 		fill(tColor); noStroke();
 		square(this._x, this._y, TILE_SIZE, TILE_SIZE, TILE_CNR);
 		// Font

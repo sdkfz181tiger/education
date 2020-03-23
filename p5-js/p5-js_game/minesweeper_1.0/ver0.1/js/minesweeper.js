@@ -102,6 +102,7 @@ class MineSweeper{
 	recursive(r, c){
 		if(this._tblSearch[r][c] == 1) return;
 		this._tblSearch[r][c] = 1;
+		if(this._tblSensor[r][c] != 0) return;
 		if(this.checkSpace(r, c, 1, 0))  this.recursive(r+1, c);
 		if(this.checkSpace(r, c, -1, 0)) this.recursive(r-1, c);
 		if(this.checkSpace(r, c, 0, 1))  this.recursive(r, c+1);
@@ -109,25 +110,25 @@ class MineSweeper{
 	}
 
 	checkSpace(r, c, x, y){
-		let gR = r + x;
-		let gC = c + y;
-		if(gR < 0) return false;
-		if(gC < 0) return false;
-		if(this._rows <= gR) return false;
-		if(this._cols <= gC) return false;
-		if(this._tblMine[gR][gC] == 1) return false;
+		let cR = r + x;
+		let cC = c + y;
+		if(cR < 0) return false;
+		if(cC < 0) return false;
+		if(this._rows <= cR) return false;
+		if(this._cols <= cC) return false;
+		if(this._tblMine[cR][cC] == 1) return false;
 		return true;
 	}
 
 	checkTrap(r, c, x, y){
-		let gR = r + x;
-		let gC = c + y;
-		if(gR < 0) return false;
-		if(gC < 0) return false;
-		if(this._rows <= gR) return false;
-		if(this._cols <= gC) return false;
+		let cR = r + x;
+		let cC = c + y;
+		if(cR < 0) return false;
+		if(cC < 0) return false;
+		if(this._rows <= cR) return false;
+		if(this._cols <= cC) return false;
 		if(this._tblMine[r][c] == 1) return false;
-		if(this._tblMine[gR][gC] == 0) return false;
+		if(this._tblMine[cR][cC] == 0) return false;
 		return true;
 	}
 
