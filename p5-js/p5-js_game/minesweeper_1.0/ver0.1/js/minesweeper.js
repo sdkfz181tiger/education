@@ -11,35 +11,34 @@
  */
 class MineSweeper{
 
-	constructor(rows, cols, boms){
+	constructor(rows, cols, mines){
 		this._rows = rows;
 		this._cols = cols;
-		this._boms = boms;
-		this._tblTrap = [];
+		this._tblMine = [];
 		this._tblSensor = [];
 		this._tblSearch = [];
-		this.initTrap(boms);
+		this.initTrap(mines);
 		this.initSensor();
 		this.initSearch();
 	}
 
-	getTrap(){return this._tblTrap;}
+	getMine(){return this._tblMine;}
 	getSensor(){return this._tblSensor;}
 	getSearch(){return this._tblSearch;}
 
-	initTrap(boms){
-		this._tblTrap = [];
+	initTrap(mines){
+		this._tblMine = [];
 		for(let r=0; r<this._rows; r++){
 			let line = [];
 			for(let c=0; c<this._cols; c++){
 				line.push(0);
 			}
-			this._tblTrap.push(line);
+			this._tblMine.push(line);
 		}
 		let arr = [];
 		let total = this._rows*this._cols;
 		for(let b=0; b<total; b++){
-			if(b < boms){
+			if(b < mines){
 				arr.push(1);
 			}else{
 				arr.push(0);
@@ -54,7 +53,7 @@ class MineSweeper{
 		for(let b=0; b<total; b++){
 			let r = Math.floor(b / this._cols);
 			let c = Math.floor(b % this._cols);
-			this._tblTrap[r][c] = arr[b];
+			this._tblMine[r][c] = arr[b];
 		}
 	}
 
@@ -92,10 +91,10 @@ class MineSweeper{
 		}
 	}
 
-	search(r, c){
-		console.log("search:", r, c);
+	sweep(r, c){
+		console.log("sweep:", r, c);
 		this.initSearch();
-		if(this._tblTrap[r][c] == 1) return true;
+		if(this._tblMine[r][c] == 1) return true;
 		this.recursive(r, c);
 		return false;
 	}
@@ -116,7 +115,7 @@ class MineSweeper{
 		if(gC < 0) return false;
 		if(this._rows <= gR) return false;
 		if(this._cols <= gC) return false;
-		if(this._tblTrap[gR][gC] == 1) return false;
+		if(this._tblMine[gR][gC] == 1) return false;
 		return true;
 	}
 
@@ -127,14 +126,14 @@ class MineSweeper{
 		if(gC < 0) return false;
 		if(this._rows <= gR) return false;
 		if(this._cols <= gC) return false;
-		if(this._tblTrap[r][c] == 1) return false;
-		if(this._tblTrap[gR][gC] == 0) return false;
+		if(this._tblMine[r][c] == 1) return false;
+		if(this._tblMine[gR][gC] == 0) return false;
 		return true;
 	}
 
 	consoleAll(){
-		console.log("=Trap=");
-		this.consoleTable(this._tblTrap);
+		console.log("=Mine=");
+		this.consoleTable(this._tblMine);
 		console.log("=Sensor=");
 		this.consoleTable(this._tblSensor);
 		console.log("=Search=");
