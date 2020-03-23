@@ -1,15 +1,13 @@
-"use strict"
+"use strict";
 //==========
 // p5.js
-
-console.log("Hello p5.js!!");
 
 const DISP_W = 520;
 const DISP_H = 380;
 
 const MS_ROWS = 10;
 const MS_COLS = 14;
-const MS_MINES = 10;
+const MS_MINES = 20;
 
 const TILE_SIZE = 32;
 const TILE_PAD  = 34;
@@ -27,7 +25,7 @@ function setup(){
 
 	// MineSweeper
 	ms = new MineSweeper(MS_ROWS, MS_COLS, MS_MINES);
-	ms.consoleAll();
+	//ms.consoleAll();
 
 	// Tiles
 	tiles = [];
@@ -59,7 +57,6 @@ function mousePressed(){
 }
 
 function mineSweep(r, c){
-	console.log("mineSweep:", r, c);
 	// Minesweeper
 	if(!ms.sweep(r, c)){
 		console.log("CONTINUE!!");
@@ -76,7 +73,6 @@ function mineSweep(r, c){
 		let t = r * MS_COLS + c;
 		tiles[t].open();
 	}
-	ms.consoleAll();
 }
 
 class Tile{

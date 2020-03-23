@@ -92,7 +92,6 @@ class MineSweeper{
 	}
 
 	sweep(r, c){
-		console.log("sweep:", r, c);
 		this.initSearch();
 		if(this._tblMine[r][c] == 1) return true;
 		this.recursive(r, c);
