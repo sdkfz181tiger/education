@@ -3,6 +3,7 @@ console.log("Hello Node JS!!");
 const express = require("express");
 const ejs     = require("ejs");
 const bParser = require("body-parser");
+const sqlite  = require("sqlite3").verbose();
 
 //==========
 // App
@@ -18,18 +19,38 @@ app.listen(PORT_APP, ()=>{
 // Root
 app.get("/", (req, res)=>{
 	let msg  = "Rootページです";
-	let json = {items:[{name:"YOU", text:"hello!!", date:"2020/04/01"}]};
-	res.render("index_root.ejs", 
-		{title: "This is Get!!", content: msg, data: json});
+	loadData((rows)=>{
+		res.render("index_root.ejs", 
+			{title: "This is Get!!", msg: msg, rows: rows});
+	});
 });
 
 // Chat
 app.get("/chat", (req, res)=>{
 	let msg  = "Chatページです";
-	let json = {items:[{name:"YOU", text:"hello!!", date:"2020/04/01"}]};
-	res.render("index_chat.ejs", 
-		{title: "This is Get!!", content: msg, data: json});
+	loadData((rows)=>{
+		res.render("index_chat.ejs", 
+			{title: "This is Get!!", msg: msg, rows: rows});
+	});
 });
+
+//==========
+// Sqlite
+function loadData(callback){
+	const sql = "SELECT * FROM main";
+	let db = new sqlite.Database("db/chat.db");
+	db.serialize(()=>{
+		db.all(sql, [], (error, rows)=>{
+			if(error){
+				console.log("Error:" + error);
+				return;
+			}
+			callback(rows);// Callback
+		});
+	});
+	db.close();
+}
+
 /*
 //==========
 // Server
