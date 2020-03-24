@@ -5,6 +5,9 @@ const ejs     = require("ejs");
 const bParser = require("body-parser");
 const sqlite  = require("sqlite3").verbose();
 
+const DATABASE_NAME = "db/chat.db";
+const TABLE_NAME = "main";
+
 //==========
 // App
 const PORT_APP = 3030;
@@ -27,6 +30,10 @@ app.get("/", (req, res)=>{
 
 // Chat
 app.get("/chat", (req, res)=>{
+
+	// Test
+	insertData("Guy", "Boo!!", "2020/03/24 20:01:00");
+
 	let msg  = "Chatページです";
 	loadData((rows)=>{
 		res.render("index_chat.ejs", 
@@ -37,8 +44,8 @@ app.get("/chat", (req, res)=>{
 //==========
 // Sqlite
 function loadData(callback){
-	const sql = "SELECT * FROM main";
-	let db = new sqlite.Database("db/chat.db");
+	const sql = "SELECT * FROM " + TABLE_NAME;
+	let db = new sqlite.Database(DATABASE_NAME);
 	db.serialize(()=>{
 		db.all(sql, [], (error, rows)=>{
 			if(error){
@@ -47,6 +54,17 @@ function loadData(callback){
 			}
 			callback(rows);// Callback
 		});
+	});
+	db.close();
+}
+
+function insertData(name, text, date){
+	const sql = "INSERT INTO " + TABLE_NAME + " VALUES(?,?,?,?)";
+	let db = new sqlite.Database(DATABASE_NAME);
+	db.serialize(()=>{
+		var stmt = db.prepare(sql);
+		stmt.run([null, name, text, date]);
+		stmt.finalize();
 	});
 	db.close();
 }
