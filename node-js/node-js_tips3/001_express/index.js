@@ -26,7 +26,7 @@ app.get("/", (req, res)=>{
 
 	// Test
 	insertData("Guy", "Boo!!");
-	
+
 	let msg  = "Rootページです";
 	loadData((rows)=>{
 		res.render("index_root.ejs", 
@@ -50,7 +50,7 @@ app.get("/chat", (req, res)=>{
 //==========
 // Sqlite
 function loadData(callback){
-	const sql = "SELECT * FROM " + NAME_TBL;
+	const sql = "SELECT * FROM " + NAME_TBL + " ORDER BY date DESC LIMIT 10";
 	let db = new sqlite.Database(NAME_DB);
 	db.serialize(()=>{
 		db.all(sql, [], (error, rows)=>{
@@ -80,7 +80,7 @@ function insertData(name, text){
 // JSON
 function writeJSON(){
 	loadData((rows)=>{
-		const let json = JSON.stringify(rows);
+		const json = JSON.stringify(rows);
 		fs.writeFile(NAME_JSON, json, (error, data)=>{
 			if(error) console.log("Error:" + error);
 		});
