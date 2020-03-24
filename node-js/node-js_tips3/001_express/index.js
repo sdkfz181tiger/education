@@ -2,7 +2,6 @@ console.log("Hello Node JS!!");
 
 const express = require("express");
 const ejs     = require("ejs");
-const bParser = require("body-parser");
 const sqlite  = require("sqlite3").verbose();
 const fs      = require("fs");
 
@@ -16,17 +15,14 @@ const PORT_APP = 3030;
 let app = express();
 app.engine("ejs", ejs.renderFile);
 app.use(express.static("public"));
-app.use(bParser.urlencoded({extended: false}));
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 app.listen(PORT_APP, ()=>{
 	console.log("Start App server port:" + PORT_APP);
 });
 
 // Root
 app.get("/", (req, res)=>{
-
-	// Test
-	insertData("Guy", "Boo!!");
-
 	let msg  = "Rootページです";
 	loadData((rows)=>{
 		res.render("index_root.ejs", 
@@ -36,15 +32,20 @@ app.get("/", (req, res)=>{
 
 // Chat
 app.get("/chat", (req, res)=>{
-
-	// Test
-	insertData("Guy", "Boo!!");
-
 	let msg  = "Chatページです";
 	loadData((rows)=>{
 		res.render("index_chat.ejs", 
 			{title: "This is Get!!", msg: msg, rows: rows});
 	});
+});
+
+// Post
+app.post("/post", (req, res)=>{
+	// Insert
+	insertData(req.body.name, req.body.text);
+	setTimeout(()=>{
+		loadData((rows)=>{res.json(rows);});
+	}, 300);
 });
 
 //==========
