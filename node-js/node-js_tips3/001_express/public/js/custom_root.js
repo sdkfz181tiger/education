@@ -32,8 +32,9 @@ function reload(rows){
 		let uid  = "<td>" + val.uid + "</td>";
 		let name = "<td>" + val.name + "</td>";
 		let text = "<td>" + val.text + "</td>";
+		let ip   = "<td>" + val.ip + "</td>";
 		let date = "<td>" + val.date + "</td>";
-		let line = "<tr>" + uid + name + text + date + "</tr>";
+		let line = "<tr>" + uid + name + text + ip + date + "</tr>";
 		$("table").append(line);
 	});
 }

@@ -23,28 +23,32 @@ app.listen(PORT_APP, ()=>{
 
 // Root
 app.get("/", (req, res)=>{
-	let msg  = "Rootページです";
-	loadData((rows)=>{
-		res.render("index_root.ejs", 
-			{title: "This is Get!!", msg: msg, rows: rows});
-	});
-});
 
-// Chat
-app.get("/chat", (req, res)=>{
-	let msg  = "Chatページです";
-	loadData((rows)=>{
-		res.render("index_chat.ejs", 
-			{title: "This is Get!!", msg: msg, rows: rows});
-	});
+	let name = "***";
+	let text = "Welcome";
+	let ip = getClientIP(req);
+	insertData(name, text, ip);
+
+	setTimeout(()=>{
+		loadData((rows)=>{
+			let json = {title: "This is title!!", rows: rows};
+			res.render("index_root.ejs", json);
+		});
+	}, 300);
 });
 
 // Post
 app.post("/post", (req, res)=>{
-	// Insert
-	insertData(req.body.name, req.body.text);
+
+	let name = req.body.name;
+	let text = req.body.text;
+	let ip = getClientIP(req);
+	insertData(name, text, ip);
+
 	setTimeout(()=>{
-		loadData((rows)=>{res.json(rows);});
+		loadData((rows)=>{
+			res.json(rows);
+		});
 	}, 300);
 });
 
@@ -65,12 +69,12 @@ function loadData(callback){
 	db.close();
 }
 
-function insertData(name, text){
-	const sql = "INSERT INTO " + NAME_TBL + " VALUES(?,?,?,?)";
+function insertData(name, text, ip){
+	const sql = "INSERT INTO " + NAME_TBL + " VALUES(?,?,?,?,?)";
 	let db = new sqlite.Database(NAME_DB);
 	db.serialize(()=>{
 		var stmt = db.prepare(sql);
-		stmt.run([null, name, text, getClientDate()]);
+		stmt.run([null, name, text, ip, getClientDate()]);
 		stmt.finalize();
 		writeJSON();// JSON
 	});
@@ -102,4 +106,20 @@ function getClientDate(){
 	if(min  < 10) min  = "0" + min;
 	if(sec  < 10) sec  = "0" + sec;
 	return year + "/" + mon + "/" + day + " " + hour + ":" + min + ":" + sec;
+}
+
+function getClientIP(req){
+	if(req.headers["x-forwarded-for"]){
+		return req.headers["x-forwarded-for"];
+	}
+	if(req.connection && req.connection.remoteAddress){
+		return req.connection.remoteAddress;
+	}
+	if(req.connection.socket && req.connection.socket.remoteAddress){
+		return req.connection.socket.remoteAddress;
+	}
+	if(req.socket && req.socket.remoteAddress){
+		return req.socket.remoteAddress;
+	}
+	return "0.0.0.0";
 }
