@@ -4,9 +4,11 @@ const express = require("express");
 const ejs     = require("ejs");
 const bParser = require("body-parser");
 const sqlite  = require("sqlite3").verbose();
+const fs      = require("fs");
 
-const DATABASE_NAME = "db/chat.db";
-const TABLE_NAME = "main";
+const NAME_DB   = "db/chat.db";
+const NAME_TBL  = "main";
+const NAME_JSON = "public/json/chat.json"
 
 //==========
 // App
@@ -21,6 +23,10 @@ app.listen(PORT_APP, ()=>{
 
 // Root
 app.get("/", (req, res)=>{
+
+	// Test
+	insertData("Guy", "Boo!!");
+	
 	let msg  = "Rootページです";
 	loadData((rows)=>{
 		res.render("index_root.ejs", 
@@ -32,7 +38,7 @@ app.get("/", (req, res)=>{
 app.get("/chat", (req, res)=>{
 
 	// Test
-	insertData("Guy", "Boo!!", "2020/03/24 20:01:00");
+	insertData("Guy", "Boo!!");
 
 	let msg  = "Chatページです";
 	loadData((rows)=>{
@@ -44,8 +50,8 @@ app.get("/chat", (req, res)=>{
 //==========
 // Sqlite
 function loadData(callback){
-	const sql = "SELECT * FROM " + TABLE_NAME;
-	let db = new sqlite.Database(DATABASE_NAME);
+	const sql = "SELECT * FROM " + NAME_TBL;
+	let db = new sqlite.Database(NAME_DB);
 	db.serialize(()=>{
 		db.all(sql, [], (error, rows)=>{
 			if(error){
@@ -58,57 +64,27 @@ function loadData(callback){
 	db.close();
 }
 
-function insertData(name, text, date){
-	const sql = "INSERT INTO " + TABLE_NAME + " VALUES(?,?,?,?)";
-	let db = new sqlite.Database(DATABASE_NAME);
+function insertData(name, text){
+	const sql = "INSERT INTO " + NAME_TBL + " VALUES(?,?,?,?)";
+	let db = new sqlite.Database(NAME_DB);
 	db.serialize(()=>{
 		var stmt = db.prepare(sql);
-		stmt.run([null, name, text, date]);
+		stmt.run([null, name, text, getClientDate()]);
 		stmt.finalize();
+		writeJSON();// JSON
 	});
 	db.close();
 }
 
-/*
 //==========
-// Server
-const PORT_SOCKET = 4040;
-const PREFIX_CLIENT = "client_";
-let counter = 0;
-let server = ws.listen(PORT_SOCKET, ()=>{
-	console.log("Start WebSocket server port:" + PORT_SOCKET);
-});
-
-// Connection
-server.on("connection", (client)=>{
-	console.log("connection");
-	client.id    = PREFIX_CLIENT + counter++;
-	client.psw   = getClientPsw();
-	client.birth = getClientDate();
-	console.log(client.id + ":" + client.psw + " [" + client.birth + "]");
-
-	// Client
-	client.on("message", (e)=>{
-		let message = '{"id": "' + client.id + '", "msg": ' + e + '}';
-		sendAll(message);
+// JSON
+function writeJSON(){
+	loadData((rows)=>{
+		const let json = JSON.stringify(rows);
+		fs.writeFile(NAME_JSON, json, (error, data)=>{
+			if(error) console.log("Error:" + error);
+		});
 	});
-	client.on("error", (e)=>{
-		console.log("error");
-		console.log(e);
-	});
-	client.on("close", ()=>{
-		console.log("close");
-	});
-});
-
-function sendAll(msg){
-	server.clients.forEach(function(client){
-		if(client !== null) client.send(msg);
-	});
-}
-
-function getClientPsw(){
-	return "xyz";
 }
 
 function getClientDate(){
@@ -126,4 +102,3 @@ function getClientDate(){
 	if(sec  < 10) sec  = "0" + sec;
 	return year + "/" + mon + "/" + day + " " + hour + ":" + min + ":" + sec;
 }
-*/
