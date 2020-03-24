@@ -2,12 +2,12 @@ console.log("Hello Node JS!!");
 
 // Load
 $(window).on("load", ()=>{
-	console.log("Load!!");
+	//console.log("Load!!");
 });
 
 // Unload
 $(window).on("unload", ()=>{
-	console.log("Unload!!");
+	//console.log("Unload!!");
 });
 
 // Ready
