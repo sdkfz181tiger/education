@@ -12,21 +12,28 @@ $(window).on("unload", ()=>{
 
 // Ready
 $(document).ready(()=>{
-	console.log("Ready!!");
-	// Form
+	//console.log("Ready!!");
 	$("form").submit((event)=>{
 		event.preventDefault();
 		$.post("./post", $("form").serialize()).done((data)=>{
-			reload(data);
+			show(data);
 		});
-    });
+	});
+	reloadJSON();
 });
 
 // Reload
-function reload(rows){
-	console.log("Reload!!");
-	const rdm = Math.floor(Math.random() * 100);
-	const path = "./json/chat.json?rdm=" + rdm;
+function reloadJSON(){
+	//console.log("Reload!!");
+	$.post("./post", null).done((data)=>{
+		show(data);
+		setTimeout(()=>{reloadJSON();}, 3000);
+	});
+}
+
+// Show
+function show(rows){
+	//console.log("Show!!");
 	$("table").empty();
 	$.each(rows, (key, val)=>{
 		let uid  = "<td>" + val.uid + "</td>";

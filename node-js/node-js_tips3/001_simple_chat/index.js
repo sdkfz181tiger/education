@@ -43,7 +43,9 @@ app.post("/post", (req, res)=>{
 	let name = req.body.name;
 	let text = req.body.text;
 	let ip = getClientIP(req);
-	insertData(name, text, ip);
+	if(name != null && text != null){
+		insertData(name, text, ip);
+	}
 
 	setTimeout(()=>{
 		loadData((rows)=>{
