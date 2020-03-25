@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta http-equiv="content-type" content="text/html" charset="utf-8">
+	<meta http-equiv="cache-control" content="no-cache">
+	<meta http-equiv="expires" content="0">
+	<meta http-equiv="pragma" content="no-cache">
+	<title><%=title %></title>
+	<!-- CSS -->
+	<link type="text/css" rel="stylesheet" href="./css/custom.css">
+	<!-- p5js -->
+	<script src="./js/libs/p5/p5.js" defer></script>
+	<script src="./js/libs/p5/addons/p5.sound.js" defer></script>
+	<!-- JQuery -->
+	<script src="./js/libs/jquery/jquery.min.js" defer></script>
+	<!-- Custom -->
+	<script src="./js/custom_2048.js" defer></script>
+	<script src="./js/custom_root.js" defer></script>
+</head>
+<body>
+	<div id="p5"></div>
+	<form>
+		<div>
+			<input name="name" value="Guest" size=4>
+			<input name="text" value="Hello!!" size=12>
+			<button>Submit</button>
+		</div>
+	</form>
+	<%-include("table_items", rows) %>
+</body>
+</html>
