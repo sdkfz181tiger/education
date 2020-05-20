@@ -10,45 +10,59 @@ function setup(){
 	background(100);
 
 	let grA = createGraphics(width/2, height/2);
-	let test = new GraphixA(grA, 30, 30);
+	let test = new GraphixA(grA);
 	image(grA, 0, 0);
 }
 
 class GraphixA{
 
-	constructor(gr, cX, cY){
+	constructor(gr){
 
 		this._gr = gr;
-		this._cX = cX;
-		this._cY = cY;
+		this._cX = gr.width / 2;
+		this._cY = gr.height / 2;
 
 		this._gr.stroke(33);
-		this._gr.strokeWeight(2);
+		this._gr.strokeWeight(1);
 		this._gr.noFill();
 		this._gr.background(255, 120, 120);
 
-		let s = 90;
+		let s = 40;
 		let p = s*cos(30)*2;
-		this.drawCubeA(cX, cY, s);
-		this.drawCubeB(cX+p, cY, s);
+		let rows = floor(this._gr.height / s);
+		let cols = floor(this._gr.width / s);
+		for(let r=0; r<rows; r++){
+			for(let c=0; c<cols; c++){
+				let x = c * p + (p*r) / 2;
+				let y = r * p;
+				if(c%2==0){
+					this.drawCubeA(x, y, s);
+				}else{
+					this.drawCubeB(x, y, s);
+				}
+			}
+		}
+
+		//this.drawCubeA(this._cX, this._cY, s);
+		//this.drawCubeB(this._cX+p, this._cY, s);
 	}
 
 	drawCubeA(cX, cY, s){
-		this.drawDiamond(cX, cY, 90, 270, 70, 100, 50);
-		this.drawDiamond(cX+cos(30)*s, cY+sin(30)*s, 90, 210, 250, 180, 50);
-		this.drawDiamond(cX+cos(30)*s, cY+sin(30)*s, 65, 210, 250, 180, 50);
-		this.drawDiamond(cX+cos(30)*s, cY+sin(30)*s, 40, 210, 220, 150, 50);
-		this.drawDiamond(cX+cos(150)*s, cY+sin(150)*s, 90, 330, 250, 180, 50);
-		this.drawDiamond(cX+cos(150)*s, cY+sin(150)*s, 65, 330, 250, 180, 50);
-		this.drawDiamond(cX+cos(150)*s, cY+sin(150)*s, 40, 330, 220, 150, 50);
+		this.drawDiamond(cX, cY, s, 270, 70, 100, 50);
+		this.drawDiamond(cX+cos(30)*s, cY+sin(30)*s, s, 210, 250, 180, 50);
+		this.drawDiamond(cX+cos(30)*s, cY+sin(30)*s, s*0.7, 210, 250, 180, 50);
+		this.drawDiamond(cX+cos(30)*s, cY+sin(30)*s, s*0.3, 210, 220, 150, 50);
+		this.drawDiamond(cX+cos(150)*s, cY+sin(150)*s, s, 330, 250, 180, 50);
+		this.drawDiamond(cX+cos(150)*s, cY+sin(150)*s, s*0.7, 330, 250, 180, 50);
+		this.drawDiamond(cX+cos(150)*s, cY+sin(150)*s, s*0.3, 330, 220, 150, 50);
 		this._gr.noFill();
 		this.drawSymbol(cX, cY, s);
 	}
 
 	drawCubeB(cX, cY, s){
-		this.drawDiamond(cX, cY, 90, 270, 250, 180, 50);
-		this.drawDiamond(cX+cos(30)*s, cY+sin(30)*s, 90, 210, 90, 120, 50);
-		this.drawDiamond(cX+cos(150)*s, cY+sin(150)*s, 90, 330, 90, 120, 50);
+		this.drawDiamond(cX, cY, s, 270, 250, 180, 50);
+		this.drawDiamond(cX+cos(30)*s, cY+sin(30)*s, s, 210, 90, 120, 50);
+		this.drawDiamond(cX+cos(150)*s, cY+sin(150)*s, s, 330, 90, 120, 50);
 		this._gr.noFill();
 		this.drawSymbol(cX, cY, s);
 	}
