@@ -31,10 +31,10 @@ class GraphixA{
 		let p = s*cos(30)*2;
 		let rows = floor(this._gr.height / s);
 		let cols = floor(this._gr.width / s);
-		for(let r=0; r<rows; r++){
-			for(let c=0; c<cols; c++){
+		for(let r=0; r<rows+1; r++){
+			for(let c=-rows; c<cols; c++){
 				let x = c * p + (p*r) / 2;
-				let y = r * p;
+				let y = r * (s+sin(30)*s);
 				if(c%2==0){
 					this.drawCubeA(x, y, s);
 				}else{
@@ -42,9 +42,6 @@ class GraphixA{
 				}
 			}
 		}
-
-		//this.drawCubeA(this._cX, this._cY, s);
-		//this.drawCubeB(this._cX+p, this._cY, s);
 	}
 
 	drawCubeA(cX, cY, s){
