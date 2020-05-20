@@ -10,13 +10,42 @@ function setup(){
 	background(100);
 
 	let grA = createGraphics(width/2, height/2);
-	let test = new GraphixA(grA);
-	image(grA, 0, 0);
+	let gxA = new GraphixA(grA, 0, 0);
+	let grD = createGraphics(width/2, height/2);
+	let gxD = new GraphixD(grD, width/2, height/2);
 }
 
 class GraphixA{
 
-	constructor(gr){
+	constructor(gr, x, y){
+
+		this._gr = gr;
+		this._cX = gr.width / 2;
+		this._cY = gr.height / 2;
+
+		this._gr.stroke(33);
+		this._gr.strokeWeight(1);
+		this._gr.noFill();
+		this._gr.background(255, 120, 120);
+
+		let s = 40;
+		let p = s*cos(30)*2;
+		let rows = floor(this._gr.height / s);
+		let cols = floor(this._gr.width / s);
+		for(let r=0; r<rows+1; r++){
+			for(let c=-rows; c<cols; c++){
+				let x = c * p + (p*r) / 2;
+				let y = r * (s+sin(30)*s);
+				
+			}
+		}
+		image(gr, x, y);
+	}
+}
+
+class GraphixD{
+
+	constructor(gr, x, y){
 
 		this._gr = gr;
 		this._cX = gr.width / 2;
@@ -42,6 +71,7 @@ class GraphixA{
 				}
 			}
 		}
+		image(gr, x, y);
 	}
 
 	drawCubeA(cX, cY, s){
