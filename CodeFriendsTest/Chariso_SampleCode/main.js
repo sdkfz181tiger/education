@@ -14,12 +14,12 @@ function gameStart(){
     var stage = new Group();
     scene.addChild(stage);
 
-    // 背景
+    // 1, 背景
     var back = new Sprite(scene.width, scene.height);
     back.backgroundColor = "skyblue";
     stage.addChild(back);
 
-    // Player
+    // 2, プレイヤー
     var player = new Sprite(32, 32);
     player.image = core.assets.player;
     player.x = 60;
@@ -30,17 +30,21 @@ function gameStart(){
     player.jumpCnt = 0;// ジャンプカウンター
     scene.addChild(player);
 
-    // 地面の高さを格納した配列
+    // 3-1, 地面の高さを格納した配列
     let arr = [
+        150, 140, 130, 120, 110, 100, 90, 80, 70, 60,
+        100, 100, 100, 100, 100, 110, 120, 130, 140, 150,
+        150, 140, 130, 120, 110, 100, 90, 80, 70, 60, 80,
+        150, 140, 130, 120, 110, 100, 90, 80, 70, 60,
         100, 100, 100, 100, 100, 110, 120, 130, 140, 150,
         150, 140, 130, 120, 110, 100, 90, 80, 70, 60, 80
     ];
 
-    // 地面グループ
+    // 3-2, 地面グループ
     var landGroup = new Group();
     scene.addChild(landGroup);
 
-    // 配列から地面オブジェクトを作る
+    // 3-3, 配列から地面オブジェクトを作る
     let landW = 42;
     for (let i = 0; i < arr.length; i++){
         // 地面オブジェクト
@@ -51,7 +55,24 @@ function gameStart(){
         landGroup.addChild(land);
     }
 
-    // タッチイベント
+    // 4, 連続処理
+    scene.on(Event.ENTER_FRAME, function(){
+        // 地に足がついているかどうか
+        if (player.isCollision == false) {
+            // 重力を速度に加算
+            player.vY += player.gY;
+            // 速度を座標に反映
+            player.y += player.vY;
+        }
+        // 地面グループを左に移動させる
+        landGroup.x -= 2;
+        // プレイヤーが画面下に落ちた場合はゲームオーバー
+        if (scene.height < player.y) {
+            gameOver();
+        }
+    });
+
+    // 5, タッチイベント
     scene.on(Event.TOUCH_START, function(){
 
         // ジャンプ回数が2未満の時
@@ -62,46 +83,28 @@ function gameStart(){
             player.y += player.vY;
             // ジャンプカウンターをカウントアップ
             player.jumpCnt++;
-            return;
         }
     });
 
-    // エンターフレーム (連続処理)
-    scene.on(Event.ENTER_FRAME, function(){
-        // プレイヤーが画面下に落ちた場合はゲームオーバー
-        if (scene.height < player.y) {
-            gameOver();
-        }
-        // 地に足がついているかどうか
-        if (player.isCollision == false) {
-            // 重力を速度に加算
-            player.vY += player.gY;
-            // 速度を座標に反映
-            player.y += player.vY;
-        }
-        // 地面グループを左に移動させる
-        landGroup.x -= 2;
-    });
-
+    // 6, プレイヤーが地面オブジェクトと衝突した場合
     player.addCollision(landGroup);
     player.on(Event.COLLISION, function(e) {
 
         player.jumpCnt = 0;// ジャンプカウンターのリセット
 
         // プレイヤーより高い壁だった場合はゲームオーバー
-        if (e.collision.target.y < player.y) {
+        if(e.collision.target.y < player.y){
             gameOver();
         }
 
-        // プレイヤーが地面オブジェクトと衝突した場合
-        if (e.collision.target.y < player.y + player.height) {
-            // 地面の高さまでプレイヤーを移動する（1ピクセル接触している状態）
+        // プレイヤーの足元(座標y+高さ)より地面が高い場合
+        if(e.collision.target.y < player.y + player.height){
+            // 地面の高さまでプレイヤーを移動する（1ピクセル接触している状態にする）
             player.y = e.collision.target.y - player.height + 1;
-            // 速度を初期化
+            // 垂直速度を0にする(停止)
             player.vY = 0;
         }
     });
-    
 };
 
 function gameOver() {
