@@ -9,12 +9,13 @@ function setup(){
 
 function draw(){
 	
-	let pallets = [];
-	pallets.push(color(22, 105, 122));
-	pallets.push(color(72, 159, 181));
-	pallets.push(color(130, 192, 204));
-	pallets.push(color(237, 231, 227));
-	pallets.push(color(255, 166, 43));
+	let pallets = [
+		color(22, 105, 122),
+		color(72, 159, 181),
+		color(130, 192, 204),
+		color(237, 231, 227),
+		color(255, 166, 43)
+	];
 
 	background(150);
 	noStroke();
