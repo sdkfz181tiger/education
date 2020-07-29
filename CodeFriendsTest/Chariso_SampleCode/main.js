@@ -1,6 +1,6 @@
 var assets = {
-    player: "images/sukebo.png",
-    land: "images/land42x320.png",
+    player: "images/chari_sukebo.png",
+    land: "images/chari_land.png",
     title: "images/title.png",
     jump: "sounds/jump.mp3"
 };
@@ -57,6 +57,8 @@ function gameStart(){
 
     // 4, 連続処理
     scene.on(Event.ENTER_FRAME, function(){
+        // 地面グループを左に移動させる
+        landGroup.x -= 2;
         // 地に足がついているかどうか
         if (player.isCollision == false) {
             // 重力を速度に加算
@@ -64,8 +66,6 @@ function gameStart(){
             // 速度を座標に反映
             player.y += player.vY;
         }
-        // 地面グループを左に移動させる
-        landGroup.x -= 2;
         // プレイヤーが画面下に落ちた場合はゲームオーバー
         if (scene.height < player.y) {
             gameOver();
