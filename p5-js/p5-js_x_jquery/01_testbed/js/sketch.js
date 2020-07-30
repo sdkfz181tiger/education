@@ -39,12 +39,12 @@ function windowResized(){
 
 function draw(){
 
-	for(let i=0; i<100; i++){
+	for(let i=0; i<200; i++){
 		let x = random(width);
 		let y = random(height);
 		let s = random(40, 80);
 		let h = 180 + random(120);
-		fill(h, 90, 90);
+		fill(h, 60, 90);
 		circle(x, y, s);
 	}
 }
