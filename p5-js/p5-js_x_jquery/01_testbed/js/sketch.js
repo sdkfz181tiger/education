@@ -30,6 +30,13 @@ function setup(){
 	$("ul").append("<li>Nougat</li>");
 }
 
+function windowResized(){
+	// Canvas
+	let canvas = resizeCanvas(windowWidth, windowHeight);
+	canvas.position(0, 0);
+	canvas.style("z-index", "-1");
+}
+
 function draw(){
 
 	for(let i=0; i<100; i++){
