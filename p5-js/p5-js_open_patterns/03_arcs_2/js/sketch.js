@@ -20,7 +20,6 @@ function draw(){
 	angleMode(DEGREES);
 	rectMode(CENTER);
 
-	let len = colors.length;
 	let d = 64;
 	let rows = height / d;
 	let cols = width / d;
