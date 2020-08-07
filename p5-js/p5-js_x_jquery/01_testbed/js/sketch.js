@@ -6,6 +6,7 @@ function setup(){
 	// Canvas
 	let canvas = createCanvas(windowWidth, windowHeight);
 	canvas.position(0, 0);
+	canvas.style("position", "fixed");
 	canvas.style("z-index", "-1");
 
 	noLoop();
@@ -34,6 +35,7 @@ function windowResized(){
 	// Canvas
 	let canvas = resizeCanvas(windowWidth, windowHeight);
 	canvas.position(0, 0);
+	canvas.style("position", "fixed");
 	canvas.style("z-index", "-1");
 }
 
