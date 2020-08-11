@@ -2,6 +2,65 @@
 //==========
 // p5.js
 
+let MINO_I = [
+	[0, 0, 1, 0,
+	 0, 0, 1, 0,
+	 0, 0, 1, 0,
+	 0, 0, 1, 0],
+	[0, 0, 0, 0,
+	 0, 0, 0, 0,
+	 1, 1, 1, 1,
+	 0, 0, 0, 0],
+	[0, 1, 0, 0,
+	 0, 1, 0, 0,
+	 0, 1, 0, 0,
+	 0, 1, 0, 0],
+	[0, 0, 0, 0,
+	 1, 1, 1, 1,
+	 0, 0, 0, 0,
+	 0, 0, 0, 0]
+];
+
+let MINO_L = [
+	[0, 2, 0, 0,
+	 0, 2, 0, 0,
+	 0, 2, 2, 0,
+	 0, 0, 0, 0],
+	[0, 0, 0, 0,
+	 0, 2, 2, 2,
+	 0, 2, 0, 0,
+	 0, 0, 0, 0],
+	[0, 0, 0, 0,
+	 0, 2, 2, 0,
+	 0, 0, 2, 0,
+	 0, 0, 2, 0],
+	[0, 0, 0, 0,
+	 0, 0, 2, 0,
+	 2, 2, 2, 0,
+	 0, 0, 0, 0]
+];
+
+let MINO_J = [
+	[0, 0, 3, 0,
+	 0, 0, 3, 0,
+	 0, 3, 3, 0,
+	 0, 0, 0, 0],
+	[0, 0, 0, 0,
+	 0, 3, 0, 0,
+	 0, 3, 3, 3,
+	 0, 0, 0, 0],
+	[0, 0, 0, 0,
+	 0, 3, 3, 0,
+	 0, 3, 0, 0,
+	 0, 3, 0, 0],
+	[0, 0, 0, 0,
+	 3, 3, 3, 0,
+	 0, 0, 3, 0,
+	 0, 0, 0, 0]
+];
+
+let MINOS = [MINO_I, MINO_L, MINO_J];
+
 let colors = ["#386641", "#6A994E", "#A7C957", "#F2E8CF", "#BC4749"];
 let cX, cY, tManager;
 
@@ -36,10 +95,10 @@ function mousePressed(){
 class TetrisManager{
 
 	constructor(){
-		this._rows = 10;
-		this._cols = 10;
+		this._rows  = 20;
+		this._cols  = 10;
 		this._grids = [];
-		this._mino = null;
+		this._mino  = null;
 		this.init();
 		this.createMino();
 		this.check();
@@ -53,23 +112,22 @@ class TetrisManager{
 	}
 
 	createMino(){
-		let rdm = floor(Math.random()*8);
-		this._mino = new Mino(0, rdm);
+		this._mino = new Mino(0, 3);
 	}
 
 	fixMino(){
 		if(this._mino == null) return;
-		let mR = this._mino.r;
-		let mC = this._mino.c;
 		let size = this._mino.size;
 		for(let r=0; r<size; r++){
 			for(let c=0; c<size; c++){
-				let iR = r+mR;
-				let iC = c+mC;
+				let iR = r+this._mino.r;
+				let iC = c+this._mino.c;
 				let i = iR*this._cols + iC;
 				if(iR < 0 || iC < 0) continue;
 				if(this._rows < iR) continue;
 				if(this._cols < iC) continue;
+				if(this._mino.getGrid(r, c) == 0) continue;
+				if(this._grids[i] != 0) continue;
 				this._grids[i] = this._mino.getGrid(r, c);
 			}
 		}
@@ -77,16 +135,14 @@ class TetrisManager{
 
 	checkCollision(){
 		if(this._mino == null) return false;
-		let mR = this._mino.r;
-		let mC = this._mino.c;
 		let size = this._mino.size;
 		for(let r=0; r<size; r++){
 			for(let c=0; c<size; c++){
-				let iR = r+mR;
-				let iC = c+mC;
+				let iR = r+this._mino.r;
+				let iC = c+this._mino.c;
 				let i = iR*this._cols + iC;
-				if(this._grids[i] == 0) continue;
-				if(this._mino.getGrid(r, c) != 0) return true;
+				if(this._mino.getGrid(r, c) == 0) continue;
+				if(this._grids[i] != 0) return true;
 				if(this._rows-1 < iR) return true;
 			}
 		}
@@ -106,17 +162,17 @@ class TetrisManager{
 	check(){
 		let data = [];
 		for(let n of this._grids) data.push(n);
-		let mR = this._mino.r;
-		let mC = this._mino.c;
 		let size = this._mino.size;
 		for(let r=0; r<size; r++){
 			for(let c=0; c<size; c++){
-				let iR = r+mR;
-				let iC = c+mC;
+				let iR = r+this._mino.r;
+				let iC = c+this._mino.c;
 				let i = iR*this._cols + iC;
 				if(iR < 0 || iC < 0) continue;
 				if(this._rows < iR) continue;
 				if(this._cols < iC) continue;
+				if(this._mino.getGrid(r, c) == 0) continue;
+				if(data[i] != 0) continue;
 				data[i] = this._mino.getGrid(r, c);
 			}
 		}
@@ -139,9 +195,8 @@ class Mino{
 	constructor(r, c){
 		this._r = r;
 		this._c = c;
-		this._type = 1;
-		this._size = 2;
-		this._mino =[];
+		this._size = 4;
+		this._mino = null;
 		this.init();
 	}
 
@@ -149,13 +204,12 @@ class Mino{
 	set c(n){this._c=c;}
 	get r(){return this._r;}
 	get c(){return this._c;}
-	get type(){return this._type;}
 	get size(){return this._size;}
 
 	init(){
-		for(let i=0; i<this._size**2; i++){
-			this._mino.push(this._type);
-		}
+		let i = floor(Math.random()*MINOS.length);
+		let r = floor(Math.random()*MINOS[i].length);
+		this._mino = MINOS[i][r];
 	}
 
 	getGrid(r, c){
