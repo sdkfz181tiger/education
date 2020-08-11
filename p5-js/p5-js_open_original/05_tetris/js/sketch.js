@@ -59,10 +59,9 @@ let MINO_J = [
 	 0, 0, 0, 0]
 ];
 
-let MINOS = [MINO_I, MINO_L, MINO_J];
-
-let colors = ["#386641", "#6A994E", "#A7C957", "#F2E8CF", "#BC4749"];
-let cX, cY, tManager;
+let MINOS  = [MINO_I, MINO_L, MINO_J];
+let COLORS = ["#386641", "#6A994E", "#A7C957", "#F2E8CF", "#BC4749"];
+let cX, cY, tMng;
 
 function setup(){
 	createCanvas(windowWidth, windowHeight);
@@ -74,7 +73,7 @@ function setup(){
 
 	cX = width / 2;
 	cY = height / 2;
-	tManager = new TetrisManager();
+	tMng = new TetrisManager();
 }
 
 function draw(){
@@ -83,36 +82,40 @@ function draw(){
 
 function mousePressed(){
 	console.log("mousePressed");
-	tManager.stepDown();
-	if(tManager.checkCollision()){
-		tManager.stepUp();
-		tManager.fixMino();
-		tManager.createMino();
+	tMng.stepDown();
+	if(tMng.checkCollision()){
+		tMng.stepUp();
+		tMng.fixMino();
+		tMng.createMino();
 	}
-	tManager.check();
+	tMng.check();
 }
 
 function keyPressed(){
 	if(keyCode == LEFT_ARROW){
-		if(!tManager.checkWallL()){
-			tManager.stepLeft();
+		if(!tMng.checkWallL()){
+			tMng.stepLeft();
 		}
 	}
 	if(keyCode == RIGHT_ARROW){
-		if(!tManager.checkWallR()){
-			tManager.stepRight();
+		if(!tMng.checkWallR()){
+			tMng.stepRight();
 		}
 	}
-	if(keyCode == UP_ARROW) tManager.stepUp();
+	if(keyCode == UP_ARROW){
+		//tMng.stepUp();
+		tMng.rotateL();// Test
+		//tMng.rotateR();// Test
+	}
 	if(keyCode == DOWN_ARROW){
-		tManager.stepDown();
-		if(tManager.checkCollision()){
-			tManager.stepUp();
-			tManager.fixMino();
-			tManager.createMino();
+		tMng.stepDown();
+		if(tMng.checkCollision()){
+			tMng.stepUp();
+			tMng.fixMino();
+			tMng.createMino();
 		}
 	}
-	tManager.check();
+	tMng.check();
 }
 
 class TetrisManager{
@@ -218,6 +221,16 @@ class TetrisManager{
 		this._mino.stepRight();
 	}
 
+	rotateL(){
+		if(this._mino == null) return;
+		this._mino.rotateL();
+	}
+
+	rotateR(){
+		if(this._mino == null) return;
+		this._mino.rotateR();
+	}
+
 	check(){
 		let data = [];
 		for(let n of this._grids) data.push(n);
@@ -254,8 +267,10 @@ class Mino{
 	constructor(r, c){
 		this._r = r;
 		this._c = c;
-		this._size = 4;
-		this._mino = null;
+		this._s = 4;
+		this._i = 0;
+		this._j = 0;
+		this._m = null;
 		this.init();
 	}
 
@@ -263,32 +278,36 @@ class Mino{
 	set c(n){this._c=c;}
 	get r(){return this._r;}
 	get c(){return this._c;}
-	get size(){return this._size;}
+	get size(){return this._s;}
 
 	init(){
-		let i = floor(Math.random()*MINOS.length);
-		let r = floor(Math.random()*MINOS[i].length);
-		this._mino = MINOS[i][r];
+		this._i = floor(Math.random()*MINOS.length);
+		this._j = floor(Math.random()*MINOS[this._i].length);
+		this._m = MINOS[this._i][this._j];
 	}
 
 	getGrid(r, c){
-		let i = r*this._size + c;
-		return this._mino[i];
+		let i = r*this._s + c;
+		return this._m[i];
 	}
 
-	stepUp(){
-		this._r--;
+	stepUp(){this._r--;}
+
+	stepDown(){this._r++;}
+
+	stepLeft(){this._c--;}
+
+	stepRight(){this._c++;}
+
+	rotateL(){
+		this._j--;
+		if(this._j < 0) this._j = MINOS[this._i].length - 1;
+		this._m = MINOS[this._i][this._j];
 	}
 
-	stepDown(){
-		this._r++;
-	}
-
-	stepLeft(){
-		this._c--;
-	}
-
-	stepRight(){
-		this._c++;
+	rotateR(){
+		this._j++;
+		if(MINOS[this._i].length <= this._j) this._j = 0;
+		this._m = MINOS[this._i][this._j];
 	}
 }
