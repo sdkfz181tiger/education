@@ -3,14 +3,6 @@
 // p5.js
 
 let MINO_I = [
-	[0, 0, 1, 0,
-	 0, 0, 1, 0,
-	 0, 0, 1, 0,
-	 0, 0, 1, 0],
-	[0, 0, 0, 0,
-	 0, 0, 0, 0,
-	 1, 1, 1, 1,
-	 0, 0, 0, 0],
 	[0, 1, 0, 0,
 	 0, 1, 0, 0,
 	 0, 1, 0, 0,
@@ -59,15 +51,65 @@ let MINO_J = [
 	 0, 0, 0, 0]
 ];
 
-let MINOS   = [MINO_I, MINO_L, MINO_J];
-let COLORS  = ["#386641", "#6A994E", "#A7C957", "#F2E8CF", "#BC4749"];
+let MINO_O = [
+	[0, 0, 0, 0,
+	 0, 4, 4, 0,
+	 0, 4, 4, 0,
+	 0, 0, 0, 0]
+];
+
+let MINO_Z = [
+	[0, 0, 0, 0,
+	 0, 5, 5, 0,
+	 0, 0, 5, 5,
+	 0, 0, 0, 0],
+	[0, 0, 0, 0,
+	 0, 0, 5, 0,
+	 0, 5, 5, 0,
+	 0, 5, 0, 0]
+];
+
+let MINO_S = [
+	[0, 0, 0, 0,
+	 0, 6, 6, 0,
+	 6, 6, 0, 0,
+	 0, 0, 0, 0],
+	[0, 6, 0, 0,
+	 0, 6, 6, 0,
+	 0, 0, 6, 0,
+	 0, 0, 0, 0]
+];
+
+let MINO_T = [
+	[0, 0, 0, 0,
+	 0, 7, 0, 0,
+	 7, 7, 7, 0,
+	 0, 0, 0, 0],
+	[0, 7, 0, 0,
+	 0, 7, 7, 0,
+	 0, 7, 0, 0,
+	 0, 0, 0, 0],
+	[0, 0, 0, 0,
+	 0, 7, 7, 7,
+	 0, 0, 7, 0,
+	 0, 0, 0, 0],
+	[0, 0, 0, 0,
+	 0, 0, 7, 0,
+	 0, 7, 7, 0,
+	 0, 0, 7, 0]
+];
+
+const ROWS    = 15;
+const COLS    = 10;
+const MINOS   = [MINO_I, MINO_L, MINO_J, MINO_O, MINO_S, MINO_Z, MINO_T];
+const COLORS  = ["#386641", "#6A994E", "#A7C957", "#F2E8CF", "#BC4749"];
+const R_SIZE  = 8;
 let cX, cY, tMng;
 
 function setup(){
 	createCanvas(windowWidth, windowHeight);
 	angleMode(DEGREES);
-	rectMode(CENTER);
-	frameRate(2);
+	frameRate(1);
 	fill(255);
 	noStroke();
 
@@ -78,39 +120,34 @@ function setup(){
 
 function draw(){
 	background(33);
-	tMng.stepDown();
-	if(tMng.checkCollision()){
-		tMng.stepUp();
-		tMng.fixMino();
-		tMng.createMino();
+	tMng.updateTetris();
+	let data = tMng.check();
+	for(let r=0; r<ROWS; r++){
+		for(let c=0; c<COLS; c++){
+			let sX = cX - (R_SIZE*COLS) / 2;
+			let sY = cY - (R_SIZE*ROWS) / 2;
+			let n = data[r*COLS+c];
+			if(n == 0) continue;
+			let x = sX + R_SIZE * c;
+			let y = sY + R_SIZE * r;
+			fill(COLORS[n%COLORS.length]);
+			square(x, y, R_SIZE);
+		}
 	}
-	tMng.check();
-}
-
-function mousePressed(){
-	console.log("mousePressed");
-	tMng.stepDown();
-	if(tMng.checkCollision()){
-		tMng.stepUp();
-		tMng.fixMino();
-		tMng.createMino();
-	}
-	tMng.check();
 }
 
 function keyPressed(){
 	if(keyCode == LEFT_ARROW){
-		if(!tMng.checkWallL()){
-			tMng.stepLeft();
-		}
+		if(tMng.checkWallL()) return;
+		tMng.stepLeft();
+		if(tMng.checkCollision()) tMng.stepRight();
 	}
 	if(keyCode == RIGHT_ARROW){
-		if(!tMng.checkWallR()){
-			tMng.stepRight();
-		}
+		if(tMng.checkWallR()) return;
+		tMng.stepRight();
+		if(tMng.checkCollision()) tMng.stepLeft();
 	}
 	if(keyCode == UP_ARROW){
-		//tMng.stepUp();
 		tMng.rotateL();
 		tMng.checkRotation();
 		//tMng.rotateR();// Test
@@ -129,20 +166,27 @@ function keyPressed(){
 class TetrisManager{
 
 	constructor(){
-		this._rows  = 20;
-		this._cols  = 10;
 		this._grids = [];
 		this._mino  = null;
 		this.init();
 		this.createMino();
-		this.check();
 	}
 
 	init(){
-		let total = this._rows * this._cols;
+		let total = ROWS * COLS;
 		for(let t=0; t<total; t++){
 			this._grids.push(0);
 		}
+	}
+
+	updateTetris(){
+		this.stepDown();
+		if(this.checkCollision()){
+			this.stepUp();
+			this.fixMino();
+			this.createMino();
+		}
+		this.check();
 	}
 
 	createMino(){
@@ -156,10 +200,10 @@ class TetrisManager{
 			for(let c=0; c<size; c++){
 				let iR = r+this._mino.r;
 				let iC = c+this._mino.c;
-				let i = iR*this._cols + iC;
+				let i = iR*COLS + iC;
 				if(iR < 0 || iC < 0) continue;
-				if(this._rows < iR) continue;
-				if(this._cols < iC) continue;
+				if(ROWS < iR) continue;
+				if(COLS < iC) continue;
 				if(this._mino.getGrid(r, c) == 0) continue;
 				if(this._grids[i] != 0) continue;
 				this._grids[i] = this._mino.getGrid(r, c);
@@ -174,10 +218,10 @@ class TetrisManager{
 			for(let c=0; c<size; c++){
 				let iR = r+this._mino.r;
 				let iC = c+this._mino.c;
-				let i = iR*this._cols + iC;
+				let i = iR*COLS + iC;
 				if(this._mino.getGrid(r, c) == 0) continue;
 				if(this._grids[i] != 0) return true;
-				if(this._rows-1 < iR) return true;
+				if(ROWS-1 < iR) return true;
 			}
 		}
 		return false;
@@ -203,7 +247,7 @@ class TetrisManager{
 			for(let c=0; c<size; c++){
 				let iC = c+this._mino.c+1;
 				if(this._mino.getGrid(r, c) == 0) continue;
-				if(this._cols <= iC) return true;
+				if(COLS <= iC) return true;
 			}
 		}
 		return false;
@@ -213,8 +257,8 @@ class TetrisManager{
 		if(this._mino.c < 0){
 			this._mino.c = -this._mino.getLeftIndex();
 		}
-		if(this._cols < this._mino.c+this._mino.size){
-			this._mino.c = (this._cols-1) - this._mino.getRightIndex();
+		if(COLS < this._mino.c+this._mino.size){
+			this._mino.c = (COLS-1) - this._mino.getRightIndex();
 		}
 	}
 
@@ -256,26 +300,27 @@ class TetrisManager{
 			for(let c=0; c<size; c++){
 				let iR = r+this._mino.r;
 				let iC = c+this._mino.c;
-				let i = iR*this._cols + iC;
+				let i = iR*COLS + iC;
 				if(iR < 0 || iC < 0) continue;
-				if(this._rows < iR) continue;
-				if(this._cols <= iC) continue;
+				if(ROWS < iR) continue;
+				if(COLS <= iC) continue;
 				if(this._mino.getGrid(r, c) == 0) continue;
 				if(data[i] != 0) continue;
 				data[i] = this._mino.getGrid(r, c);
 			}
 		}
 		let str = "=======================\n";
-		for(let r=0; r<this._rows; r++){
+		for(let r=0; r<ROWS; r++){
 			let line = "| ";
-			for(let c=0; c<this._cols; c++){
-				let iG = r*this._cols + c;
+			for(let c=0; c<COLS; c++){
+				let iG = r*COLS + c;
 				line += (data[iG]==0) ? "  ":data[iG]+" ";
 			}
 			str += line + "|\n";
 		}
 		str += "=======================\n";
 		console.log(str);
+		return data;
 	}
 }
 
