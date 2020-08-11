@@ -92,6 +92,29 @@ function mousePressed(){
 	tManager.check();
 }
 
+function keyPressed(){
+	if(keyCode == LEFT_ARROW){
+		if(!tManager.checkWallL()){
+			tManager.stepLeft();
+		}
+	}
+	if(keyCode == RIGHT_ARROW){
+		if(!tManager.checkWallR()){
+			tManager.stepRight();
+		}
+	}
+	if(keyCode == UP_ARROW) tManager.stepUp();
+	if(keyCode == DOWN_ARROW){
+		tManager.stepDown();
+		if(tManager.checkCollision()){
+			tManager.stepUp();
+			tManager.fixMino();
+			tManager.createMino();
+		}
+	}
+	tManager.check();
+}
+
 class TetrisManager{
 
 	constructor(){
@@ -149,6 +172,32 @@ class TetrisManager{
 		return false;
 	}
 
+	checkWallL(){
+		if(this._mino == null) return false;
+		let size = this._mino.size;
+		for(let r=0; r<size; r++){
+			for(let c=0; c<size; c++){
+				let iC = c+this._mino.c-1;
+				if(this._mino.getGrid(r, c) == 0) continue;
+				if(iC < 0) return true;
+			}
+		}
+		return false;
+	}
+
+	checkWallR(){
+		if(this._mino == null) return false;
+		let size = this._mino.size;
+		for(let r=0; r<size; r++){
+			for(let c=0; c<size; c++){
+				let iC = c+this._mino.c+1;
+				if(this._mino.getGrid(r, c) == 0) continue;
+				if(this._cols <= iC) return true;
+			}
+		}
+		return false;
+	}
+
 	stepUp(){
 		if(this._mino == null) return;
 		this._mino.stepUp();
@@ -157,6 +206,16 @@ class TetrisManager{
 	stepDown(){
 		if(this._mino == null) return;
 		this._mino.stepDown();
+	}
+
+	stepLeft(){
+		if(this._mino == null) return;
+		this._mino.stepLeft();
+	}
+
+	stepRight(){
+		if(this._mino == null) return;
+		this._mino.stepRight();
 	}
 
 	check(){
@@ -170,7 +229,7 @@ class TetrisManager{
 				let i = iR*this._cols + iC;
 				if(iR < 0 || iC < 0) continue;
 				if(this._rows < iR) continue;
-				if(this._cols < iC) continue;
+				if(this._cols <= iC) continue;
 				if(this._mino.getGrid(r, c) == 0) continue;
 				if(data[i] != 0) continue;
 				data[i] = this._mino.getGrid(r, c);
@@ -223,5 +282,13 @@ class Mino{
 
 	stepDown(){
 		this._r++;
+	}
+
+	stepLeft(){
+		this._c--;
+	}
+
+	stepRight(){
+		this._c++;
 	}
 }
