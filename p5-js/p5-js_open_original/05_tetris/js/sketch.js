@@ -59,15 +59,15 @@ let MINO_J = [
 	 0, 0, 0, 0]
 ];
 
-let MINOS  = [MINO_I, MINO_L, MINO_J];
-let COLORS = ["#386641", "#6A994E", "#A7C957", "#F2E8CF", "#BC4749"];
+let MINOS   = [MINO_I, MINO_L, MINO_J];
+let COLORS  = ["#386641", "#6A994E", "#A7C957", "#F2E8CF", "#BC4749"];
 let cX, cY, tMng;
 
 function setup(){
 	createCanvas(windowWidth, windowHeight);
 	angleMode(DEGREES);
 	rectMode(CENTER);
-	frameRate(1);
+	frameRate(2);
 	fill(255);
 	noStroke();
 
@@ -78,6 +78,13 @@ function setup(){
 
 function draw(){
 	background(33);
+	tMng.stepDown();
+	if(tMng.checkCollision()){
+		tMng.stepUp();
+		tMng.fixMino();
+		tMng.createMino();
+	}
+	tMng.check();
 }
 
 function mousePressed(){
@@ -104,7 +111,8 @@ function keyPressed(){
 	}
 	if(keyCode == UP_ARROW){
 		//tMng.stepUp();
-		tMng.rotateL();// Test
+		tMng.rotateL();
+		tMng.checkRotation();
 		//tMng.rotateR();// Test
 	}
 	if(keyCode == DOWN_ARROW){
@@ -201,6 +209,15 @@ class TetrisManager{
 		return false;
 	}
 
+	checkRotation(){
+		if(this._mino.c < 0){
+			this._mino.c = -this._mino.getLeftIndex();
+		}
+		if(this._cols < this._mino.c+this._mino.size){
+			this._mino.c = (this._cols-1) - this._mino.getRightIndex();
+		}
+	}
+
 	stepUp(){
 		if(this._mino == null) return;
 		this._mino.stepUp();
@@ -275,7 +292,7 @@ class Mino{
 	}
 
 	set r(n){this._r=n;}
-	set c(n){this._c=c;}
+	set c(n){this._c=n;}
 	get r(){return this._r;}
 	get c(){return this._c;}
 	get size(){return this._s;}
@@ -309,5 +326,25 @@ class Mino{
 		this._j++;
 		if(MINOS[this._i].length <= this._j) this._j = 0;
 		this._m = MINOS[this._i][this._j];
+	}
+
+	getLeftIndex(){
+		for(let c=0; c<this._s; c++){
+			for(let r=0; r<this._s; r++){
+				let i = r*this._s + c;
+				if(this._m[i] != 0) return c;
+			}
+		}
+		return 0;
+	}
+
+	getRightIndex(){
+		for(let c=this._s-1; 0<=c; c--){
+			for(let r=this._s-1; 0<=r; r--){
+				let i = r*this._s + c;
+				if(this._m[i] != 0) return c;
+			}
+		}
+		return 0;
 	}
 }
