@@ -341,7 +341,7 @@ class TetrisManager{
 			str += line + "|\n";
 		}
 		str += "=======================\n";
-		console.clear();
+		//console.clear();
 		console.log(str);
 		return data;
 	}
