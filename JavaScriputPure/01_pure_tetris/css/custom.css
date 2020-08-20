@@ -2,13 +2,13 @@
 
 body{
 	margin: 0px; padding: 0px;
-	background-color: #333333;
+	background-color: #000000;
 	color: #ffffff;
 }
 
 #canvas{
 	margin: 0px; padding: 0px;
-	width:320px; height: 480px;
-	background-color: #333333;
+	width: auto; height: auto;
+	background-color: #000000;
 	color: #ffffff;
 }

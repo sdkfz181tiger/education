@@ -100,13 +100,12 @@ let MINO_T = [
 ];
 
 const MINOS  = [MINO_I, MINO_L, MINO_J, MINO_O, MINO_S, MINO_Z, MINO_T];
-const ROWS   = 20;
-const COLS   = 10;
-const R_SIZE = 8;
 
 class TetrisManager{
 
-	constructor(debug=false){
+	constructor(rows=20,cols=10,debug=false){
+		this._rows  = rows;
+		this._cols  = cols;
 		this._debug = debug;
 		this._grids = [];
 		this._mino  = null;
@@ -114,22 +113,23 @@ class TetrisManager{
 	}
 
 	init(){
-		let total = ROWS * COLS;
+		let total = this._rows * this._cols;
 		for(let t=0; t<total; t++){
 			this._grids.push(0);
 		}
 		this.createMino();
+		this.step();
 	}
 
-	update(){
+	step(){
 		this.stepDown();
 		if(this.checkCollision()){
 			this.stepUp();
 			this.fixMino();
 			this.createMino();
 		}
-		this.checkLines(ROWS-1);
-		return this.getData();
+		this.checkLines(this._rows-1);
+		setTimeout(()=>{this.step();}, 1000);
 	}
 
 	createMino(){
@@ -142,10 +142,10 @@ class TetrisManager{
 			for(let c=0; c<size; c++){
 				let iR = r+this._mino.r;
 				let iC = c+this._mino.c;
-				let i = iR*COLS + iC;
+				let i = iR*this._cols + iC;
 				if(iR < 0 || iC < 0) continue;
-				if(ROWS < iR) continue;
-				if(COLS < iC) continue;
+				if(this._rows < iR) continue;
+				if(this._cols < iC) continue;
 				if(this._mino.getGrid(r, c) == 0) continue;
 				if(this._grids[i] != 0) continue;
 				this._grids[i] = this._mino.getGrid(r, c);
@@ -159,10 +159,10 @@ class TetrisManager{
 			for(let c=0; c<size; c++){
 				let iR = r+this._mino.r;
 				let iC = c+this._mino.c;
-				let i = iR*COLS + iC;
+				let i = iR*this._cols + iC;
 				if(this._mino.getGrid(r, c) == 0) continue;
 				if(this._grids[i] != 0) return true;
-				if(ROWS-1 < iR) return true;
+				if(this._rows-1 < iR) return true;
 			}
 		}
 		return false;
@@ -186,7 +186,7 @@ class TetrisManager{
 			for(let c=0; c<size; c++){
 				let iC = c+this._mino.c+1;
 				if(this._mino.getGrid(r, c) == 0) continue;
-				if(COLS <= iC) return true;
+				if(this._cols <= iC) return true;
 			}
 		}
 		return false;
@@ -196,22 +196,22 @@ class TetrisManager{
 		if(this._mino.c < 0){
 			this._mino.c = -this._mino.getLIndex();
 		}
-		if(COLS < this._mino.c+this._mino.size){
-			this._mino.c = (COLS-1) - this._mino.getRIndex();
+		if(this._cols < this._mino.c+this._mino.size){
+			this._mino.c = (this._cols-1) - this._mino.getRIndex();
 		}
 	}
 
 	checkLines(last){
 		for(let r=last; 0<=r; r--){
 			let filled = true;
-			for(let c=0; c<COLS; c++){
-				let n = this._grids[r*COLS+c];
+			for(let c=0; c<this._cols; c++){
+				let n = this._grids[r*this._cols+c];
 				if(n != 0) continue;
 				filled = false;
 			}
 			if(filled == true){
-				this._grids.splice(r*COLS, COLS);// Delete and fill
-				for(let i=0; i<COLS; i++) this._grids.unshift(0);
+				this._grids.splice(r*this._cols, this._cols);// Delete and fill
+				for(let i=0; i<this._cols; i++) this._grids.unshift(0);
 				this.checkLines(r);// Recursive
 			}
 		}
@@ -249,25 +249,28 @@ class TetrisManager{
 			for(let c=0; c<size; c++){
 				let iR = r+this._mino.r;
 				let iC = c+this._mino.c;
-				let i = iR*COLS + iC;
+				let i = iR*this._cols + iC;
 				if(iR < 0 || iC < 0) continue;
-				if(ROWS < iR) continue;
-				if(COLS <= iC) continue;
+				if(this._rows < iR) continue;
+				if(this._cols <= iC) continue;
 				if(this._mino.getGrid(r, c) == 0) continue;
 				if(data[i] != 0) continue;
 				data[i] = this._mino.getGrid(r, c);
 			}
 		}
-		let str = "=======================\n";
-		for(let r=0; r<ROWS; r++){
+		let bar = "";
+		for(let b=0; b<this._cols*2+3; b++) bar += "=";
+		bar += "\n";
+		let str = bar;
+		for(let r=0; r<this._rows; r++){
 			let line = "| ";
-			for(let c=0; c<COLS; c++){
-				let iG = r*COLS + c;
+			for(let c=0; c<this._cols; c++){
+				let iG = r*this._cols + c;
 				line += (data[iG]==0) ? "  ":data[iG]+" ";
 			}
 			str += line + "|\n";
 		}
-		str += "=======================\n";
+		str += bar;
 		if(this._debug){
 			console.clear();
 			console.log(str);

@@ -19,8 +19,8 @@ function draw(){
 	let padX = RAD+RAD*cos(60);
 	let padY = RAD*sin(60);
 	let oddX = RAD-RAD*cos(60);
-	let rows = height / padY + 1;
-	let cols = width / padX + 1;
+	// let rows = height / padY + 1;
+	// let cols = width / padX + 1;
 
 	for(let r=0; r<4; r++){
 		for(let c=0; c<4; c++){
@@ -32,8 +32,6 @@ function draw(){
 		}
 	}
 
-	//drawTriangle(100, 100, 0);
-	//drawTriangle(100+padX, 100+padY, 180);
 }
 
 function drawTriangle(x, y, r){
