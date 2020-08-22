@@ -120,6 +120,13 @@ class TetrisManager{
 		}
 	}
 
+	isGameOver(){
+		for(let c=0; c<this._cols; c++){
+			if(this._grids[c] != 0) return true;
+		}
+		return false;
+	}
+
 	stepUp(){
 		this._mino.stepUp();
 	}

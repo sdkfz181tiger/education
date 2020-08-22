@@ -105,7 +105,7 @@ const COLORS = ["#E60012", "#F39800", "#FFF100", "#009944", "#0068B7", "#1D2088"
 
 const WIDTH  = 240;
 const HEIGHT = 320;
-const ROWS   = 15;
+const ROWS   = 18;
 const COLS   = 10;
 const SIZE   = 16;
 
@@ -117,13 +117,19 @@ canvas.height = HEIGHT;
 const ctx = canvas.getContext("2d");
 
 // Tetris Manager
-let tMng = new TetrisManager(ROWS, COLS, MINOS, false);
+let tMng = new TetrisManager(ROWS, COLS, MINOS, true);
 
 // Step
 step();
 function step(){
+	if(tMng.isGameOver()){
+		console.log("GAME OVER");
+		return;
+	}
 	let dels = tMng.step();// Step
-	console.log("You deleted:" + dels + " lines!!");
+	if(0 < dels){
+		console.log("You deleted:" + dels + " lines!!");
+	}
 	setTimeout(step, 1000);
 }
 
@@ -158,7 +164,7 @@ function update(){
 
 // Keyboard
 document.addEventListener("keydown", (e)=>{
-
+	if(tMng.isGameOver()) return;
 	let key = e.keyCode;
 	// Left
 	if(key == 37){
