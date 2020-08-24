@@ -10,17 +10,53 @@
 //   2, 定数は値を変更することができません
 //   3, 定数を使う事でバグを減らす事ができます
 
+// 定数を宣言して初期化する
+const hoge = 100;
+console.log(hoge);
+
+//hoge = 200;// 定数の値を変更しようとしたのでエラー
+//console.log(hoge);
+
 //==========
 // [true / falseを使ってみよう]
 //   1, trueには"真", falseには"偽"という意味があります
 //   2, ifとセットで使う事が多く、判定に使います
 //   3, "true / false"は、変数に格納することができます
 
+// 変数を宣言して初期値を"true"にする
+let fuga = true;
+console.log(fuga);
+
+// もしfugaが"true"だったら...
+if(fuga){
+	console.log("貴様、見ているな!!");
+}
+
+// 変数を宣言して初期値を"false"にする
+let piyo = false;
+console.log(piyo);
+
+// もしpiyoが"true"だったら...
+if(piyo){
+	console.log("ロードローラーだ!!");
+}
+
 //==========
 // [2つに分岐する判定をしてみよう]
 //   1, elseは、if文とセットで記述します
 //   2, elseには"その他"という意味があります
 //   3, 必ずどちらかの分岐処理を行うことを覚えましょう
+
+// 変数を宣言して初期値を"true"にする
+let puyo = true;
+console.log(puyo);
+
+console.log("今日のお昼ご飯は...");
+if(puyo){
+	console.log("生姜焼き定食です!!");
+}else{
+	console.log("ビーフステーキセットです!!");
+}
 
 //==========
 // [配列をつかってみよう]
@@ -29,18 +65,90 @@
 //   3, 添字(整数)を使ってそれぞれのデータにアクセスすることができます
 //   4, 先頭のデータは添字[0]、2番目以降からは1,2,3...とアクセスします
 
+// 配列を宣言して初期値を設定する
+let teisyoku = ["ごはん", "みそしる", "しょうが焼き"];
+console.log(teisyoku[0]);
+console.log(teisyoku[1]);
+console.log(teisyoku[2]);
+//console.log(teisyoku[3]);// これはエラーです
+
+// 配列に格納されている値を変更する
+teisyoku[0] = "パン";
+teisyoku[1] = "赤ワイン";
+teisyoku[2] = "ビーフステーキ";
+console.log(teisyoku[0]);
+console.log(teisyoku[1]);
+console.log(teisyoku[2]);
+
+//==========
+// [配列とfor文]
+//   1, for文を使うと、配列の要素に一つづつ順番にアクセスできます
+//   2, lengthパラメーターは配列の要素数(総件数)を取得できます
+
+// 配列を宣言して初期値を設定する
+let family = ["ひろし", "みさえ", "しんちゃん", "シロ"];
+// 配列に格納されている要素数を取得する
+let total = family.length;
+
+// 添字(i)を利用して配列の要素にアクセスする
+for(let i=0; i<total; i++){
+	console.log(family[i]);
+}
+
+// 配列を宣言して初期値を設定する
+let ages = [35, 29, 5, 2];
+for(let i=0; i<total; i++){
+	// 一つの文章にまとめる(連結する)
+	let str = family[i] + "は" + ages[i] + "歳です!!";
+	console.log(str);
+}
+
+//==========
+// [for文を2重に使ってみよう]
+//   1, for文を2つ組み合わせる事ができます
+//   2, 初期化部分で使う変数名(iとj)は同じにしない様にしましょう
+
+console.log("掛け算自動計算システム")
+// iの値が 1, 2, 3, 4, 5... 9まで繰り返す
+for(let i=1; i<10; i++){
+	console.log(i + "の段");
+	// jの値が 1, 2, 3, 4, 5... 9まで繰り返す
+	for(let j=1; j<10; j++){
+		// iとjとを掛け算する
+		console.log(i * j);
+	}
+}
+
+//==========
+// [関数を使ってみよう]
+//   1, 関数は、処理を一つにまとめることができます
+//   2, 処理のまとまりを何度も使い回すことができます
+//   3, 関数を作っても、実行するまでは動きません
+
+// 関数を定義する
+function myFunction(){
+	console.log("関数が実行された!!");
+}
+
+// 関数を実行する
+myFunction();
+// 関数を実行する
+myFunction();
+// 関数を実行する
+myFunction();
 
 
-// 定数
-// const
-// true / false
+
+
+
+
 
 // 判定
-// if / else
 // if / && ||
-
-// 判定
 // if / else if
+
+// くり返し処理
+// for(){for(){}}
 
 // 配列と繰り返し処理
 // array / for
@@ -60,7 +168,7 @@
 
 
 
-
+/*
 //==========
 // [コンソールを使ってみる]
 
@@ -212,6 +320,6 @@ for(let i=0; i<4; i++){
 for(let i=0; i<5; i++){
 	console.log(i);
 }
-
+*/
 
 
