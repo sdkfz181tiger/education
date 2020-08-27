@@ -126,7 +126,7 @@ function step(){
 		console.log("GAME OVER");
 		return;
 	}
-	let dels = tMng.step();// Step
+	let dels = tMng.stepTetris();// Step
 	if(0 < dels){
 		console.log("You deleted:" + dels + " lines!!");
 	}
