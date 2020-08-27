@@ -125,7 +125,7 @@ class MineSweeper{
 	getCell(r, c){
 		if(this._tblSearch[r][c] == 0) return -1;// Closed
 		if(this._tblSensor[r][c] != 0) return this._tblSensor[r][c];
-		if(this._tblMine[r][c] != 0) return 9;// Mine
+		if(this._tblMine[r][c] != 0)   return 9;// Mine
 		return 0;// Opened
 	}
 
