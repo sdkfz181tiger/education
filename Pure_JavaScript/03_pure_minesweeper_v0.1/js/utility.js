@@ -15,10 +15,6 @@ class MineSweeper{
 		this.initSearch();
 	}
 
-	getMine(){return this._tblMine;}
-	getSensor(){return this._tblSensor;}
-	getSearch(){return this._tblSearch;}
-
 	initMine(mines){
 		this._tblMine = [];
 		for(let r=0; r<this._rows; r++){
@@ -127,14 +123,10 @@ class MineSweeper{
 	}
 
 	getCell(r, c){
-		if(this._tblSearch[r][c] == 0) return 0;
-		if(this._tblSensor[r][c] != 0){
-			return this._tblSensor[r][c];
-		}
-		if(this._tblMine[r][c] != 0){
-			return "x";
-		}
-		return "o";
+		if(this._tblSearch[r][c] == 0) return -1;// Closed
+		if(this._tblSensor[r][c] != 0) return this._tblSensor[r][c];
+		if(this._tblMine[r][c] != 0) return 9;// Mine
+		return 0;// Opened
 	}
 
 	consoleAll(){
