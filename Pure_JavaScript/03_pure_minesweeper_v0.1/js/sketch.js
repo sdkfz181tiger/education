@@ -3,11 +3,11 @@
 // Pure JavaScript
 
 const WIDTH  = 320;
-const HEIGHT = 240;
-const ROWS   = 9;
-const COLS   = 10;
-const PAD    = 24;
-const SIZE   = 22;
+const HEIGHT = 480;
+const ROWS   = 14;
+const COLS   = 9;
+const PAD    = 32;
+const SIZE   = 30;
 
 // Context
 const canvas  = document.getElementById("canvas");
@@ -21,7 +21,7 @@ ctx.textAlign = "center";
 const oX = Math.floor(WIDTH / 2 - COLS * PAD / 2);
 const oY = Math.floor(HEIGHT / 2 - ROWS * PAD / 2);
 
-let msMng = new MineSweeper(ROWS, COLS, 5);
+let msMng = new MineSweeper(ROWS, COLS, 8);
 show();
 
 function show(){
@@ -29,7 +29,7 @@ function show(){
 	ctx.fillStyle = "#333333";
 	ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
-	ctx.fillStyle = "#666666";
+	ctx.fillStyle = "#444444";
 	ctx.fillRect(oX, oY, COLS*PAD-1, ROWS*PAD-1);
 
 	for(let r=0; r<ROWS; r++){
