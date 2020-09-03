@@ -1,8 +1,8 @@
 "use strict";
 //==========
-// MineSweeper
+// MineSweeperManager
 
-class MineSweeper{
+class MineSweeperManager{
 
 	constructor(rows, cols, mines){
 		this._rows = rows;

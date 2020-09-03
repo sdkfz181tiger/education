@@ -1,6 +1,6 @@
 "use strict";
 //==========
-// Tetris
+// TetrisManager
 
 class TetrisManager{
 
@@ -9,9 +9,9 @@ class TetrisManager{
 		this._cols  = cols;
 		this._minos = minos;
 		this._debug = debug;
-		this._dels  = 0;
 		this._grids = [];
 		this._mino  = null;
+		this._dels  = 0;
 		this.init();
 	}
 

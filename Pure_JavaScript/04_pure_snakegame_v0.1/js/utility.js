@@ -1,8 +1,8 @@
 "use strict";
 //==========
-// MineSweeper
+// SnakeManager
 
-class SnakeGame{
+class SnakeManager{
 
 	constructor(width, height, g){
 		this._width  = width;
@@ -20,7 +20,7 @@ class SnakeGame{
 		let y = Math.floor(this._rows/2) * this._g;
 		this._body.push(new Dot(x, y));
 		this._vX = 0;
-		this._vY = 1;
+		this._vY = 0;
 		this.addFood();
 		this.addFood();
 		this.addFood();
@@ -50,9 +50,7 @@ class SnakeGame{
 		if(this._height-this._g*1.5 < this._body[0].y) return true;
 		// Head x Tail
 		for(let f=this._body.length-1; 1<f; f--){
-			let dX = this._body[0].x - this._body[f].x;
-			let dY = this._body[0].y - this._body[f].y;
-			let dist = Math.sqrt(dX*dX + dY*dY);
+			let dist = this._body[0].calcDistance(this._body[f]);
 			if(dist < this._g) return true;
 		}
 		return false;
@@ -69,9 +67,7 @@ class SnakeGame{
 		this._body[0].y += Math.floor(this._g * this._vY);
 		// Head x Foods
 		for(let f=this._foods.length-1; 0<=f; f--){
-			let dX = this._body[0].x - this._foods[f].x;
-			let dY = this._body[0].y - this._foods[f].y;
-			let dist = Math.sqrt(dX*dX + dY*dY);
+			let dist = this._body[0].calcDistance(this._foods[f]);
 			if(dist < this._g){
 				this.addBody();          // Add body
 				this.addFood();          // Add food
@@ -118,6 +114,12 @@ class Dot{
 	constructor(x, y){
 		this._x = x;
 		this._y = y;
+	}
+
+	calcDistance(target){
+		let dX = this._x - target.x;
+		let dY = this._y - target.y;
+		return Math.sqrt(dX*dX + dY*dY);
 	}
 
 	set x(num){this._x = num;}

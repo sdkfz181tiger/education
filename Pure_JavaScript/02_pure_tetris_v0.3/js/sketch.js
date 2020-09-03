@@ -1,8 +1,8 @@
 "use strict";
 //==========
-// Pure JavaScript
+// JavaScript
 
-let MINO_I = [
+const MINO_I = [
 	[0, 1, 0, 0,
 	 0, 1, 0, 0,
 	 0, 1, 0, 0,
@@ -13,7 +13,7 @@ let MINO_I = [
 	 0, 0, 0, 0]
 ];
 
-let MINO_L = [
+const MINO_L = [
 	[0, 2, 0, 0,
 	 0, 2, 0, 0,
 	 0, 2, 2, 0,
@@ -32,7 +32,7 @@ let MINO_L = [
 	 0, 0, 0, 0]
 ];
 
-let MINO_J = [
+const MINO_J = [
 	[0, 0, 3, 0,
 	 0, 0, 3, 0,
 	 0, 3, 3, 0,
@@ -51,14 +51,14 @@ let MINO_J = [
 	 0, 0, 0, 0]
 ];
 
-let MINO_O = [
+const MINO_O = [
 	[0, 0, 0, 0,
 	 0, 4, 4, 0,
 	 0, 4, 4, 0,
 	 0, 0, 0, 0]
 ];
 
-let MINO_Z = [
+const MINO_Z = [
 	[0, 0, 0, 0,
 	 0, 5, 5, 0,
 	 0, 0, 5, 5,
@@ -69,7 +69,7 @@ let MINO_Z = [
 	 0, 5, 0, 0]
 ];
 
-let MINO_S = [
+const MINO_S = [
 	[0, 0, 0, 0,
 	 0, 6, 6, 0,
 	 6, 6, 0, 0,
@@ -80,7 +80,7 @@ let MINO_S = [
 	 0, 0, 0, 0]
 ];
 
-let MINO_T = [
+const MINO_T = [
 	[0, 0, 0, 0,
 	 0, 7, 0, 0,
 	 7, 7, 7, 0,
@@ -109,18 +109,25 @@ const ROWS   = 18;
 const COLS   = 10;
 const SIZE   = 16;
 
-// Context
-const canvas  = document.getElementById("canvas");
-canvas.width  = WIDTH;
-canvas.height = HEIGHT;
+let canvas, ctx, oX, oY, tMng;
 
-const ctx = canvas.getContext("2d");
-
-// Tetris Manager
-let tMng = new TetrisManager(ROWS, COLS, MINOS, true);
+window.addEventListener("load", (e)=>{
+	// Canvas
+	canvas  = document.getElementById("canvas");
+	canvas.width  = WIDTH;
+	canvas.height = HEIGHT;
+	// Context
+	ctx = canvas.getContext("2d");
+	// Offset
+	oX = Math.floor(WIDTH / 2 - COLS * SIZE / 2);
+	oY = Math.floor(HEIGHT / 2 - ROWS * SIZE / 2);
+	// TetrisManager
+	tMng = new TetrisManager(ROWS, COLS, MINOS, true);
+	step();  // Step
+	update();// Update
+});
 
 // Step
-step();
 function step(){
 	if(tMng.isGameOver()){
 		console.log("GAME OVER");
@@ -134,31 +141,26 @@ function step(){
 }
 
 // Update
-update();
 function update(){
-
-	let sX = Math.floor(WIDTH / 2 - COLS * SIZE / 2);
-	let sY = Math.floor(HEIGHT / 2 - ROWS * SIZE / 2);
 
 	// Background
 	ctx.fillStyle = "#666666";
 	ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
 	ctx.fillStyle = "#999999";
-	ctx.fillRect(sX, sY, COLS*SIZE, ROWS*SIZE);
+	ctx.fillRect(oX, oY, COLS*SIZE, ROWS*SIZE);
 
 	let data = tMng.getData();
 	for(let r=0; r<ROWS; r++){
 		for(let c=0; c<COLS; c++){
 			let i = r*COLS + c;
-			let x = sX + c*SIZE;
-			let y = sY + r*SIZE;
+			let x = oX + c*SIZE;
+			let y = oY + r*SIZE;
 			if(data[i] == 0) continue;
 			ctx.fillStyle = COLORS[data[i]-1];
 			ctx.fillRect(x, y, SIZE-1, SIZE-1);
 		}
 	}
-
 	setTimeout(update, 100);
 }
 

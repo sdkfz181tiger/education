@@ -1,31 +1,30 @@
 "use strict";
 //==========
-// Pure JavaScript
+// JavaScript
 
 const WIDTH  = 320;
 const HEIGHT = 320;
+const SIZE   = 8;
 const WALL   = 8;
-const SIZE   = 24;
 
 let canvas, ctx, sMng;
 
 // Window
 window.addEventListener("load", (e)=>{
-	
-	// Canvas and Context
+	// Canvas
 	canvas  = document.getElementById("canvas");
 	canvas.width  = WIDTH;
 	canvas.height = HEIGHT;
-
+	// Context
 	ctx = canvas.getContext("2d");
 	ctx.font = "24px Arial";
 	ctx.textAlign = "center";
-
-	// Manager
-	sMng = new SnakeGame(WIDTH, HEIGHT, SIZE);
+	// SnakeManager
+	sMng = new SnakeManager(WIDTH, HEIGHT, SIZE);
 	update();
 });
 
+// Update
 function update(){
 	// Background
 	ctx.fillStyle = "#993333";
@@ -34,15 +33,16 @@ function update(){
 	ctx.fillRect(WALL, WALL, WIDTH-WALL*2, HEIGHT-WALL*2);
 	// Update
 	sMng.update();
-	// Body(Tail)
+	// Body
 	let body = sMng.getBody();
-	for(let b=1; b<body.length; b++){
-		ctx.fillStyle = "#6699ff";
-		ctx.fillRect(body[b].x, body[b].y, SIZE, SIZE);
+	for(let i=body.length-1; 0<=i; i--){
+		if(i == 0){
+			ctx.fillStyle = "#ff6633";
+		}else{
+			ctx.fillStyle = "#6699ff";
+		}
+		ctx.fillRect(body[i].x, body[i].y, SIZE, SIZE);
 	}
-	// Body(Head)
-	ctx.fillStyle = "#ff6633";
-	ctx.fillRect(body[0].x, body[0].y, SIZE, SIZE);
 	// Foods
 	let foods = sMng.getFoods();
 	for(let food of foods){

@@ -1,6 +1,6 @@
 "use strict";
 //==========
-// Pure JavaScript
+// JavaScript
 
 const WIDTH  = 320;
 const HEIGHT = 480;
@@ -9,20 +9,25 @@ const COLS   = 9;
 const PAD    = 32;
 const SIZE   = 30;
 
-// Context
-const canvas  = document.getElementById("canvas");
-canvas.width  = WIDTH;
-canvas.height = HEIGHT;
+let canvas, ctx, oX, oY, mMng;
 
-const ctx = canvas.getContext("2d");
-ctx.font = SIZE + "px Arial";
-ctx.textAlign = "center";
-
-const oX = Math.floor(WIDTH / 2 - COLS * PAD / 2);
-const oY = Math.floor(HEIGHT / 2 - ROWS * PAD / 2);
-
-let msMng = new MineSweeper(ROWS, COLS, 8);
-show();
+// Window
+window.addEventListener("load", (e)=>{
+	// Canvas
+	canvas  = document.getElementById("canvas");
+	canvas.width  = WIDTH;
+	canvas.height = HEIGHT;
+	// Context
+	ctx = canvas.getContext("2d");
+	ctx.font = SIZE + "px Arial";
+	ctx.textAlign = "center";
+	// Offset
+	oX = Math.floor(WIDTH / 2 - COLS * PAD / 2);
+	oY = Math.floor(HEIGHT / 2 - ROWS * PAD / 2);
+	// MineSweeperManager
+	mMng = new MineSweeperManager(ROWS, COLS, 8);
+	show();// Show
+});
 
 function show(){
 	// Background
@@ -37,7 +42,7 @@ function show(){
 			let x = oX + c * PAD;
 			let y = oY + r * PAD;
 
-			let cell = msMng.getCell(r, c);
+			let cell = mMng.getCell(r, c);
 			if(cell == -1){
 				ctx.fillStyle = "#999999";
 				ctx.fillRect(x, y, SIZE, SIZE);
@@ -64,14 +69,14 @@ function show(){
 			}
 		}
 	}
-	//msMng.consoleAll();
+	//mMng.consoleAll();
 }
 
 // Keyboard
 document.addEventListener("click", (e)=>{
 	let r = Math.floor((e.y - oY) / PAD);
 	let c = Math.floor((e.x - oX) / PAD);
-	if(msMng.search(r, c)){
+	if(mMng.search(r, c)){
 		console.log("GAME OVER");
 	}
 	show();
