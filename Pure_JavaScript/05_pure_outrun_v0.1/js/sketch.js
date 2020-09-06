@@ -9,7 +9,7 @@ const R_LENGTH = 30; // Road length
 const R_WIDTH  = 320;// Road width
 
 let canvas, ctx;
-let pos;
+let tiles;
 
 // Window
 window.addEventListener("load", (e)=>{
@@ -22,13 +22,8 @@ window.addEventListener("load", (e)=>{
 	ctx.font = "24px Arial";
 	ctx.textAlign = "center";
 
-	ctx.fillStyle = "#333333";
-	ctx.fillRect(0, 0, WIDTH, HEIGHT);
-
-	pos = 0;
-
 	// Tiles
-	let tiles = [];
+	tiles = [];
 	for(let i=0; i<50; i++){
 		let tile = new Tile(0, 200, R_LENGTH*i, R_WIDTH);
 		tiles.push(tile);
@@ -38,9 +33,8 @@ window.addEventListener("load", (e)=>{
 	// Update
 	update();
 	function update(){
-		console.log("update:" + pos);
 		// Clear
-		ctx.fillStyle = "#999933";
+		ctx.fillStyle = "#333333";
 		ctx.fillRect(0, 0, WIDTH, HEIGHT);
 		// Draw
 		for(let i=0; i<10; i++){
@@ -52,11 +46,8 @@ window.addEventListener("load", (e)=>{
 			drawTrp(tA.X, tA.Y, WIDTH, tB.X, tB.Y, WIDTH, cGrass);
 			drawTrp(tA.X, tA.Y, tA.W*1.2, tB.X, tB.Y, tB.W*1.2, cSide);
 			drawTrp(tA.X, tA.Y, tA.W, tB.X, tB.Y, tB.W, cRoad);
-
-			//tA.slideZ(10);
 		}
-
-		//setTimeout(update, 500);
+		setTimeout(update, 500);
 	}
 });
 
@@ -78,13 +69,17 @@ function drawTrp(x1, y1, w1, x2, y2, w2, c){
 
 document.addEventListener("keydown", (e)=>{
 	let key = e.key;
-	if(key == "ArrowUp")   pos+=5;
-	if(key == "ArrowDown") pos-=5;
+	if(key == "ArrowUp"){
+		for(let tile of tiles) tile.offsetZ(5);
+	}
+	if(key == "ArrowDown"){
+		for(let tile of tiles) tile.offsetZ(-5);
+	}
 	if(key == "ArrowLeft"){
-		console.log(key);
+		for(let tile of tiles) tile.offsetX(20);
 	}
 	if(key == "ArrowRight"){
-		console.log(key);
+		for(let tile of tiles) tile.offsetX(-20);
 	}
 });
 
@@ -105,7 +100,17 @@ class Tile{
 		this._W = this._w * this._s;
 	}
 
-	slideZ(n){
+	offsetX(n){
+		this._x += n;
+		this.project();
+	}
+
+	offsetY(n){
+		this._y += n;
+		this.project();
+	}
+
+	offsetZ(n){
 		this._z += n;
 		this.project();
 	}
