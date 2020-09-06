@@ -5,8 +5,8 @@
 const WIDTH   = 320;
 const HEIGHT  = 320;
 const S_DEPTH = 50; // Screen depth
-const R_DEPTH = 20; // Road depth
-const R_WIDTH = 320;// Road width
+const R_DEPTH = 10; // Road depth
+const R_WIDTH = 480;// Road width
 
 let canvas, ctx;
 let posX, posZ, lines;
@@ -28,8 +28,12 @@ window.addEventListener("load", (e)=>{
 	posZ = 0;
 	// Lines
 	lines = [];
-	for(let i=0; i<40; i++){
+	for(let i=0; i<400; i++){
 		let line = new Line();
+		if(100 < i && i < 150) line.curve = 0.8;
+		if(150 < i && i < 200) line.curve = -0.8;
+		if(250 < i && i < 300) line.curve = 0.8;
+		if(300 < i && i < 350) line.curve = -0.8;
 		line.project(0, 200, R_DEPTH*i);
 		lines.push(line);
 	}
@@ -42,25 +46,32 @@ window.addEventListener("load", (e)=>{
 		ctx.fillRect(0, 0, WIDTH, HEIGHT);
 		// Position
 		posZ += 5;
+
+		let x = 0;
+		let dX = 0;
+
 		// Lines
 		const start = Math.floor(posZ/R_DEPTH)+1;
-		for(let i=start; i<start+20; i++){
+		for(let i=start; i<start+100; i++){
 			let iA = i % lines.length;
 			let iB = (0<iA)?iA-1:lines.length-1;
 			let lA = lines[iA];
 			let lB = lines[iB];
-			lA.project(posX, 200, R_DEPTH*i-posZ);
+			lA.project(posX-x, 170, R_DEPTH*i-posZ);
+
+			x += dX;
+			dX += lA.curve;
 
 			let cGrass = (i%2==0) ? "#33dd33":"#33aa33";
 			let cSide  = (i%2==0) ? "#333333":"#ffffff";
 			let cRoad  = (i%2==0) ? "#bbbbbb":"#eeeeee";
-			drawTrp(lA.X, lA.Y, WIDTH, lB.X, lB.Y, WIDTH, cGrass);
+			drawTrp(lA.X, lA.Y, WIDTH*4, lB.X, lB.Y, WIDTH*4, cGrass);
 			drawTrp(lA.X, lA.Y, lA.W*1.2, lB.X, lB.Y, lB.W*1.2, cSide);
 			drawTrp(lA.X, lA.Y, lA.W, lB.X, lB.Y, lB.W, cRoad);
 
 			if(iA == 0) drawLine(lA.X, lA.Y, lA.W, "#ff3333");
 		}
-		setTimeout(update, 50);
+		setTimeout(update, 20);
 	}
 });
 
@@ -95,6 +106,7 @@ class Line{
 		this._X = 0;
 		this._Y = 0;
 		this._W = 0;
+		this._C = 0;
 	}
 
 	project(x, y, z){
@@ -103,6 +115,9 @@ class Line{
 		this._Y = y * s + HEIGHT/2;
 		this._W = R_WIDTH * s;
 	}
+
+	set curve(n){this._C=n;}
+	get curve(){return this._C;}
 
 	get X(){return this._X;}
 	get Y(){return this._Y;}
