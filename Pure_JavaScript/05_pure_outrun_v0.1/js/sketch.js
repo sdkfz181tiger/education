@@ -5,11 +5,11 @@
 const WIDTH   = 320;
 const HEIGHT  = 320;
 const S_DEPTH = 50; // Screen depth
-const R_DEPTH = 30; // Road depth
+const R_DEPTH = 20; // Road depth
 const R_WIDTH = 320;// Road width
 
 let canvas, ctx;
-let posZ, tiles;
+let posX, posZ, lines;
 
 // Window
 window.addEventListener("load", (e)=>{
@@ -19,17 +19,19 @@ window.addEventListener("load", (e)=>{
 	canvas.height = HEIGHT;
 	// Context
 	ctx = canvas.getContext("2d");
-	ctx.font = "24px Arial";
-	ctx.textAlign = "center";
-	// Position Z
+	ctx.font        = "24px Arial";
+	ctx.textAlign   = "center";
+	ctx.strokeStyle = "#ffffff";
+	ctx.lineWidth   = 2;
+	// Position
+	posX = 0;
 	posZ = 0;
-	// Tiles
-	tiles = [];
-	for(let i=0; i<10; i++){
-		let tile = new Tile(0, 200, R_DEPTH*i);
-		tile.project(0, 0, 0);
-		tiles.push(tile);
-		//drawBox(tile.X, tile.Y, tile.W, "#33ffff");
+	// Lines
+	lines = [];
+	for(let i=0; i<40; i++){
+		let line = new Line();
+		line.project(0, 200, R_DEPTH*i);
+		lines.push(line);
 	}
 
 	// Update
@@ -38,33 +40,36 @@ window.addEventListener("load", (e)=>{
 		// Clear
 		ctx.fillStyle = "#333333";
 		ctx.fillRect(0, 0, WIDTH, HEIGHT);
-		// Index
-		let start = Math.floor(posZ / R_DEPTH) * -1;
-		console.log(start);
-		// Draw
-		for(let i=start; i<start+5; i++){
-			let index = i % (tiles.length-1);
-			console.log(index, "<->", index+1);
-			let tA = tiles[index];
-			let tB = tiles[index+1];
+		// Position
+		posZ += 5;
+		// Lines
+		const start = Math.floor(posZ/R_DEPTH)+1;
+		for(let i=start; i<start+20; i++){
+			let iA = i % lines.length;
+			let iB = (0<iA)?iA-1:lines.length-1;
+			let lA = lines[iA];
+			let lB = lines[iB];
+			lA.project(posX, 200, R_DEPTH*i-posZ);
+
 			let cGrass = (i%2==0) ? "#33dd33":"#33aa33";
 			let cSide  = (i%2==0) ? "#333333":"#ffffff";
-			let cRoad  = (i%2==0) ? "#dddddd":"#eeeeee";
-			drawTrp(tA.X, tA.Y, WIDTH, tB.X, tB.Y, WIDTH, cGrass);
-			drawTrp(tA.X, tA.Y, tA.W*1.2, tB.X, tB.Y, tB.W*1.2, cSide);
-			drawTrp(tA.X, tA.Y, tA.W, tB.X, tB.Y, tB.W, cRoad);
+			let cRoad  = (i%2==0) ? "#bbbbbb":"#eeeeee";
+			drawTrp(lA.X, lA.Y, WIDTH, lB.X, lB.Y, WIDTH, cGrass);
+			drawTrp(lA.X, lA.Y, lA.W*1.2, lB.X, lB.Y, lB.W*1.2, cSide);
+			drawTrp(lA.X, lA.Y, lA.W, lB.X, lB.Y, lB.W, cRoad);
+
+			if(iA == 0) drawLine(lA.X, lA.Y, lA.W, "#ff3333");
 		}
-
-		posZ -= 5;
-		for(let tile of tiles) tile.project(0, 0, posZ);
-
-		setTimeout(update, 500);
+		setTimeout(update, 50);
 	}
 });
 
-function drawBox(x, y, w, c){
+function drawLine(x, y, w, c){
 	ctx.strokeStyle = c;
-	ctx.strokeRect(x-w/2, y-w/2, w, w);
+	ctx.beginPath();
+	ctx.moveTo(x+w/2, y);
+	ctx.lineTo(x-w/2, y);
+	ctx.stroke();
 }
 
 function drawTrp(x1, y1, w1, x2, y2, w2, c){
@@ -80,34 +85,22 @@ function drawTrp(x1, y1, w1, x2, y2, w2, c){
 
 document.addEventListener("keydown", (e)=>{
 	let key = e.key;
-	if(key == "ArrowUp"){
-		posZ += 5;
-		for(let tile of tiles) tile.project(0, 0, posZ);
-	}
-	if(key == "ArrowDown"){
-		posZ -= 5;
-		for(let tile of tiles) tile.project(0, 0, posZ);
-	}
-	// if(key == "ArrowLeft"){
-	// 	for(let tile of tiles) tile.offsetX(20);
-	// }
-	// if(key == "ArrowRight"){
-	// 	for(let tile of tiles) tile.offsetX(-20);
-	// }
+	if(key == "ArrowLeft")  posX += 20;
+	if(key == "ArrowRight") posX -= 20;
 });
 
-class Tile{
+class Line{
 
-	constructor(x, y, z){
-		this._x = x;
-		this._y = y;
-		this._z = z;
+	constructor(){
+		this._X = 0;
+		this._Y = 0;
+		this._W = 0;
 	}
 
-	project(oX, oY, oZ){
-		let s = S_DEPTH / (S_DEPTH + (this._z+oZ));
-		this._X = (this._x+oX) * s + WIDTH/2;
-		this._Y = (this._y+oY) * s + HEIGHT/2;
+	project(x, y, z){
+		const s = S_DEPTH / (S_DEPTH + z);
+		this._X = x * s + WIDTH/2;
+		this._Y = y * s + HEIGHT/2;
 		this._W = R_WIDTH * s;
 	}
 
