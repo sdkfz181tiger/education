@@ -4,7 +4,7 @@
 
 const WIDTH   = 420;
 const HEIGHT  = 320;
-const S_DEPTH = 50; // Screen depth
+const S_DIST  = 50; // Distance to screen
 const R_DEPTH = 10; // Road depth
 const R_WIDTH = 480;// Road width
 
@@ -53,9 +53,11 @@ function update(){
 	// Clear
 	ctx.fillStyle = "#333333";
 	ctx.fillRect(0, 0, WIDTH, HEIGHT);
+	// Text
+	ctx.fillStyle = "#ffffff";
+	ctx.fillText("OUTRUN!!", WIDTH/2, 32);
 	// Position
 	posZ += 5;
-
 	// Lines
 	const start = Math.floor(posZ/R_DEPTH)+1;
 
@@ -70,13 +72,14 @@ function update(){
 		let iB = (0<iA)?iA-1:lines.length-1;
 		let lA = lines[iA];
 		let lB = lines[iB];
-		lA.project(posX-oX, posY-oY, R_DEPTH*i-posZ);
 
 		oX += dX;
 		dX += lA.curve;
 
 		oY += dY;
 		dY += lA.bank;
+		
+		lA.project(posX-oX, posY-oY, R_DEPTH*i-posZ);
 
 		if(lB.Y < lA.Y) continue;// Important
 		let cGrass = (i%2==0) ? "#33dd33":"#33aa33";
@@ -127,7 +130,7 @@ class Line{
 	}
 
 	project(x, y, z){
-		const s = S_DEPTH / (S_DEPTH + z);
+		const s = S_DIST / (S_DIST + z);
 		this._X = x * s + WIDTH/2;
 		this._Y = y * s + HEIGHT/2;
 		this._W = R_WIDTH * s;
