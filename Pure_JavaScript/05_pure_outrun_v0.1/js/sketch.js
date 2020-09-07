@@ -45,51 +45,51 @@ window.addEventListener("load", (e)=>{
 		line.project(0, 200, R_DEPTH*i);
 		lines.push(line);
 	}
-
-	// Update
-	update();
-	function update(){
-		// Clear
-		ctx.fillStyle = "#333333";
-		ctx.fillRect(0, 0, WIDTH, HEIGHT);
-		// Position
-		posZ += 5;
-
-		// Lines
-		const start = Math.floor(posZ/R_DEPTH)+1;
-
-		let oX = 0;
-		let dX = 0;
-
-		let oY = 0;
-		let dY = 0;
-
-		for(let i=start; i<start+50; i++){
-			let iA = i % lines.length;
-			let iB = (0<iA)?iA-1:lines.length-1;
-			let lA = lines[iA];
-			let lB = lines[iB];
-			lA.project(posX-oX, posY-oY, R_DEPTH*i-posZ);
-
-			oX += dX;
-			dX += lA.curve;
-
-			oY += dY;
-			dY += lA.bank;
-
-			if(lB.Y < lA.Y) continue;// Important
-			let cGrass = (i%2==0) ? "#33dd33":"#33aa33";
-			let cSide  = (i%2==0) ? "#333333":"#ffffff";
-			let cRoad  = (i%2==0) ? "#bbbbbb":"#eeeeee";
-			drawTrp(lA.X, lA.Y, WIDTH*4, lB.X, lB.Y, WIDTH*4, cGrass);
-			drawTrp(lA.X, lA.Y, lA.W*1.2, lB.X, lB.Y, lB.W*1.2, cSide);
-			drawTrp(lA.X, lA.Y, lA.W, lB.X, lB.Y, lB.W, cRoad);
-			if(iA == 0) drawLine(lA.X, lA.Y, lA.W, "#ff3333");
-		}
-
-		setTimeout(update, 20);
-	}
+	update();// Update
 });
+
+// Update
+function update(){
+	// Clear
+	ctx.fillStyle = "#333333";
+	ctx.fillRect(0, 0, WIDTH, HEIGHT);
+	// Position
+	posZ += 5;
+
+	// Lines
+	const start = Math.floor(posZ/R_DEPTH)+1;
+
+	let oX = 0;
+	let dX = 0;
+
+	let oY = 0;
+	let dY = 0;
+
+	for(let i=start; i<start+50; i++){
+		let iA = i % lines.length;
+		let iB = (0<iA)?iA-1:lines.length-1;
+		let lA = lines[iA];
+		let lB = lines[iB];
+		lA.project(posX-oX, posY-oY, R_DEPTH*i-posZ);
+
+		oX += dX;
+		dX += lA.curve;
+
+		oY += dY;
+		dY += lA.bank;
+
+		if(lB.Y < lA.Y) continue;// Important
+		let cGrass = (i%2==0) ? "#33dd33":"#33aa33";
+		let cSide  = (i%2==0) ? "#333333":"#ffffff";
+		let cRoad  = (i%2==0) ? "#bbbbbb":"#eeeeee";
+		drawTrp(lA.X, lA.Y, WIDTH*4, lB.X, lB.Y, WIDTH*4, cGrass);
+		drawTrp(lA.X, lA.Y, lA.W*1.2, lB.X, lB.Y, lB.W*1.2, cSide);
+		drawTrp(lA.X, lA.Y, lA.W, lB.X, lB.Y, lB.W, cRoad);
+		if(iA == 0) drawLine(lA.X, lA.Y, lA.W, "#ff3333");
+	}
+
+	setTimeout(update, 20);
+}
 
 function drawLine(x, y, w, c){
 	ctx.strokeStyle = c;
@@ -111,7 +111,7 @@ function drawTrp(x1, y1, w1, x2, y2, w2, c){
 }
 
 document.addEventListener("keydown", (e)=>{
-	let key = e.key;
+	const key = e.key;
 	if(key == "ArrowLeft")  posX += 20;
 	if(key == "ArrowRight") posX -= 20;
 });
