@@ -1,26 +1,12 @@
 //==========
 // p5.js
 
-const palette = ["#03045E", "#0077B6", "#00B4D8", "#90E0EF", "#CAF0F8"];
-
 let cX, cY;
 
 let mySound;
 let myAmp;
 let myFft;
 
-let sound, amplitude;
-
-function preload(){
-  mySound = loadSound('sounds/bgm.mp3');
-}
-function setup() {
-  let cnv = createCanvas(100,100);
-  //cnv.mouseClicked(toggleSound);
-  myAmp = new p5.Amplitude();
-}
-
-/*
 function preload(){
 	console.log("preload!!");
 	// Load
@@ -32,29 +18,21 @@ function setup(){
 	console.log("setup!!");
 	createCanvas(windowWidth,windowHeight);
 	angleMode(DEGREES);
-	noLoop();
+	frameRate(8);
 	stroke(255);
 	strokeWeight(2);
 	strokeCap(SQUARE);
 
-	//mySound.loop();
-
 	cX = width / 2;
 	cY = height / 2;
-
-	// Amp
-
-// create a new Amplitude analyzer
-  myAmp = new p5.Amplitude();
-
-  // Patch the input to an volume analyzer
-  myAmp.setInput(mySound);
-
-
+	
+	// Amplitude analyzer
+	// Firefox, Chromeでの下記クラスエラー発生の為、保留!!
+	myAmp = new p5.Amplitude();
+	myAmp.setInput(mySound);
 	// FFT
-	//myFft = new p5.FFT();
+	myFft = new p5.FFT();
 }
-*/
 
 function draw(){
 	background(0);
@@ -65,6 +43,8 @@ function draw(){
 	textAlign(CENTER);
 	text(cTime, width/2, 50);
 
+	console.log(cTime);
+
 	// Level
 	// let level = myAmp.getLevel();
 	// let hue   = map(level, 0, 1, 0, 360);
@@ -74,3 +54,6 @@ function draw(){
 	// ellipse(width/2, height/2, size, size);
 }
 
+function mousePressed(){
+	mySound.loop();
+}
