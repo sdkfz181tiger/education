@@ -14,10 +14,10 @@ setup=()=>{
 }
 
 draw=()=>{
-	//background(0);
+	background(0);
 
-	fill(33, 33, 33, 33)
-	square(0, 0, w, w);
+	//fill(33, 33, 33, 33)
+	//square(0, 0, w, w);
 
 	t += 0.1;
 	for(r=0; r<TAU*9; r+=0.1){
