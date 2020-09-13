@@ -10,7 +10,7 @@ let myFft;
 function preload(){
 	console.log("preload!!");
 	// Load
-	soundFormats("mp3");
+	soundFormats("mp3", "ogg");
 	mySound = loadSound("./sounds/bgm.mp3");
 }
 
@@ -32,6 +32,8 @@ function setup(){
 	myAmp.setInput(mySound);
 	// FFT
 	myFft = new p5.FFT();
+
+	//mySound.play();
 }
 
 function draw(){
@@ -42,18 +44,9 @@ function draw(){
 	textSize(32);
 	textAlign(CENTER);
 	text(cTime, width/2, 50);
-
-	console.log(cTime);
-
-	// Level
-	// let level = myAmp.getLevel();
-	// let hue   = map(level, 0, 1, 0, 360);
-	// let size  = map(level, 0, 1, 0, 300);
-	// colorMode(HSB);
-	// fill(hue, 100, 100);
-	// ellipse(width/2, height/2, size, size);
 }
 
 function mousePressed(){
-	mySound.loop();
+	
+	mySound.play();
 }

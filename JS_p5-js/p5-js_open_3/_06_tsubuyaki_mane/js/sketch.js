@@ -28,3 +28,17 @@ draw=()=>{
 		circle(x, y, 2);
 	}
 }
+
+/*
+t = 0 //#つぶやきProcessing
+draw = _ => {
+  createCanvas(W = 600, W)
+  background(w = W / 2)
+  t += .02
+  strokeWeight(7)
+  C = constrain
+  for (y = W; y -= 40;)
+    for (x = W; x -= 40;)
+      for (i = 4; i--; line(x, y, C(cos(p) * 80 + x, x - 20, x + 20), C(sin(p) * 80 + y, y - 20, y + 20))) p = TAU / 4 * i + (t - dist(x, y, w, w) / w)
+}
+*/
