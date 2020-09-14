@@ -1,7 +1,7 @@
 //==========
 // p5.js
 
-const palette = ["#03045E", "#0077B6", "#00B4D8", "#90E0EF", "#CAF0F8"];
+const palette = ["#F4F1DE", "#E07A5F", "#3D405B", "#81B29A", "#F2CC8F"];
 
 let cX, cY;
 let t = 0;
