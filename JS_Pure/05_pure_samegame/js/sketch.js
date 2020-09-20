@@ -2,7 +2,8 @@
 //==========
 // JavaScript
 
-const palette = ["#233D4D", "#FE7F2D", "#FCCA46", "#A1C181", "#619B8A"];
+//const palette = ["#233D4D", "#FE7F2D", "#FCCA46", "#A1C181", "#619B8A"];
+const palette = ["#233D4D", "#FE7F2D", "#FCCA46"];
 
 const WIDTH  = 320;
 const HEIGHT = 320;
@@ -28,7 +29,7 @@ window.addEventListener("load", (e)=>{
 	// SamegameManager
 	let sX = WIDTH/2  - COLS*T_SIZE/2;
 	let sY = HEIGHT/2 - ROWS*T_SIZE/2;
-	sMng = new SamegameManager(sX, sY);
+	sMng = new SamegameManager(sX, sY, palette.length);
 	sMng.checkMtx();// Test
 	update();// Update
 });
@@ -84,9 +85,10 @@ document.addEventListener("click", (e)=>{
 
 class SamegameManager{
 
-	constructor(sX, sY){
+	constructor(sX, sY, types){
 		this._sX = sX;
 		this._sY = sY;
+		this._types = types;
 		this.initMatrix();
 		this.compressV();
 	}
@@ -97,8 +99,7 @@ class SamegameManager{
 			for(let c=0; c<COLS; c++){
 				let x = this._sX + T_SIZE * c;
 				let y = this._sY + T_SIZE * r;
-				let type = Math.floor(Math.random()*5);
-				if(type == 0) continue;
+				let type = Math.floor(Math.random()*this._types);
 				this._mtx[r][c] = new Tile(r, c, x, y, type);
 			}
 		}
@@ -107,19 +108,35 @@ class SamegameManager{
 	compressV(){
 		for(let c=COLS-1; 0<=c; c--){
 			for(let r=ROWS-1; 0<=r; r--){
-				if(this._mtx[r][c] == null){
-					for(let v=r-1; 0<=v; v--){
-						if(this._mtx[v][c] == null) continue;
-						this._mtx[r][c] = this._mtx[v][c];// Swap
-						this._mtx[v][c] = null;
-						let x = this._sX + T_SIZE * c;// Change
-						let y = this._sY + T_SIZE * r;
-						this._mtx[r][c].setParams(r, c, x, y);
-						break;
-					}
+				if(this._mtx[r][c] != null) continue;
+				for(let v=r-1; 0<=v; v--){
+					if(this._mtx[v][c] == null) continue;
+					this.swapTiles(r, c, v, c);// Swap
+					break;
 				}
 			}
 		}
+	}
+
+	compressH(){
+		for(let r=ROWS-1; 0<=r; r--){
+			for(let c=0; c<COLS-1; c++){
+				if(this._mtx[r][c] != null) continue;
+				for(let h=c+1; h<COLS; h++){
+					if(this._mtx[r][h] == null) continue;
+					this.swapTiles(r, c, r, h);// Swap
+					break;
+				}
+			}
+		}
+	}
+
+	swapTiles(aR, aC, bR, bC){
+		this._mtx[aR][aC] = this._mtx[bR][bC];// Swap
+		this._mtx[bR][bC] = null;
+		let x = this._sX + T_SIZE * aC;// Change
+		let y = this._sY + T_SIZE * aR;
+		this._mtx[aR][aC].setParams(aR, aC, x, y);
 	}
 
 	createMtx(){
@@ -170,11 +187,11 @@ class SamegameManager{
 			this._mtx[tile.r][tile.c] = null;// Remove
 		}
 		this.compressV();// Compress
+		this.compressH();// Compress
 		this.checkMtx();// Check
 	}
 
 	searchTiles(tile){
-		//console.log("searchTiles:", tile.r, tile.c);
 		this._chains.push(tile);// Push
 		this.traseTile(tile, 0, 1);
 		this.traseTile(tile, 0,-1);
@@ -192,7 +209,6 @@ class SamegameManager{
 	}
 
 	traseTile(tile, oR, oC){
-		//console.log("traseTile", oR, oC)
 		if(tile.r+oR < 0) return;
 		if(tile.c+oC < 0) return;
 		if(ROWS-1 < tile.r+oR) return;
