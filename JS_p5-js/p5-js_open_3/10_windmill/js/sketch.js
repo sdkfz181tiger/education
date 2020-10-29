@@ -3,7 +3,7 @@
 
 const palette = ["#F4F1DE", "#E07A5F", "#3D405B", "#81B29A", "#F2CC8F"];
 
-let t=d=0;
+let d = 0;
 
 function setup(){
 	createCanvas(windowWidth,windowHeight);
@@ -22,8 +22,7 @@ function draw(){
 	// fill(33, 33, 33, 66);
 	// rect(0, 0, width, height);
 
-	t += 5;
-	d += (cos(t)<0) ? 8:1;
+	d += 0.5;
 
 	let size = 60;
 	let rows = height / size + 1;
@@ -32,9 +31,9 @@ function draw(){
 		for(let c=0; c<cols; c++){
 			let x = c * size;
 			let y = r * size;
-			let i = floor((r*cols+c) % palette.length);
+			let i = floor((r+c) % palette.length);
 			fill(color(palette[i]));
-			drawWindmill(x, y, size*0.8, d);
+			drawWindmill(x, y, size*sin(d*c), d);
 			//drawHeart(x, y, 2, d);
 		}
 	}
