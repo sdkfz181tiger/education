@@ -1,0 +1,17 @@
+[_tb_system_call storage=system/_preview.ks ]
+
+[mask time=10]
+[mask_off time=10]
+[cm  ]
+[bg  storage="rouka.jpg"  time="1000"  ]
+[tb_show_message_window  ]
+[tb_start_text mode=1 ]
+廊下に出た。[p]
+[_tb_end_text]
+
+[tb_hide_message_window  ]
+[clickable  storage="scene2.ks"  x="400"  y="158"  width="52"  height="277"  target=""  _clickable_img=""  ]
+[clickable  storage="scene3.ks"  x="213"  y="192"  width="33"  height="36"  target=""  _clickable_img=""  ]
+[clickable  storage="scene4.ks"  x="73"  y="80"  width="62"  height="212"  target=""  _clickable_img=""  ]
+[clickable  storage="scene5.ks"  x="534"  y="0"  width="146"  height="477"  target=""  _clickable_img=""  ]
+[s  ]
