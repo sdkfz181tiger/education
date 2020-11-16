@@ -423,15 +423,18 @@ function readyPuzzle(x, y, w, h, grid, size, success){
 
 function loadPiece(r, c, item){
 	console.log("loadPiece");
-	var x = pzlStartX + c * pzlSize;
-	var y = pzlStartY + r * pzlSize;
+	var x = Math.random() * (pzlBkgW-pzlSize);
+	var y = Math.random() * (pzlBkgH-pzlSize);
+	var dX = pzlStartX + c * pzlSize;
+	var dY = pzlStartY + r * pzlSize;
 	var img = new Image();
 	img.src = ICON_DIR+item;
-	var piece = {x:x, y:y, img:img, item:item};
+	var piece = {x:x, y:y, dX:dX, dY:dY, img:img, item:item};
 	pzlPieces.push(piece);
 }
 
-function showPuzzle(){
+function updatePuzzle(){
+	console.log("updatePuzzle");
 	if(!pzlBkg) return;
 	pzlCtx.clearRect(0, 0, pzlBkgW, pzlBkgH);
 	for(var r=0; r<pzlGrid; r++){
@@ -446,7 +449,7 @@ function showPuzzle(){
 		var piece = pzlPieces[i];
 		pzlCtx.drawImage(piece.img, piece.x, piece.y);
 	}
-	setTimeout(function(){showPuzzle();}, 80);
+	setTimeout(function(){updatePuzzle();}, 80);
 }
 
 function pieceDown(e){
@@ -480,9 +483,34 @@ function pieceUp(e){
 	if(!pzlHandle) return;
 	pzlHandle.x = cX - pzlHandleX;
 	pzlHandle.y = cY - pzlHandleY;
+	var disX = pzlHandle.x - pzlHandle.dX;
+	var disY = pzlHandle.y - pzlHandle.dY;
+	var dist = Math.sqrt(disX*disX+disY*disY);
+	console.log(dist);
+	if(dist < 20){
+		pzlHandle.x = pzlHandle.dX;
+		pzlHandle.y = pzlHandle.dY;
+		var first = pzlPieces[0];// Swap
+		pzlPieces[0] = pzlHandle;
+		pzlPieces[pzlPieces.length-1] = first;
+	}
 	pzlHandle = null;// Null
+	if(!judgePuzzle()) return;
+	TYRANO.kag.ftag.startTag("jump",{target:pzlSuccess});// Jump
 }
 
+function judgePuzzle(){
+	console.log("judgePuzzle");
+	for(var i=0; i<pzlPieces.length; i++){
+		var piece = pzlPieces[i];
+		var disX = piece.x - piece.dX;
+		var disY = piece.y - piece.dY;
+		var dist = Math.sqrt(disX*disX+disY*disY);
+		console.log(dist);
+		if(10 < dist) return false;
+	}
+	return true;
+}
 
 function clearPuzzle(){
 	console.log("clearPuzzle");
