@@ -19,7 +19,7 @@ init(f);
 [bg  storage="school.jpg"  ]
 [tb_show_message_window  ]
 [tb_start_text mode=1 ]
-大仏にアイテムを見せゲーム[p]
+オルゴールの演出パターン[p]
 [_tb_end_text]
 
 [tb_hide_message_window  ]

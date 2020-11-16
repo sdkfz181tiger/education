@@ -1,12 +1,13 @@
 //==========
 // Plugin
-// ver 0.0.2
+// ver 0.0.3
 //     2020/10/01_持ち物メニュー機能追加
 //     2020/11/02_トグル機能追加
 //     2020/11/05_音符再生機能追加
 //     2020/11/06_タイマー機能追加
 //     2020/11/13_音符生成機能削除
 //     2020/11/13_オルゴール機能追加
+//     2020/11/13_トグル機能のエラーを修正対応
 
 console.log("Hello, base_plugin.js");
 
@@ -204,6 +205,8 @@ function checkToggles(){
 
 function clearToggles(){
 	console.log("clearToggles");
+	tglFiles = [];// 20201113修正
+	tglBtns  = [];
 	if(tglBkg == null) return;
 	tglBkg.remove();
 	tglBkg = null;
