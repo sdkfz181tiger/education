@@ -30,6 +30,7 @@ let b2WeldJointDef      = Box2D.Dynamics.Joints.b2WeldJointDef;
 let b2RevoluteJointDef  = Box2D.Dynamics.Joints.b2RevoluteJointDef;
 let b2PrismaticJointDef = Box2D.Dynamics.Joints.b2PrismaticJointDef;
 let b2GearJointDef      = Box2D.Dynamics.Joints.b2GearJointDef;
+let b2ContactListener   = Box2D.Dynamics.b2ContactListener;
 
 class Box2dManager{
 
@@ -42,6 +43,8 @@ class Box2dManager{
 		this._fixDef.restitution = 0.2;
 		 
 		this._bodyDef  = new b2BodyDef;
+
+		this._destroys = [];
 
 		this.init();
 	}
@@ -91,7 +94,7 @@ class Box2dManager{
 		return body;
 	}
 
-	createBodyImage(type, x, y, img, deg=0, maskBits=0xffff){
+	createBodyImage(type, x, y, img, deg=0, tag="noname", maskBits=0xffff){
 
 		// Box
 		this._bodyDef.position.Set(x / PTM_RATIO, y / PTM_RATIO);
@@ -101,7 +104,7 @@ class Box2dManager{
 
 		let w = img.width;
 		let h = img.height;
-		this._bodyDef.userData = {shape_type: "box", img: img, width: w, height: h};
+		this._bodyDef.userData = {shape_type: "box", img: img, width: w, height: h, tag: tag};
 		this._fixDef.shape = new b2PolygonShape;
 		this._fixDef.shape.SetAsBox(w / PTM_RATIO / 2, h / PTM_RATIO / 2);
 		this._fixDef.filter.maskBits = maskBits;// Collision
@@ -164,6 +167,10 @@ class Box2dManager{
 		return gearJoint;
 	}
 
+	pushDestroys(body){
+		this._destroys.push(body);
+	}
+
 	update(){
 
 		// Mouse
@@ -195,32 +202,45 @@ class Box2dManager{
 		this._world.DrawDebugData();
 		this._world.ClearForces();
 
-		// Images
+		// Destroy
+		for(let destroy of this._destroys){
+			this._world.DestroyBody(destroy);
+		}
+		this._destroys = [];
+
+		// BodyItems
+		let bodyItems = [];
 		let context = document.getElementById(C_NAME).getContext("2d");
 		for(let bodyItem = this._world.GetBodyList(); bodyItem; bodyItem = bodyItem.GetNext()){
 			let type = bodyItem.GetType();
 			if(type == b2Body.b2_dynamicBody || type == b2Body.b2_staticBody){
-				let position = bodyItem.GetPosition();
-				let userData = bodyItem.GetUserData();
-				context.save();
-				if(userData && userData.img && userData.img.complete){
-					if(userData.shape_type && userData.shape_type == "circle"){
-						let slideX = position.x * PTM_RATIO;
-						let slideY = position.y * PTM_RATIO;
-						context.translate(slideX, slideY);
-						context.rotate(bodyItem.GetAngle());
-						context.drawImage(userData.img, -userData.radius, -userData.radius);
-					}
-					if(userData.shape_type && userData.shape_type == "box"){
-						let slideX = position.x * PTM_RATIO;
-						let slideY = position.y * PTM_RATIO;
-						context.translate(slideX, slideY);
-						context.rotate(bodyItem.GetAngle());
-						context.drawImage(userData.img, -userData.width / 2.0, -userData.height / 2.0);
-					}
-				}
-				context.restore();
+				bodyItems.push(bodyItem);
 			}
+		}
+
+		// Draw
+		for(let i=bodyItems.length-1; 0<=i; i--){
+			let bodyItem = bodyItems[i];
+			let position = bodyItem.GetPosition();
+			let userData = bodyItem.GetUserData();
+			context.save();
+			if(userData && userData.img && userData.img.complete){
+				if(userData.shape_type && userData.shape_type == "circle"){
+					let slideX = position.x * PTM_RATIO;
+					let slideY = position.y * PTM_RATIO;
+					context.translate(slideX, slideY);
+					context.rotate(bodyItem.GetAngle());
+					context.drawImage(userData.img, -userData.radius, -userData.radius);
+				}
+				if(userData.shape_type && userData.shape_type == "box"){
+					let slideX = position.x * PTM_RATIO;
+					let slideY = position.y * PTM_RATIO;
+					context.translate(slideX, slideY);
+					context.rotate(bodyItem.GetAngle());
+					context.drawImage(userData.img, -userData.width / 2.0, -userData.height / 2.0);
+				}
+			}
+			context.restore();
 		}
 	}
 }
