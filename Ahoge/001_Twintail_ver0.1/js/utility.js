@@ -78,13 +78,13 @@ class Box2dManager{
 		this._world.SetDebugDraw(debugDraw);
 	}
 
-	createBody(type, x, y, w, h, deg=0){
+	createBody(type, x, y, w, h, deg=0, tag="noname"){
 
 		// Box
 		this._bodyDef.position.Set(x / PTM_RATIO, y / PTM_RATIO);
 		this._bodyDef.angle = deg * DEG_TO_RAD;
 		this._bodyDef.type = type;
-		this._bodyDef.userData = null;
+		this._bodyDef.userData = {tag: tag};
 
 		// Shape
 		this._fixDef.shape = new b2PolygonShape;
