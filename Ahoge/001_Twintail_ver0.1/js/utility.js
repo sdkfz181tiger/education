@@ -4,8 +4,8 @@ const DEG_TO_RAD = Math.PI / 180;
 
 const PTM_RATIO  = 30.0;
 
-const C_WIDTH  = 480;
-const C_HEIGHT = 480;
+const C_WIDTH  = 640;
+const C_HEIGHT = 640;
 
 const C_NAME   = "canvas";
 
@@ -71,7 +71,7 @@ class Box2dManager{
 		debugDraw.SetDrawScale(PTM_RATIO);
 		debugDraw.SetFillAlpha(0.5);
 		debugDraw.SetLineThickness(1.0);
-		debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
+		debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);// Debug
 		this._world.SetDebugDraw(debugDraw);
 	}
 
@@ -91,7 +91,7 @@ class Box2dManager{
 		return body;
 	}
 
-	createBodyImage(type, x, y, img, deg=0){
+	createBodyImage(type, x, y, img, deg=0, maskBits=0xffff){
 
 		// Box
 		this._bodyDef.position.Set(x / PTM_RATIO, y / PTM_RATIO);
@@ -104,6 +104,7 @@ class Box2dManager{
 		this._bodyDef.userData = {shape_type: "box", img: img, width: w, height: h};
 		this._fixDef.shape = new b2PolygonShape;
 		this._fixDef.shape.SetAsBox(w / PTM_RATIO / 2, h / PTM_RATIO / 2);
+		this._fixDef.filter.maskBits = maskBits;// Collision
 		let body = this._world.CreateBody(this._bodyDef);
 		body.CreateFixture(this._fixDef);
 		return body;
@@ -197,7 +198,8 @@ class Box2dManager{
 		// Images
 		let context = document.getElementById(C_NAME).getContext("2d");
 		for(let bodyItem = this._world.GetBodyList(); bodyItem; bodyItem = bodyItem.GetNext()){
-			if(bodyItem.GetType() == b2Body.b2_dynamicBody){
+			let type = bodyItem.GetType();
+			if(type == b2Body.b2_dynamicBody || type == b2Body.b2_staticBody){
 				let position = bodyItem.GetPosition();
 				let userData = bodyItem.GetUserData();
 				context.save();
