@@ -20,20 +20,34 @@ let assets = {
 	mouth:   {src: "assets/w_mouth.png",   img: null}
 }
 
-let vFood, vGoki;
+let sMain, sFood, sGoki;
 let foods = [];
 
 // Main
 window.onload = function(){
+	// CanvasPosition
+	canvasPosition = getElementPosition(document.getElementById(C_NAME));
+}
+
+window.onclick = function(){
+	// World
+	if(world != null) return;
 	loadImages(init);// Images
 }
 
 function init(){
 	console.log("init");
 
+	// BGM
+	sBgm = new Audio("assets/s_bgm.mp3");
+	sBgm.volume = 0.2;
+	sBgm.loop = true;
+	sBgm.currentTime = 0;
+	sBgm.play();
+
 	// Effect
-	vFood = new Audio("assets/v_eat.mp3");
-	vGoki = new Audio("assets/v_goki.mp3");
+	sFood = new Audio("assets/s_food.mp3");
+	sGoki = new Audio("assets/s_goki.mp3");
 
 	// Foods
 	foods.push(assets.goki);
@@ -41,9 +55,6 @@ function init(){
 	foods.push(assets.daifuku);
 	foods.push(assets.pafe);
 	foods.push(assets.pudding);
-
-	// CanvasPosition
-	canvasPosition = getElementPosition(document.getElementById(C_NAME));
 	
 	// World
 	world = new b2World(new b2Vec2(0, 10), true);
@@ -68,12 +79,12 @@ function init(){
 		if(userDataB && userDataB.tag == "mouth"){
 
 			if(userDataA.tag == "food"){
-				vFood.currentTime = 0;
-				vFood.play();
+				sFood.currentTime = 0;
+				sFood.play();
 			}
 			if(userDataA.tag == "goki"){
-				vGoki.currentTime = 0;
-				vGoki.play();
+				sGoki.currentTime = 0;
+				sGoki.play();
 			}
 
 			b2dManager.pushDestroys(contact.GetFixtureA().GetBody());
@@ -119,26 +130,29 @@ function init(){
 	}
 
 	// Update
-	window.setInterval(update, 1000 / 50);
+	update();
 	function update(){
 		// Box2dManager
 		b2dManager.update();
+		setTimeout(update, 1000 / 50);
 	};
 
-	// Random
-	window.setInterval(()=>{
+	// Incomming
+	incomming();
+	function incomming(){
 		// Create
 		let rdm = Math.floor(Math.random()*foods.length);
 		let food = foods[rdm];
 		let type = b2Body.b2_dynamicBody;
-		let x = C_WIDTH * 0.8 * Math.random() - C_WIDTH * 0.1;
+		let x = C_WIDTH * 0.4 * Math.random() + C_WIDTH * 0.2;
 		let vX = Math.random() * 100 - 50;
 		let tag = (rdm==0) ? "goki":"food";
 		let body = b2dManager.createBodyImage(type, x, 20, food.img, 0, tag);
 		let vec = new b2Vec2(vX, 0.0);
 		let pos = new b2Vec2(body.GetPosition().x, body.GetPosition().y);
 		body.ApplyImpulse(vec, pos);
-	}, 1000 * 1);
+		setTimeout(incomming, 1000 * 1);
+	};
 };
 
 function loadImages(callback){

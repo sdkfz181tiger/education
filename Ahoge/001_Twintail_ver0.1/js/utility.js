@@ -74,7 +74,7 @@ class Box2dManager{
 		debugDraw.SetDrawScale(PTM_RATIO);
 		debugDraw.SetFillAlpha(0.5);
 		debugDraw.SetLineThickness(1.0);
-		debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);// Debug
+		//debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);// Debug
 		this._world.SetDebugDraw(debugDraw);
 	}
 
