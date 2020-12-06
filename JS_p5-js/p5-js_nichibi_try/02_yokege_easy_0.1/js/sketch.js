@@ -1,6 +1,6 @@
 
 let pReimu;// れいむ
-let pMarisa;// まりさ
+let eMarisas;// まりさ達
 
 let iReimu, iMarisa;
 
@@ -9,7 +9,7 @@ function preload(){
 	iMarisa = loadImage("assets/y_marisa_x2.png");
 }
 
-function setup() {
+function setup(){
 	createCanvas(480, 320);
 	angleMode(DEGREES);
 	frameRate(32);
@@ -26,46 +26,32 @@ function setup() {
 	pMarisa.immovable = true;
 }
 
-function draw() {
+function draw(){
 	background(33);
 
 	fill(200, 200, 200);
 	rect(0, 0, width, height);
 
-	// もし、LEFTキーが押されていたら
 	if(keyIsDown(LEFT_ARROW)){
 		pReimu.position.x -= 4;
 		pReimu.mirrorX(-1);// 左向き
 	}
 
-	// もし、RIGHTキーが押されていたら
 	if(keyIsDown(RIGHT_ARROW)){
 		pReimu.position.x += 4;
 		pReimu.mirrorX(1);// 右向き
 	}
 
-	// もし、Upキーが押されていたら
-	if(keyIsDown(UP_ARROW)){
-		pReimu.position.y -= 4;
-	}
-
-	// もし、Downキーが押されていたら
-	if(keyIsDown(DOWN_ARROW)){
-		pReimu.position.y += 4;
-	}
-
-	// もし、画面の右端より大きかったら
 	if(width < pReimu.position.x){
 		pReimu.position.x = 0;
 	}
 
-	// もし、画面の左端より小さかったら
 	if(pReimu.position.x < 0){
 		pReimu.position.x = width;
 	}
 
 	// もし、衝突していたら
-	if(pReimu.collide()){
+	if(pReimu.collide(pMarisa)){
 		console.log("あたったんだぜ!!");
 	}
 	
