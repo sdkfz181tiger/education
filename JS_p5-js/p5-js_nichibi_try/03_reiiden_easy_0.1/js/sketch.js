@@ -4,11 +4,12 @@ let wTop, wBottom, wLeft, wRight;
 let iBall, iCard;
 let iReimu, iMarisa, iYoumu, iChiruno, iSanae;
 
-let pReimu, pBall;
+let pReimu, pMarisa, pBall;
 let pCards = [];
 
 function preload(){
 	iReimu   = loadImage("assets/y_reimu_x2.png");
+	iMarisa  = loadImage("assets/y_marisa_x2.png");
 	iBall    = loadImage("assets/y_ball_x2.png");
 	iCard    = loadImage("assets/y_card_x2.png");
 }
@@ -38,11 +39,17 @@ function setup(){
 	pReimu.scale = 0.5;
 	pReimu.immovable = true;
 
+	// まりさ配置
+	pMarisa = createSprite(width/2, 40, 60, 16);
+	pMarisa.addImage(iMarisa);// 画像
+	pMarisa.scale = 0.5;
+	pMarisa.setSpeed(4, random(60, 120));
+
 	// ボール
 	pBall = createSprite(width/2, height-55, 30, 30);
 	pBall.addImage(iBall);
 	pBall.scale = 0.5;
-	pBall.setSpeed(8, random(60, 120));
+	pBall.setSpeed(6, random(60, 120));
 
 	// カードを配置
 	let rows = 2;
@@ -69,6 +76,36 @@ function draw(){
 	fill(200);
 	rect(0, 0, width, height);
 
+	// コントロール
+	if(keyIsDown(LEFT_ARROW)){
+		pReimu.position.x -= 8;
+		pReimu.mirrorX(-1);// 左向き
+	}
+
+	if(keyIsDown(RIGHT_ARROW)){
+		pReimu.position.x += 8;
+		pReimu.mirrorX(1);// 右向き
+	}
+
+	// 画面制限
+	if(pReimu.position.x < 0){
+		pReimu.position.x = 0;
+	}
+	if(width < pReimu.position.x){
+		pReimu.position.x = width;
+	}
+
+	// まりさ x 壁
+	pMarisa.bounce(wTop);
+	pMarisa.bounce(wBottom);
+	pMarisa.bounce(wLeft);
+	pMarisa.bounce(wRight);
+
+	// まりさ x れいむ
+	if(pMarisa.bounce(pReimu)){
+		//noLoop();// ゲーム停止
+	}
+
 	// ボール x 壁
 	pBall.bounce(wTop);
 	pBall.bounce(wBottom);
@@ -93,16 +130,6 @@ function draw(){
 			pCard.position.x = -100;
 			pCard.position.y = -100;
 		}
-	}
-
-	if(keyIsDown(LEFT_ARROW)){
-		pReimu.position.x -= 8;
-		pReimu.mirrorX(-1);// 左向き
-	}
-
-	if(keyIsDown(RIGHT_ARROW)){
-		pReimu.position.x += 8;
-		pReimu.mirrorX(1);// 右向き
 	}
 	
 	drawSprites();// これお約束!!
