@@ -2,7 +2,7 @@
 let cvs, ctrack, iImage;
 
 function preload(){
-	iImage = loadImage("assets/audrey.jpg");
+	iImage = loadImage("assets/sample_02.png");
 }
 
 function setup(){
