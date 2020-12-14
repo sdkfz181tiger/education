@@ -11,10 +11,9 @@ function setup(){
 	angleMode(DEGREES);
 	noLoop();
 	noFill();
-	stroke(255, 100, 100);
+	stroke(99, 33, 33);
 	strokeWeight(1);
 	background(100);
-
 	loadModels();
 }
 
@@ -37,7 +36,7 @@ async function detectAllFaces(){
 	console.log("detectAllFaces");
 	const sample = await faceapi.fetchImage(FILE_URL);
 	let iSize = {width: iImage.width, height: iImage.height};
-	let fData = await faceapi.detectAllFaces(sample).withFaceLandmarks().withFaceDescriptors();
+	let fData = await faceapi.detectAllFaces(sample).withFaceLandmarks();
 	let rData = faceapi.resizeResults(fData, iSize);
 	rData.forEach(data=>{drawResult(data);});
 }
@@ -49,8 +48,6 @@ function drawResult(data){
 	const mrk = data.landmarks;
 	const box = det.box;
 
-	stroke(33);
-	strokeWeight(1);
 	rect(box.x, box.y, box.width, box.height);
 	// for(let i=27; i<35; i++){
 	// 	let fX = mrk.positions[i].x;
