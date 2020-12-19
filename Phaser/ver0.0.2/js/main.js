@@ -4,7 +4,7 @@ const D_WIDTH   = 480;
 const D_HEIGHT  = 320;
 const GRAVITY_X = 0;
 const GRAVITY_Y = 200;
-const M_GOTHIC  = {fontFamily: "MisakiGothic"};
+const FONT = {fontFamily: "MisakiGothic"};
 
 let sndDamage, sndHit, sndShot;
 let scoreNum, scoreTxt;
@@ -33,7 +33,8 @@ let phaser = new Phaser.Game(config);
 function preload(){
 	console.log("preload!!");
 	// Image
-	this.load.image("sky", "assets/sky_480x320.png");
+	this.load.image("sky", "assets/bkg_sky.png");
+	this.load.image("mountain", "assets/bkg_mountain.png");
 	this.load.image("gro_32x32", "assets/gro_32x32.png");
 	this.load.image("gro_128x32", "assets/gro_128x32.png");
 	this.load.image("gro_256x32", "assets/gro_256x32.png");
@@ -45,8 +46,10 @@ function preload(){
 	this.load.image("youmu", "assets/y_youmu_x1.png");
 	this.load.image("sanae", "assets/y_sanae_x1.png");
 	// SpriteSheet
-	this.load.spritesheet("dude", "assets/d_dude_x1.png",
-		{frameWidth: 32, frameHeight: 48});
+	this.load.spritesheet("osho", "assets/d_osho_x1.png",
+		{frameWidth: 32, frameHeight: 32});
+	this.load.spritesheet("koboz", "assets/d_koboz_x1.png",
+		{frameWidth: 32, frameHeight: 32});
 	// Audio
 	this.load.audio("damage", ["sounds/damage.mp3"]);
 	this.load.audio("hit", ["sounds/hit.mp3"]);
@@ -57,7 +60,8 @@ function create(){
 	console.log("create!!");
 
 	// Background
-	this.add.image(D_WIDTH/2, D_HEIGHT/2, "sky");
+	createBackground(this, 2, "sky", 0.1);
+	createBackground(this, 3, "mountain", 0.5);
 
 	// Sound
 	sndDamage = this.sound.add("damage");
@@ -66,7 +70,8 @@ function create(){
 
 	// Text
 	scoreNum = 0;
-	scoreTxt = this.add.text(D_WIDTH/2, 32, "TEST", M_GOTHIC).setFontSize(32).setOrigin(0.5);
+	scoreTxt = this.add.text(D_WIDTH/2, 32, "*", FONT).setFontSize(32).setOrigin(0.5);
+	scoreTxt.setScrollFactor(0);// Fix
 	scoreTxt.setText("SCORE:" + scoreNum);
 
 	// Ground
@@ -78,20 +83,20 @@ function create(){
 	// Player
 	player = this.physics.add.sprite(D_WIDTH/2, D_HEIGHT/2, "dude");
 	player.setBounce(0.2);
-	player.setCollideWorldBounds(true);
+	//player.setCollideWorldBounds(true);
 
 	// Animation
 	this.anims.create({
 		key: "front", frameRate: 10, repeat: -1,
-		frames: [{ key: "dude", frame: 4}],
+		frames: this.anims.generateFrameNumbers("osho", {start: 5, end: 8}),
 	});
 	this.anims.create({
 		key: "left", frameRate: 10, repeat: -1,
-		frames: this.anims.generateFrameNumbers("dude", {start: 0, end: 3}),
+		frames: this.anims.generateFrameNumbers("osho", {start: 10, end: 13}),
 	});
 	this.anims.create({
 		key: "right", frameRate: 10, repeat: -1,
-		frames: this.anims.generateFrameNumbers("dude", {start: 5, end: 8}),
+		frames: this.anims.generateFrameNumbers("osho", {start: 15, end: 18}),
 	});
 	player.anims.play("front", true);// Default
 
@@ -110,11 +115,15 @@ function create(){
 	this.physics.add.collider(balls, staticGroup);
 	// Overwrap: Player x Balls
 	this.physics.add.overlap(player, balls, overlap, null, this);
+
+	// Cameras, Follow
+	this.cameras.main.setBounds(0, 0, D_WIDTH*2, D_HEIGHT);
+	this.cameras.main.startFollow(player);
 }
 
 function update(){
 
-	// Controls
+	// Cursors
 	let cursors = this.input.keyboard.createCursorKeys();
 
 	if(cursors.up.isDown){
@@ -136,4 +145,13 @@ function overlap(player, ball){
 	sndShot.play();// Sound
 	scoreNum += 100;// Score
 	scoreTxt.setText("SCORE:" + scoreNum);
+}
+
+function createBackground(scene, cnt, texture, factor){
+	let offX = 0;
+	for(let i=0; i<cnt; i++){
+		const img = scene.add.image(offX, scene.scale.height, texture)
+					.setOrigin(0, 1).setScrollFactor(factor);
+		offX += img.width;
+	}
 }
