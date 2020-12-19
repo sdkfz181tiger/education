@@ -2,8 +2,6 @@
 
 const D_WIDTH   = 480;
 const D_HEIGHT  = 320;
-const GRAVITY_X = 0;
-const GRAVITY_Y = 200;
 const FONT = {fontFamily: "MisakiGothic"};
 
 let sndDamage, sndHit, sndShot;
@@ -16,10 +14,10 @@ const config = {
 	height: D_HEIGHT,
 	physics: {
 		default: "arcade",
-		arcade: {gravity: {
-			x: GRAVITY_X,
-			y: GRAVITY_Y
-		}}
+		arcade: {
+			debug:true,
+			gravity: {x: 0, y: 800}
+		}
 	},
 	scene: {
 		preload: preload,
