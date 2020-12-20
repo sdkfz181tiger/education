@@ -1,7 +1,7 @@
 "use strict";
 
-const D_WIDTH   = 480;
-const D_HEIGHT  = 320;
+const D_WIDTH  = 480;
+const D_HEIGHT = 320;
 const FONT = {fontFamily: "MisakiGothic"};
 
 let sndDamage, sndHit, sndShot;
@@ -16,7 +16,7 @@ const config = {
 		default: "arcade",
 		arcade: {
 			debug:true,
-			gravity: {x: 0, y: 800}
+			gravity: {x: 0, y: 300}
 		}
 	},
 	scene: {
@@ -30,7 +30,7 @@ let phaser = new Phaser.Game(config);
 
 function preload(){
 	console.log("preload!!");
-	// Image
+	// Load image
 	this.load.image("sky", "assets/bkg_sky.png");
 	this.load.image("mountain", "assets/bkg_mountain.png");
 	this.load.image("gro_32x32", "assets/gro_32x32.png");
@@ -43,12 +43,12 @@ function preload(){
 	this.load.image("chiruno", "assets/y_chiruno_x1.png");
 	this.load.image("youmu", "assets/y_youmu_x1.png");
 	this.load.image("sanae", "assets/y_sanae_x1.png");
-	// SpriteSheet
+	// Load spriteSheet
 	this.load.spritesheet("osho", "assets/d_osho_x1.png",
 		{frameWidth: 32, frameHeight: 32});
 	this.load.spritesheet("koboz", "assets/d_koboz_x1.png",
 		{frameWidth: 32, frameHeight: 32});
-	// Audio
+	// Load audio
 	this.load.audio("damage", ["sounds/damage.mp3"]);
 	this.load.audio("hit", ["sounds/hit.mp3"]);
 	this.load.audio("shot", ["sounds/shot.mp3"]);
@@ -79,8 +79,11 @@ function create(){
 	staticGroup.create(360, 200, "gro_32x32");
 
 	// Player
-	player = this.physics.add.sprite(D_WIDTH/2, D_HEIGHT/2, "dude");
-	player.setBounce(0.2);
+	player = this.physics.add.sprite(D_WIDTH/2, D_HEIGHT/2, "osho");
+	player.setGravityY(900);
+	player.setBounce(0.1);
+	player.body.offset.y = player.height*0.2;
+	player.body.setSize(player.width*0.5, player.height*0.8);
 	//player.setCollideWorldBounds(true);
 
 	// Animation
