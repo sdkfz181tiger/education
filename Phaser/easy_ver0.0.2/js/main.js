@@ -3,7 +3,7 @@
 const D_WIDTH  = 480;
 const D_HEIGHT = 320;
 
-let player, balls;
+let player, coins;
 
 const config = {
 	type: Phaser.AUTO,
@@ -70,21 +70,28 @@ function create(){
 	player.body.setSize(player.width*0.5, player.height*0.8);
 	player.setCollideWorldBounds(true);
 
-	// Balls
-	balls = this.physics.add.group({
-		key: "coin", repeat: 20,
-		setXY: {x: 10, y: 0, stepX: 30}});
+	// Coins
+	coins = this.physics.add.group();
+	for(let i=0; i<10; i++){
+		let x = Math.random() * D_WIDTH;
+		let y = 0;
+		let coin = coins.create(x, y, "coin");
+		coin.setGravityY(600);
+		coin.setBounce(0.5);
+		coin.body.offset.y = coin.height*0.2;
+		coin.body.setSize(coin.width*0.5, coin.height*0.8);
+	}
 
-	balls.children.iterate((child)=>{
+	coins.children.iterate((child)=>{
 		child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
 	});
 
 	// Bounce: Player x StaticGroup
 	this.physics.add.collider(player, staticGroup);
-	// Bounce: Balls x StaticGroup
-	this.physics.add.collider(balls, staticGroup);
-	// Overwrap: Player x Balls
-	this.physics.add.overlap(player, balls, overlap, null, this);
+	// Bounce: coins x StaticGroup
+	this.physics.add.collider(coins, staticGroup);
+	// Overwrap: Player x coins
+	this.physics.add.overlap(player, coins, overlap, null, this);
 
 	// Bounds, Follow
 	//this.cameras.main.setBounds(0, 0, D_WIDTH*2, D_HEIGHT);
