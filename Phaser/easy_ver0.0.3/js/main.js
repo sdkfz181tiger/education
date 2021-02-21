@@ -3,7 +3,8 @@
 const D_WIDTH  = 480;
 const D_HEIGHT = 320;
 
-let player, coins;
+let player, platform;
+let groundGroup, coins;
 
 const config = {
 	type: Phaser.AUTO,
@@ -12,14 +13,18 @@ const config = {
 	physics: {
 		default: "arcade",
 		arcade: {
-			debug: false,
-			gravity: {x: 0, y: 300}
+			gravity: {y: 300},
+			debug: true
 		}
 	},
 	scene: {
 		preload: preload,
 		create: create,
 		update: update
+	},
+	fps: {
+		target: 10,
+		forceSetTimeOut: true
 	}
 }
 
@@ -52,73 +57,67 @@ function preload(){
 function create(){
 	console.log("create!!");
 
-	// Background
-	createBackground(this, 2, "sky", 0.1);
-	createBackground(this, 3, "mountain", 0.5);
+	// Platform
+	platform = this.physics.add.image(D_WIDTH/2, D_HEIGHT/2+100, "gro_128x32");
+	platform.setCollideWorldBounds(false);
+	platform.setBounce(0.0);
+	platform.setFriction(1, 1);
+	platform.setImmovable(true);
+	platform.setVelocityX(30);
+	platform.body.allowGravity = false;
 
 	// Ground
-	let staticGroup = this.physics.add.staticGroup();
-	staticGroup.create(240, 320-16, "gro_256x32");
-	staticGroup.create(120, 160, "gro_128x32");
-	staticGroup.create(360, 200, "gro_32x32");
+	groundGroup = this.physics.add.staticGroup();
+	groundGroup.create(240, 300, "gro_256x32");
+	groundGroup.create(120, 160, "gro_128x32");
+	groundGroup.create(360, 180, "gro_32x32");
 
 	// Player
 	player = this.physics.add.sprite(D_WIDTH/2, D_HEIGHT/2, "osho");
-	player.setGravityY(900);
-	player.setBounce(0.1);
+	player.setCollideWorldBounds(true);
+	player.setBounce(0.0);
+	player.setFriction(1, 1);
 	player.body.offset.y = player.height*0.2;
 	player.body.setSize(player.width*0.5, player.height*0.8);
-	player.setCollideWorldBounds(true);
 
 	// Coins
 	coins = this.physics.add.group();
-	for(let i=0; i<10; i++){
-		let x = Math.random() * D_WIDTH;
-		let y = 0;
-		let coin = coins.create(x, y, "coin");
-		coin.setGravityY(600);
-		coin.setBounce(0.5);
-		coin.body.offset.y = coin.height*0.2;
-		coin.body.setSize(coin.width*0.5, coin.height*0.8);
-	}
+	coins.createMultiple({ key: "coin", repeat: 3, setXY: {x: D_WIDTH/2, y: 0, stepX: 30}});
 
-	coins.children.iterate((child)=>{
-		child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-	});
+	// Overlap
+	this.physics.add.overlap(player, coins, overlapCoin, null, this);
 
-	// Bounce: Player x StaticGroup
-	this.physics.add.collider(player, staticGroup);
-	// Bounce: coins x StaticGroup
-	this.physics.add.collider(coins, staticGroup);
-	// Overwrap: Player x coins
-	this.physics.add.overlap(player, coins, overlap, null, this);
-
-	// Bounds, Follow
-	//this.cameras.main.setBounds(0, 0, D_WIDTH*2, D_HEIGHT);
-	//this.cameras.main.startFollow(player);
+	this.physics.add.collider(player, platform);
+	this.physics.add.collider(player, groundGroup);
+	this.physics.add.collider(coins, platform);
+	this.physics.add.collider(coins, groundGroup);
 }
 
 function update(){
 
+	// Platform
+	if(D_WIDTH-D_WIDTH/4 < platform.x){
+		platform.setVelocityX(-30);
+	}
+	if(platform.x < D_WIDTH/4){
+		platform.setVelocityX(30);
+	}
+
 	// Cursors
 	let cursors = this.input.keyboard.createCursorKeys();
-
 	if(cursors.up.isDown){
 		player.setVelocityY(-200);
 	}else if(cursors.left.isDown){
 		player.setVelocityX(-100);
-		//player.anims.play("left", true);
 	}else if(cursors.right.isDown){
 		player.setVelocityX(+100);
-		//player.anims.play("right", true);
 	}else{
 		player.setVelocityX(0);
-		//player.anims.play("front", true);
 	}
 }
 
-function overlap(player, ball){
-	ball.disableBody(true, true);// Remove
+function overlapCoin(player, c){
+	c.disableBody(true, true);
 }
 
 function createBackground(scene, cnt, texture, factor){
