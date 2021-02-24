@@ -4,7 +4,6 @@ const D_WIDTH  = 480;
 const D_HEIGHT = 320;
 
 let player, platform;
-let groundGroup, coins;
 
 const config = {
 	type: Phaser.AUTO,
@@ -57,6 +56,18 @@ function preload(){
 function create(){
 	console.log("create!!");
 
+	// Background
+	this.add.image(D_WIDTH/2, D_HEIGHT/2, "sky");
+	this.add.image(D_WIDTH/2, D_HEIGHT/2, "mountain");
+	
+	// Player
+	player = this.physics.add.sprite(D_WIDTH/2, D_HEIGHT/2, "osho");
+	player.setCollideWorldBounds(true);
+	player.setBounce(0.0);
+	player.setFriction(1, 1);
+	player.body.offset.y = player.height*0.2;
+	player.body.setSize(player.width*0.5, player.height*0.8);
+
 	// Platform
 	platform = this.physics.add.image(D_WIDTH/2, D_HEIGHT/2+100, "gro_128x32");
 	platform.setCollideWorldBounds(false);
@@ -67,30 +78,22 @@ function create(){
 	platform.body.allowGravity = false;
 
 	// Ground
-	groundGroup = this.physics.add.staticGroup();
+	let groundGroup = this.physics.add.staticGroup();
 	groundGroup.create(240, 300, "gro_256x32");
 	groundGroup.create(120, 160, "gro_128x32");
 	groundGroup.create(360, 180, "gro_32x32");
 
-	// Player
-	player = this.physics.add.sprite(D_WIDTH/2, D_HEIGHT/2, "osho");
-	player.setCollideWorldBounds(true);
-	player.setBounce(0.0);
-	player.setFriction(1, 1);
-	player.body.offset.y = player.height*0.2;
-	player.body.setSize(player.width*0.5, player.height*0.8);
-
 	// Coins
-	coins = this.physics.add.group();
-	coins.createMultiple({ key: "coin", repeat: 3, setXY: {x: D_WIDTH/2, y: 0, stepX: 30}});
+	let coinGroup = this.physics.add.group();
+	coinGroup.createMultiple({ key: "coin", repeat: 3, setXY: {x: D_WIDTH/2, y: 0, stepX: 30}});
 
 	// Overlap
-	this.physics.add.overlap(player, coins, overlapCoin, null, this);
+	this.physics.add.overlap(player, coinGroup, overlapCoin, null, this);
 
 	this.physics.add.collider(player, platform);
 	this.physics.add.collider(player, groundGroup);
-	this.physics.add.collider(coins, platform);
-	this.physics.add.collider(coins, groundGroup);
+	this.physics.add.collider(coinGroup, platform);
+	this.physics.add.collider(coinGroup, groundGroup);
 }
 
 function update(){
@@ -118,13 +121,4 @@ function update(){
 
 function overlapCoin(player, c){
 	c.disableBody(true, true);
-}
-
-function createBackground(scene, cnt, texture, factor){
-	let offX = 0;
-	for(let i=0; i<cnt; i++){
-		const img = scene.add.image(offX, scene.scale.height, texture)
-					.setOrigin(0, 1).setScrollFactor(factor);
-		offX += img.width;
-	}
 }
