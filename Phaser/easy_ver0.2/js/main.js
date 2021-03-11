@@ -72,6 +72,13 @@ function create(){
 	player.body.offset.y = player.height*0.2;
 	player.body.setSize(player.width*0.5, player.height*0.8);
 
+	// Animation
+	this.anims.create({
+		key: "ukiuki", frameRate: 10, repeat: -1,
+		frames: this.anims.generateFrameNumbers("s_osho", {start: 0, end: 4}),
+	});
+	player.anims.play("ukiuki", true);// Default
+
 	// Platform
 	// platform = this.physics.add.image(D_WIDTH/2, D_HEIGHT/2+100, "gro_128x32");
 	// platform.setCollideWorldBounds(false);
