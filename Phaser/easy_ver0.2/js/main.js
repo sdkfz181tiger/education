@@ -80,23 +80,23 @@ function create(){
 	player.anims.play("ukiuki", true);// Default
 
 	// Platform
-	// platform = this.physics.add.image(D_WIDTH/2, D_HEIGHT/2+100, "gro_128x32");
-	// platform.setCollideWorldBounds(false);
-	// platform.setBounce(0.0);
-	// platform.setFriction(1, 1);
-	// platform.setImmovable(true);
-	// platform.setVelocityX(30);
-	// platform.body.allowGravity = false;
+	platform = this.physics.add.image(D_WIDTH/2, D_HEIGHT/2+100, "gro_128x32");
+	platform.setCollideWorldBounds(false);
+	platform.setBounce(0.0);
+	platform.setFriction(1, 1);
+	platform.setImmovable(true);
+	platform.setVelocityX(30);
+	platform.body.allowGravity = false;
 
 	// Ground
 	let groundGroup = this.physics.add.staticGroup();
-	groundGroup.create(240, 300, "gro_256x32");
+	groundGroup.create(520, 300, "gro_256x32");
 	groundGroup.create(120, 160, "gro_128x32");
-	groundGroup.create(360, 180, "gro_32x32");
+	groundGroup.create(360, 80, "gro_32x32");
 
 	// Coins
 	let coinGroup = this.physics.add.group();
-	coinGroup.createMultiple({ key: "coin", repeat: 3, setXY: {x: D_WIDTH/2, y: 0, stepX: 30}});
+	coinGroup.createMultiple({ key: "coin", repeat: 3, setXY: {x: D_WIDTH, y: 0, stepX: 30}});
 
 	// Overlap
 	this.physics.add.overlap(player, coinGroup, overlapCoin, null, this);
@@ -114,12 +114,12 @@ function create(){
 function update(){
 
 	// Platform
-	// if(D_WIDTH-D_WIDTH/4 < platform.x){
-	// 	platform.setVelocityX(-30);
-	// }
-	// if(platform.x < D_WIDTH/4){
-	// 	platform.setVelocityX(30);
-	// }
+	if(D_WIDTH-D_WIDTH/4 < platform.x){
+		platform.setVelocityX(-30);
+	}
+	if(platform.x < D_WIDTH/4){
+		platform.setVelocityX(30);
+	}
 
 	// Cursors
 	let cursors = this.input.keyboard.createCursorKeys();
