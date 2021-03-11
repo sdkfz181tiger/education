@@ -22,7 +22,7 @@ const config = {
 		update: update
 	},
 	fps: {
-		target: 10,
+		target: 30,
 		forceSetTimeOut: true
 	}
 }

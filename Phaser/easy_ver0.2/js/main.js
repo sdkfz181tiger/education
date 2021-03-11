@@ -57,8 +57,12 @@ function create(){
 	console.log("create!!");
 
 	// Background
-	this.add.image(D_WIDTH/2, D_HEIGHT/2, "sky");
-	this.add.image(D_WIDTH/2, D_HEIGHT/2, "mountain");
+	// this.add.image(D_WIDTH/2, D_HEIGHT/2, "sky");
+	// this.add.image(D_WIDTH/2, D_HEIGHT/2, "mountain");
+
+	// Background
+	createBackground(this, 2, "sky", 0.1);
+	createBackground(this, 3, "mountain", 0.5);
 	
 	// Player
 	player = this.physics.add.sprite(D_WIDTH/2, D_HEIGHT/2, "osho");
@@ -69,13 +73,13 @@ function create(){
 	player.body.setSize(player.width*0.5, player.height*0.8);
 
 	// Platform
-	platform = this.physics.add.image(D_WIDTH/2, D_HEIGHT/2+100, "gro_128x32");
-	platform.setCollideWorldBounds(false);
-	platform.setBounce(0.0);
-	platform.setFriction(1, 1);
-	platform.setImmovable(true);
-	platform.setVelocityX(30);
-	platform.body.allowGravity = false;
+	// platform = this.physics.add.image(D_WIDTH/2, D_HEIGHT/2+100, "gro_128x32");
+	// platform.setCollideWorldBounds(false);
+	// platform.setBounce(0.0);
+	// platform.setFriction(1, 1);
+	// platform.setImmovable(true);
+	// platform.setVelocityX(30);
+	// platform.body.allowGravity = false;
 
 	// Ground
 	let groundGroup = this.physics.add.staticGroup();
@@ -94,17 +98,21 @@ function create(){
 	this.physics.add.collider(player, groundGroup);
 	this.physics.add.collider(coinGroup, platform);
 	this.physics.add.collider(coinGroup, groundGroup);
+
+	// Bounds, Follow
+	this.cameras.main.setBounds(0, 0, D_WIDTH*2, D_HEIGHT);
+	this.cameras.main.startFollow(player);
 }
 
 function update(){
 
 	// Platform
-	if(D_WIDTH-D_WIDTH/4 < platform.x){
-		platform.setVelocityX(-30);
-	}
-	if(platform.x < D_WIDTH/4){
-		platform.setVelocityX(30);
-	}
+	// if(D_WIDTH-D_WIDTH/4 < platform.x){
+	// 	platform.setVelocityX(-30);
+	// }
+	// if(platform.x < D_WIDTH/4){
+	// 	platform.setVelocityX(30);
+	// }
 
 	// Cursors
 	let cursors = this.input.keyboard.createCursorKeys();
@@ -121,4 +129,13 @@ function update(){
 
 function overlapCoin(player, c){
 	c.disableBody(true, true);
+}
+
+function createBackground(scene, cnt, texture, factor){
+	let offX = 0;
+	for(let i=0; i<cnt; i++){
+		const img = scene.add.image(offX, scene.scale.height, texture)
+					.setOrigin(0, 1).setScrollFactor(factor);
+		offX += img.width;
+	}
 }
