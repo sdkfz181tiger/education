@@ -18,27 +18,39 @@ function setup(){
 
 	background(33);
 	noStroke();
-	noFill();
+	fill(255);
 }
 
 function draw(){
 	background(33);
 
-	for(let i=0; i<10; i++){
-		const cX = random(width);
-		const cY = random(height);
-		const leafs = 7;
-		const size = random(20, 80);
-		drawFlower(cX, cY, leafs, size);
+	let cX = width / 2;
+	let cY = height / 2;
+	let a = width * 0.4;
+	let b = height * 0.3;
+	let pad = height * 0.15;
+
+	push();
+	translate(cX, cY);
+	rotate(-20);
+
+	for(let i=0; i<360; i+=4){
+		let x = a * cos(i) + random(pad) - pad/2;
+		let y = b * sin(i) + random(pad) - pad/2;
+		let leafs = 7;
+		let size = random(10, 40);
+		drawFlower(x, y, leafs, size);
 	}
+
+	pop();
 }
 
 function drawFlower(cX, cY, leafs, size){
 
-	const palette = getPalette();
-	const colorA = palette[0];
-	const colorB = palette[1];
-	const colorC = palette[2];
+	let palette = getPalette();
+	let colorA = palette[0];
+	let colorB = palette[1];
+	let colorC = palette[2];
 
 	let o = 360 / leafs;
 	fill(colorA);
@@ -60,9 +72,9 @@ function drawLeaf(cX, cY, num, limit, dir, size){
 	rotate(dir - limit/2);
 	beginShape();
 	for(let i=0; i<limit; i+=2){
-		const o = i * num;
-		const x = sin(o) * cos(i) * size;
-		const y = sin(o) * sin(i) * size;
+		let o = i * num;
+		let x = sin(o) * cos(i) * size;
+		let y = sin(o) * sin(i) * size;
 		vertex(x, y);
 	}
 	endShape(CLOSE);
