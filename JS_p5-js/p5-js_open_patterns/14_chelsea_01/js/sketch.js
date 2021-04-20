@@ -10,6 +10,12 @@ const palette = [
 //==========
 // p5.js
 
+let font;
+
+function preload(){
+	font = loadFont("./fonts/KAGE-Freebies-Black.otf");
+}
+
 function setup(){
 	createCanvas(windowWidth, windowHeight);
 	angleMode(DEGREES);
@@ -26,19 +32,25 @@ function draw(){
 
 	let cX = width / 2;
 	let cY = height / 2;
-	let a = width * 0.4;
-	let b = height * 0.3;
-	let pad = height * 0.15;
+	let cWidth = width * 0.4;
+	let cHeight = cWidth * 0.5;
+	let fSize = cWidth * 0.4;
+	let fPad = cWidth * 0.3;
 
 	push();
 	translate(cX, cY);
 	rotate(-20);
 
+	textFont(font);
+	textSize(fSize);
+	textAlign(CENTER, CENTER);
+	text("CHELSEA", 0, fSize*-0.2);
+
 	for(let i=0; i<360; i+=4){
-		let x = a * cos(i) + random(pad) - pad/2;
-		let y = b * sin(i) + random(pad) - pad/2;
+		let x = cWidth * cos(i) + random(fPad) - fPad/2;
+		let y = cHeight * sin(i) + random(fPad) - fPad/2;
 		let leafs = 7;
-		let size = random(10, 40);
+		let size = fSize * random(1, 3) / 10;
 		drawFlower(x, y, leafs, size);
 	}
 
