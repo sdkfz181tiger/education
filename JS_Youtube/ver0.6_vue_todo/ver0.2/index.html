@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>Document</title>
+		<link rel="stylesheet" href="css/normalize.css" />
+		<link rel="stylesheet" href="css/style.css" />
+	</head>
+	<body>
+		<div id="wrapper">
+			<h1>My Todo</h1>
+
+			<!-- タブ Begin -->
+			<div id="tab">
+				<div class="tab-list -active"><button>インボックス</button></div>
+				<div class="tab-list"><button>完了したタスク</button></div>
+			</div>
+			<!-- タブ End -->
+
+			<!-- Todo入力フォーム Begin -->
+			<form id="input-form">
+				<div class="input-text">
+					<label for="input-text">Todo</label>
+					<input
+						type="text"
+						id="input-text"
+						name="todo-text"
+						placeholder="牛乳を買う"
+					/>
+				</div>
+				<div class="submit">
+					<button type="submit">登録</button>
+				</div>
+			</form>
+			<!-- Todo入力フォーム End -->
+
+			<!-- Todoリスト Begin -->
+			<table id="todo-table">
+				<tbody id="todo-main">
+					<tr v-for="todo in todos" v-bind:key="todo.id">
+						<td class="cell-done"><label><input type="checkbox" /></label></td>
+						<td class="cell-text">{{ todo.text }}</td>
+						<td class="cell-created-at">{{ todo.createdAt }}</td>
+					</tr>
+				</tbody>
+			</table>
+			<!-- Todoリスト End -->
+			
+		</div>
+		<script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+		<script src="script.js"></script>
+	</body>
+</html>
