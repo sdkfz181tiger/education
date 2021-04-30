@@ -1,25 +1,10 @@
 console.log("main.js!!");
 
-// Class
-let classObj = {
-	default: true,
-	normal:  false,
-	warning: false,
-	danger:  false
-}
-
-// Logs
-let logs = [
-	{name: "You", text: "Hello, nice to meet you!!", time: "00:01:00", align: "right"},
-	{name: "Joe", text: "Nice to meet you too!!", time: "00:02:00", align: "left"},
-	{name: "You", text: "How are you!?", time: "00:03:00", align: "right"},
-	{name: "Joe", text: "Fine thank you!!", time: "00:04:00", align: "left"}
-];
-
 // MyData
 let myData = {
+	txName: "",
 	txData: "",
-	txLogs: logs
+	txLogs: []
 }
 
 // Vue
@@ -30,6 +15,14 @@ let app = new Vue({
 
 	},
 	computed:{
+		txInput:{
+			get(){
+				return this.txName;
+			},
+			set(value){
+				this.txName = value;
+			}
+		},
 		txArea:{
 			get(){
 				return this.txData;
@@ -38,15 +31,28 @@ let app = new Vue({
 				this.txData = value;
 			}
 		}
+	},
+	watch:{
+		txData:(value)=>{
+
+			// Clear
+			myData.txLogs.length = 0;// Important
+
+			// Split
+			const regLine = /\n|\r\n|\r/;
+			const regSpace = /^ |^　/;
+			const lines = value.split(regLine);
+			for(let line of lines){
+				if(line.length == 0 || line == " ") continue;
+				if(line.match(regSpace) != null){
+					myData.txLogs.push({name: "", text: line, time: "00:04:00", youFlg: true});
+				}else{
+					myData.txLogs.push({name: myData.txName, text: line, time: "00:04:00", youFlg: false});
+				}
+			}
+		}
 	}
 });
-
-
-
-
-
-
-
 
 function checkData(value){
 
@@ -71,30 +77,4 @@ function checkData(value){
 	myData.errFlg = false;
 	myData.errMsg = "***";
 	return true;
-}
-
-function calcBmi(){
-	console.log("calcBmi!!");
-
-	// Calc
-	myData.nResult = myData.nWeight / Math.pow(myData.nHeight*0.01, 2);
-	myData.nResult = Math.floor(myData.nResult * 100) * 0.01;
-	
-	classObj.default = false;
-	classObj.normal  = false;
-	classObj.warning = false;
-	classObj.danger  = false;
-	if(myData.nResult < 18){
-		classObj.danger  = true;
-	}else if(myData.nResult < 25){
-		classObj.normal  = true;
-	}else if(myData.nResult < 35){
-		classObj.warning = true;
-	}else{
-		classObj.danger  = true;
-	}
-
-	// Logs
-	let log = {weight: myData.nWeight, height: myData.nHeight, result: myData.nResult};
-	logArr.push(log);
 }

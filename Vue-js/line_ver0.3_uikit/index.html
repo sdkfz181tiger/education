@@ -12,13 +12,12 @@
 	<div class="container" id="app">
 		<header class="header">header</header>
 		<main class="main">
-			{{ txData }}
 			<ul>
-				<li v-for="(log, id) in txLogs" v-if="id%2==0" class="brace-left">
-					{{id}}_{{log.name}}
+				<li v-for="(log, id) in txLogs" v-if="log.youFlg==true" class="brace-right">
+					{{log.name}}_{{log.text}}
 				</li>
-				<li v-else class="brace-right">
-					{{id}}_{{log.name}}
+				<li v-else class="brace-left">
+					{{log.name}}_{{log.text}}
 				</li>
 			</ul>
 		</main>
@@ -27,7 +26,7 @@
 				<fieldset class="uk-fieldset">
 					<legend class="uk-legend">Legend</legend>
 					<div class="uk-margin">
-						<input class="uk-input" type="text" placeholder="Input">
+						<input class="uk-input" type="text" placeholder="Name" v-model="txInput">
 					</div>
 					<div class="uk-margin">
 						<div uk-form-custom="target: true">
@@ -37,7 +36,7 @@
 					<button class="uk-button uk-button-default">Submit</button>
 					</div>
 					<div class="uk-margin">
-						<textarea class="uk-textarea" rows="5" placeholder="Textarea" v-model="txArea"></textarea>
+						<textarea class="uk-textarea" rows="5" placeholder="Text" v-model="txArea"></textarea>
 					</div>
 					<p uk-margin>
 						<button class="uk-button uk-button-default">Button</button>
