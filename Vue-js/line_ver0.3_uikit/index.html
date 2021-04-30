@@ -11,18 +11,17 @@
 <body>
 	<div class="container" id="app">
 		<header class="header">header</header>
-		<main class="main">
-			<!-- Logs -->
+		<main class="main" id="screen">
 			<ul>
 				<li v-for="(log, id) in txLogs" v-if="log.youFlg==true" class="brace-right">
-					{{log.text}}
+					「{{log.text}}」
 				</li>
 				<li v-else class="brace-left">
 					<div v-if="tnBase64==''">
-						<img src="images/icon01.png">{{log.name}}_{{log.text}}
+						{{log.name}} <img src="images/icon01.png">「{{log.text}}」
 					</div>
 					<div v-else>
-						<img v-bind:src="tnBase64">{{log.name}}_{{log.text}}
+						{{log.name}} <img v-bind:src="tnBase64">「{{log.text}}」
 					</div>
 				</li>
 			</ul>
@@ -44,7 +43,7 @@
 						<textarea class="uk-textarea" rows="5" placeholder="Text" v-model="txArea"></textarea>
 					</div>
 					<p uk-margin>
-						<button class="uk-button uk-button-default">Button</button>
+						<button class="uk-button uk-button-default" v-on:click="createScreenshot">Button</button>
 						<button class="uk-button uk-button-default" disabled>Disabled</button>
 					</p>
 				</fieldset>
@@ -57,7 +56,7 @@
 	<script src="https://cdn.jsdelivr.net/npm/uikit@3.6.20/dist/js/uikit.min.js" defer></script>
 	<script src="https://cdn.jsdelivr.net/npm/uikit@3.6.20/dist/js/uikit-icons.min.js" defer></script>
 	<script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js" defer></script>
-	<script src="./js/utility.js" defer></script>
+	<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.5/dist/html2canvas.min.js" defer></script>
 	<script src="./js/main.js" defer></script>
 </body>
 </html>

@@ -18,8 +18,17 @@ let app = new Vue({
 			const files = e.target.files || e.dataTransfer.files;
 			this.getBase64(files[0]).then(image=>this.tnBase64 = image).catch(error=>console.log(error));
 		},
+		createScreenshot(e){
+			e.preventDefault();// Important
+			// Screenshot
+			html2canvas(document.querySelector("#screen")).then(canvas=>{ 
+				let downloadEle = document.createElement("a");
+				downloadEle.href = canvas.toDataURL("image/png");
+				downloadEle.download = "screenshot.png";
+				downloadEle.click();
+			});
+		},
 		getBase64(file){
-			// Promise
 			return new Promise((resolve, reject)=>{
 				const reader = new FileReader();
 				reader.onload = () => resolve(reader.result);
