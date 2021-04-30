@@ -62,6 +62,10 @@ ul{
 	list-style: none;
 }
 
+ul li img{
+	width: 64px; height: auto;
+}
+
 .brace-left{
 	text-align: left;
 	font-size: 2em;

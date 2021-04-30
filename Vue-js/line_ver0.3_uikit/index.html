@@ -12,12 +12,18 @@
 	<div class="container" id="app">
 		<header class="header">header</header>
 		<main class="main">
+			<!-- Logs -->
 			<ul>
 				<li v-for="(log, id) in txLogs" v-if="log.youFlg==true" class="brace-right">
-					{{log.name}}_{{log.text}}
+					{{log.text}}
 				</li>
 				<li v-else class="brace-left">
-					{{log.name}}_{{log.text}}
+					<div v-if="tnBase64==''">
+						<img src="images/icon01.png">{{log.name}}_{{log.text}}
+					</div>
+					<div v-else>
+						<img v-bind:src="tnBase64">{{log.name}}_{{log.text}}
+					</div>
 				</li>
 			</ul>
 		</main>
@@ -30,10 +36,9 @@
 					</div>
 					<div class="uk-margin">
 						<div uk-form-custom="target: true">
-							<input type="file">
+							<input type="file" v-on:change="createThumbnail" accept="image/jpeg, image/png">
 							<input class="uk-input uk-form-width-medium" type="text" placeholder="Select file" disabled>
 						</div>
-					<button class="uk-button uk-button-default">Submit</button>
 					</div>
 					<div class="uk-margin">
 						<textarea class="uk-textarea" rows="5" placeholder="Text" v-model="txArea"></textarea>
@@ -47,35 +52,6 @@
 		</aside>
 		<nav class="nav">nav</nav>
 		<footer class="footer">footer</footer>
-		<!--
-		<div><c_disp/></div>
-		<div><c_weight/></div>
-		<div><c_height/></div>
-		<div v-if="myData.errFlg==false"><c_ctl_enabled/></div>
-		<div v-else><c_ctl_disabled/></div>
-		<div class="error" v-if="myData.errFlg==true">{{myData.errMsg}}</div>
-		<hr/>
-		<table>
-			<tr>
-				<th>Index</th>
-				<th>Weight</th>
-				<th>Height</th>
-				<th>Result</th>
-			</tr>
-			<tr v-for="(log, id) in logs" v-if="id%2==0" class="tr-even">
-				<td>{{id}}</td>
-				<td>{{log.weight}}</td>
-				<td>{{log.height}}</td>
-				<td>{{log.result}}</td>
-			</tr>
-			<tr v-else class="tr-odd">
-				<td>{{id}}</td>
-				<td>{{log.weight}}</td>
-				<td>{{log.height}}</td>
-				<td>{{log.result}}</td>
-			</tr>
-		</table>
-		-->
 	</div>
 	<!-- JavaScript -->
 	<script src="https://cdn.jsdelivr.net/npm/uikit@3.6.20/dist/js/uikit.min.js" defer></script>
