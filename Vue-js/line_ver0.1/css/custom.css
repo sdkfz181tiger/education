@@ -1,0 +1,88 @@
+/* Custom */
+
+body{
+	width: 100%; height: 100%;
+	padding:0; margin:0;
+}
+
+.container{
+	width: 100%; height: 100%;
+	display: grid;
+	grid-template-columns: 180px 1fr 160px;
+	grid-template-rows: 60px 1fr 90px;
+}
+
+.header{
+	background-color: steelblue;
+	grid-column-start: 1;
+	grid-column-end: 4;
+	grid-row-start: 1;
+	grid-row-end: 2;
+}
+
+.main{
+	background-color: powderblue;
+	grid-column-start: 2;
+	grid-column-end: auto;
+	grid-row-start: 2;
+	grid-row-end: auto;
+}
+
+.aside{
+	background-color: skyblue;
+	grid-column-start: 1;
+	grid-column-end: auto;
+	grid-row-start: 2;
+	grid-row-end: auto;
+}
+
+.nav{
+	background-color: lightblue;
+	grid-column-start: 3;
+	grid-column-end: auto;
+	grid-row-start: 2;
+	grid-row-end: auto;
+}
+
+.footer{
+	background-color: royalblue;
+	grid-column-start: 1;
+	grid-column-end: 4;
+	grid-row-start: 3;
+	grid-row-end: auto;
+}
+
+.default{
+	color: black;
+}
+
+.normal{
+	color: blue;
+}
+
+.warning{
+	color: orange;
+}
+
+.danger{
+	color: red;
+}
+
+.error{
+	width: auto; height: auto;
+	padding:0; margin:2;
+	color: red;
+	background-color: darkred;
+}
+
+th{
+	background-color: aqua;
+}
+
+.tr-even{
+	background-color: gray;
+}
+
+.tr-odd{
+	background-color: silver;
+}
