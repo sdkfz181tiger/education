@@ -11,7 +11,17 @@
 <body>
 	<div class="container" id="app">
 		<header class="header">header</header>
-		<main class="main">{{ txData }}</main>
+		<main class="main">
+			{{ txData }}
+			<ul>
+				<li v-for="(log, id) in txLogs" v-if="id%2==0" class="brace-left">
+					{{id}}_{{log.name}}
+				</li>
+				<li v-else class="brace-right">
+					{{id}}_{{log.name}}
+				</li>
+			</ul>
+		</main>
 		<aside class="aside">
 			<form>
 				<fieldset class="uk-fieldset">

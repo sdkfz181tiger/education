@@ -9,15 +9,17 @@ let classObj = {
 }
 
 // Logs
-let logArr = [
-	{weight: 60, height: 160, result: 23},
-	{weight: 50, height: 150, result: 23},
-	{weight: 40, height: 140, result: 23}
+let logs = [
+	{name: "You", text: "Hello, nice to meet you!!", time: "00:01:00", align: "right"},
+	{name: "Joe", text: "Nice to meet you too!!", time: "00:02:00", align: "left"},
+	{name: "You", text: "How are you!?", time: "00:03:00", align: "right"},
+	{name: "Joe", text: "Fine thank you!!", time: "00:04:00", align: "left"}
 ];
 
 // MyData
 let myData = {
-	txData: ""
+	txData: "",
+	txLogs: logs
 }
 
 // Vue

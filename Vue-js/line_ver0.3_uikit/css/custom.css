@@ -58,37 +58,16 @@ body{
 	grid-row-end: auto;
 }
 
-.default{
-	color: black;
+ul{
+	list-style: none;
 }
 
-.normal{
-	color: blue;
+.brace-left{
+	text-align: left;
+	font-size: 2em;
 }
 
-.warning{
-	color: orange;
-}
-
-.danger{
-	color: red;
-}
-
-.error{
-	width: auto; height: auto;
-	padding:0; margin:2;
-	color: red;
-	background-color: darkred;
-}
-
-th{
-	background-color: aqua;
-}
-
-.tr-even{
-	background-color: gray;
-}
-
-.tr-odd{
-	background-color: silver;
+.brace-right{
+	text-align: right;
+	font-size: 2em;
 }
