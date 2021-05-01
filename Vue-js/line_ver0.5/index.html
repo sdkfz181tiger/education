@@ -35,17 +35,23 @@
 					</div>
 					<div class="uk-margin">
 						<div uk-form-custom="target: true">
-							ICON:
-							<input type="file" v-on:change="createThumbnail" accept="image/jpeg, image/png">
+							アイコン:
+							<input type="file" v-on:change="createThumbnail">
 							<input class="uk-input uk-form-width-medium" type="text" placeholder="Select file" disabled>
 						</div>
 					</div>
+					<div class="uk-margin" v-if="msgErrIcon">
+						<span class="uk-label uk-label-warning">png/jpeg/gifファイルを使用できます</span>
+					</div>
 					<div class="uk-margin">
 						<div uk-form-custom="target: true">
-							XLSX:
+							エクセル:
 							<input type="file" v-on:change="loadXLSX">
 							<input class="uk-input uk-form-width-medium" type="text" placeholder="Select file" disabled>
 						</div>
+					</div>
+					<div class="uk-margin" v-if="msgErrXLSX">
+						<span class="uk-label uk-label-warning">xlsxファイルを使用できます</span>
 					</div>
 					<div class="uk-margin">
 						<textarea class="uk-textarea" rows="5" placeholder="Text" v-model="txArea"></textarea>

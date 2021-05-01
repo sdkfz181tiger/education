@@ -5,7 +5,9 @@ let myData = {
 	txName: "",
 	txData: "",
 	txLogs: [],
-	tnBase64: ""
+	tnBase64: "",
+	msgErrIcon: false,
+	msgErrXLSX: false
 }
 
 // Vue
@@ -16,26 +18,28 @@ let app = new Vue({
 		createThumbnail(e){
 			// Base64
 			const files = e.target.files || e.dataTransfer.files;
-			this.getBase64(files[0])
+			const file = files[0];
+			const type = file.type;
+			if(type !== "image/png" && type !== "image/jpeg" && type !== "image/gif"){
+				this.msgErrIcon = true;
+				return;
+			}
+			this.msgErrIcon = false;
+			this.getBase64(file)
 				.then(result=>{
 					this.tnBase64 = result;
 				}).catch(error=>console.log(error));
 		},
-		createScreenshot(e){
-			e.preventDefault();// Important
-			// Screenshot
-			html2canvas(document.querySelector("#screen")).then(canvas=>{ 
-				const downloadEle = document.createElement("a");
-				downloadEle.href = canvas.toDataURL("image/png");
-				downloadEle.download = "screenshot.png";
-				downloadEle.click();
-			});
-		},
 		loadXLSX(e){
-			console.log("loadXLSX");
 			// Load
 			const files = e.target.files || e.dataTransfer.files;
-			this.getXLSX(files[0])
+			const file = files[0];
+			if(file.type !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"){
+				this.msgErrXLSX = true;
+				return;
+			}
+			this.msgErrXLSX = false;
+			this.getXLSX(file)
 				.then(result=>{
 					const unit8 = new Uint8Array(result);
 					const xlsx = XLSX.read(unit8, {type: "array"});
@@ -65,6 +69,16 @@ let app = new Vue({
 				reader.onload = event => resolve(event.target.result);
 				reader.onerror = error => reject(error);
 				reader.readAsArrayBuffer(file);
+			});
+		},
+		createScreenshot(e){
+			e.preventDefault();// Important
+			// Screenshot
+			html2canvas(document.querySelector("#screen")).then(canvas=>{ 
+				const downloadEle = document.createElement("a");
+				downloadEle.href = canvas.toDataURL("image/png");
+				downloadEle.download = "screenshot.png";
+				downloadEle.click();
 			});
 		}
 	},
@@ -105,28 +119,3 @@ let app = new Vue({
 		}
 	}
 });
-
-function checkData(value){
-
-	if(value == ""){
-		myData.errFlg = true;
-		myData.errMsg = "データを入力してください";
-		return false;
-	}
-
-	if(!isFinite(value)){
-		myData.errFlg = true;
-		myData.errMsg = "数値データを入力してください";
-		return false;
-	}
-
-	if(value <= 0){
-		myData.errFlg = true;
-		myData.errMsg = "正しいデータを入力してください";
-		return false;
-	}
-
-	myData.errFlg = false;
-	myData.errMsg = "***";
-	return true;
-}
