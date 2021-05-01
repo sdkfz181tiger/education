@@ -12,19 +12,19 @@
 	<div class="container" id="app">
 		<header class="header">header</header>
 		<main class="main" id="screen">
-			<ul>
-				<li v-for="(log, id) in txLogs" v-if="log.youFlg==true" class="brace-right">
-					「{{log.text}}」
-				</li>
-				<li v-else class="brace-left">
-					<div v-if="tnBase64==''">
-						{{log.name}} <img src="./system/images/icon01.png">「{{log.text}}」
+			<div class="talk">
+				<div class="talk_right" v-for="(log, id) in txLogs" v-if="log.youFlg==true">
+					<p>{{log.text}}</p>
+				</div>
+				<div class="talk_left" v-else>
+					<img src="./system/images/icon01.png" v-if="tnBase64==''">
+					<img v-bind:src="tnBase64" v-else>
+					<div class="talk_box">
+						<div class="talk_name">{{log.name}}</div>
+						<p>{{log.text}}</p>
 					</div>
-					<div v-else>
-						{{log.name}} <img v-bind:src="tnBase64">「{{log.text}}」
-					</div>
-				</li>
-			</ul>
+				</div>
+			</div>
 		</main>
 		<aside class="aside">
 			<form>
@@ -70,8 +70,8 @@
 	<script src="https://cdn.jsdelivr.net/npm/uikit@3.6.20/dist/js/uikit-icons.min.js" defer></script>
 	<script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js" defer></script>
 	<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.5/dist/html2canvas.min.js" defer></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.15.1/shim.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.15.1/xlsx.full.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.15.1/shim.min.js" defer></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.15.1/xlsx.full.min.js" defer></script>
 	<script src="./system/js/main.js" defer></script>
 </body>
 </html>
