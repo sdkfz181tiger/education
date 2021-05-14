@@ -1,32 +1,28 @@
 // Template
 const tmpClock = 
-'<div class="uk-grid-small uk-child-width-auto" uk-grid>' +
-	'<div>' + 
-		'<div class="uk-countdown-number">{{ h }}</div>' +
-		'<div class="uk-countdown-label uk-margin-small uk-text-center">Hours</div>' +
-	'</div>' + 
-	'<div class="uk-countdown-separator">:</div>' +
-	'<div>' + 
-		'<div class="uk-countdown-number">{{ m }}</div>' +
-		'<div class="uk-countdown-label uk-margin-small uk-text-center">Minutes</div>' +
-	'</div>' + 
-	'<div class="uk-countdown-separator">:</div>' +
-	'<div>' + 
-		'<div class="uk-countdown-number">{{ s }}</div>' +
-		'<div class="uk-countdown-label uk-margin-small uk-text-center">Seconds</div>' +
-	'</div>' +
-'</div>';
+	'<div class="uk-grid-small uk-child-width-auto" uk-grid>' +
+		'<div>' + 
+			'<div class="uk-countdown-number">{{ h }}</div>' +
+			'<div class="uk-countdown-label uk-margin-small uk-text-center">Hours</div>' +
+		'</div>' + 
+		'<div class="uk-countdown-separator">:</div>' +
+		'<div>' + 
+			'<div class="uk-countdown-number">{{ m }}</div>' +
+			'<div class="uk-countdown-label uk-margin-small uk-text-center">Minutes</div>' +
+		'</div>' + 
+		'<div class="uk-countdown-separator">:</div>' +
+		'<div>' + 
+			'<div class="uk-countdown-number">{{ s }}</div>' +
+			'<div class="uk-countdown-label uk-margin-small uk-text-center">Seconds</div>' +
+		'</div>' +
+	'</div>';
 
 // MyData
 let myData = {
 	navStr: "Nav",
 	asideStr: "Aside",
 	intervalID: null,
-	timeObj: {
-		h: 0,
-		m: 0,
-		s: 0
-	},
+	timeObj: {h: 0, m: 0, s: 0},
 	msgErrOffline: false
 }
 
