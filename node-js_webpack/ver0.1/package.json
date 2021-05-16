@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "build": "webpack"
+  },
+  "devDependencies": {
+    "css-loader": "^5.2.4",
+    "install": "^0.13.0",
+    "npm": "^7.13.0",
+    "style-loader": "^2.0.0",
+    "sudo": "^1.0.3",
+    "webpack": "^5.37.0",
+    "webpack-cli": "^4.7.0"
+  }
+}
