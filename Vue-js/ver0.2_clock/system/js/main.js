@@ -1,21 +1,3 @@
-// Template
-const tmpClock = 
-	'<div class="uk-grid-small uk-child-width-auto" uk-grid>' +
-		'<div>' + 
-			'<div class="uk-countdown-number">{{ h }}</div>' +
-			'<div class="uk-countdown-label uk-margin-small uk-text-center">Hours</div>' +
-		'</div>' + 
-		'<div class="uk-countdown-separator">:</div>' +
-		'<div>' + 
-			'<div class="uk-countdown-number">{{ m }}</div>' +
-			'<div class="uk-countdown-label uk-margin-small uk-text-center">Minutes</div>' +
-		'</div>' + 
-		'<div class="uk-countdown-separator">:</div>' +
-		'<div>' + 
-			'<div class="uk-countdown-number">{{ s }}</div>' +
-			'<div class="uk-countdown-label uk-margin-small uk-text-center">Seconds</div>' +
-		'</div>' +
-	'</div>';
 
 // MyData
 let myData = {
@@ -61,7 +43,7 @@ const app = Vue.createApp({
 // Component
 app.component("c_clock", {
 	props: ["h", "m", "s"],
-	template: tmpClock
+	template: "#t_clock"
 });
 
 // Mount
