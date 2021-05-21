@@ -1,0 +1,62 @@
+<html>
+<head>
+	<meta charset="UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>Gooqle</title>
+	<!-- CSS -->
+	<link rel="shortcut icon" href="./system/images/favicon.ico"/> 
+	<link rel="stylesheet" href="./system/libs/uikit/css/uikit.min.css"/>
+	<link rel="stylesheet" href="./system/css/custom.css"/>
+</head>
+<body>
+	<div class="container" id="app">
+		<header class="header">= Single Page Application =</header>
+		<nav class="nav">
+			<div class="uk-margin">
+				<button class="uk-button uk-button-default uk-width-1-1" v-on:click="start">Start</button>
+			</div>
+			<div class="uk-margin">
+				<button class="uk-button uk-button-default uk-width-1-1" v-on:click="stop">Stop</button>
+			</div>
+		</nav>
+		<main class="main">
+			<div id="clock_outer">
+				<div id="clock_inner">
+					<c_clock :h="timeObj.h" :m="timeObj.m" :s="timeObj.s"></c_clock>
+				</div>
+			</div>
+		</main>
+		<aside class="aside">
+			{{ asideStr }}
+		</aside>
+		<footer class="footer"><small>©Gooqle</small></footer>
+	</div>
+	<!-- Template -->
+	<script type="text/x-template" id="t_clock">
+		<div class="uk-grid-small uk-child-width-auto" uk-grid>
+			<div> 
+				<div class="uk-countdown-number">{{ h }}</div>
+				<div class="uk-countdown-label uk-margin-small uk-text-center">Hours</div>
+			</div>
+			<div class="uk-countdown-separator">:</div>
+			<div>
+				<div class="uk-countdown-number">{{ m }}</div>
+				<div class="uk-countdown-label uk-margin-small uk-text-center">Minutes</div>
+			</div>
+			<div class="uk-countdown-separator">:</div>
+			<div>
+				<div class="uk-countdown-number">{{ s }}</div>
+				<div class="uk-countdown-label uk-margin-small uk-text-center">Seconds</div>
+			</div>
+		</div>
+	</script>
+	<!-- JavaScript -->
+	<script src="./system/libs/vue/js/vue.global.min.js" defer></script>
+	<script src="./system/libs/uikit/js/uikit.min.js" defer></script>
+	<script src="./system/libs/uikit/js/uikit-icons.min.js" defer></script>
+	<script src="./system/libs/html2canvas/js/html2canvas.min.js"></script>
+	<script src="./system/libs/xlsx/js/shim.min.js"></script>
+	<script src="./system/libs/xlsx/js/xlsx.full.min.js"></script>
+	<script src="./system/js/main.js" defer></script>
+</body>
+</html>
