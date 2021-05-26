@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>Timer</title>
+		<link rel="stylesheet" href="css/normalize.css" />
+		<link rel="stylesheet" href="css/style.css" />
+	</head>
+	<body>
+		<div id="wrapper">
+			<h1>Timer</h1>
+			<p>
+				残り時間は{{ timeRemain }}秒です
+			</p>
+			<p id="d_ui">
+				<input v-model="timeInput"/>秒<br/>
+				<button v-on:click="start">Start</button>
+				<button v-on:click="stop">Stop</button>
+			</p>
+			<p v-if="timeRemain<=0">終了です!!</p>
+			<p v-else-if="timeRemain<=5">{{ timeRemain }}秒前です!!</p>
+			<p v-else-if="timeRemain<=10">10秒前です!!</p>
+			<p v-else>計測中です</p>
+		</div>
+		<script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+		<script src="script.js"></script>
+	</body>
+</html>
