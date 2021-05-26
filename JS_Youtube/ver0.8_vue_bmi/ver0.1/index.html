@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>BMI</title>
+		<link rel="stylesheet" href="css/normalize.css" />
+		<link rel="stylesheet" href="css/style.css" />
+	</head>
+	<body>
+		<div id="wrapper">
+			<h1>BMI</h1>
+			<p>
+				身長と体重を入力してください
+			</p>
+			<p>
+				身長:<input v-model="inputHeight"/>cm<br/>
+				体重:<input v-model="inputWeight"/>kg<br/>
+				<button v-on:click="calc">Calc</button>
+			</p>
+			<p>
+				BMI値は{{ result }}です
+			</p>
+			<p v-if="result<18.5">低体重です</p>
+			<p v-else-if="result<25.0">普通体重です</p>
+			<p v-else-if="result<30.0">肥満(1度)です</p>
+			<p v-else-if="result<35.0">肥満(2度)です</p>
+			<p v-else-if="result<40.0">肥満(3度)です</p>
+			<p v-else>肥満(4度)です</p>
+		</div>
+		<script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+		<script src="script.js"></script>
+	</body>
+</html>

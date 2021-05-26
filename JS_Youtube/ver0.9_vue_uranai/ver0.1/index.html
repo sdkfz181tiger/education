@@ -4,26 +4,30 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
-		<title>Timer</title>
+		<title>Weather</title>
 		<link rel="stylesheet" href="css/normalize.css" />
 		<link rel="stylesheet" href="css/style.css" />
 	</head>
 	<body>
 		<div id="wrapper">
-			<h1>Timer</h1>
+			<h1>Weather</h1>
 			<p>
-				残り時間は{{ timeRemain }}秒です
+				天気情報を取得します
 			</p>
 			<p>
-				<input v-model="timeInput"/>秒<br/>
-				<button v-on:click="start">Start</button>
-				<button v-on:click="stop">Stop</button>
+				<button v-on:click="connect">Connect</button>
 			</p>
-			<p v-if="timeRemain<=0">終了です!!</p>
-			<p v-else-if="timeRemain<=5">{{ timeRemain }}秒前です!!</p>
-			<p v-else-if="timeRemain<=10">10秒前です!!</p>
-			<p v-else>計測中です</p>
+			<div v-for="item in items" v-bind:key="item.area.name">
+				{{ item.area.name }}<br/>
+				<ul>
+					<li v-for="weather in item.weathers">{{ weather }}</li>
+				</ul>
+				<ul>
+					<li v-for="code in item.weatherCodes">{{ code }}</li>
+				</ul>
+			</div>
 		</div>
+		<script src="https://cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
 		<script src="script.js"></script>
 	</body>

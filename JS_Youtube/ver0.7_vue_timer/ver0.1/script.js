@@ -25,7 +25,7 @@ function createApp(){
 				clearInterval(this.timerID);
 			},
 			calc: function(){
-				console.log("Calc!!");
+				console.log("calc!!");
 				// 残り時間
 				this.timeRemain = Math.floor((this.timeLimit - Date.now()) / 1000) + 1;
 				// 終了判定
