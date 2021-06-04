@@ -194,6 +194,28 @@ for(let i=0; i<10; i++){
 }
 
 //==========
+// 問題
+//	0から9までの数値を出力しなさい。
+//	ただし、1の時は"One",5の時は"Five",8の時は"Eight"と出力する事。
+//	条件: for文を1回以上使う事。
+//	例: 0, One, 2, 3, 4, Five, 6, 7, Eight, 9
+
+//==========
+// 解答
+console.log("==========");
+for(let i=0; i<10; i++){
+	if(i == 1){
+		console.log("One");
+	}else if(i == 5){
+		console.log("Five");
+	}else if(i == 8){
+		console.log("Eight");
+	}else{
+		console.log(i);
+	}
+}
+
+//==========
 // Lv4
 console.log("===== Level4 =====");
 
