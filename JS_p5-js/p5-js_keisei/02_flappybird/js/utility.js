@@ -13,16 +13,16 @@ let sGetReady, sGameOver;
 let playing = false;
 
 function loadAssets(dir){
-	const sBird = loadSpriteSheet(dir + "/fb_bird_x2.png", 34, 24, 3);
+	const sBird = loadSpriteSheet(dir + "fb_bird_x2.png", 34, 24, 3);
 	aBird = loadAnimation(sBird);
-	iBkg = loadImage(dir + "/fb_bkg_x2.png");
-	iGrd = loadImage(dir + "/fb_grd_x2.png");
-	iTop = loadImage(dir + "/fb_tun_top_x2.png");
-	iBtm = loadImage(dir + "/fb_tun_bottom_x2.png");
-	iGameOver = loadImage(dir + "/fb_gameover_x2.png");
-	iGetReady = loadImage(dir + "/fb_getready_x2.png");
-	seJump = loadSound(dir + "/se_jump.mp3");
-	seOmg = loadSound(dir + "/se_omg.mp3");
+	iBkg = loadImage(dir + "fb_bkg_x2.png");
+	iGrd = loadImage(dir + "fb_grd_x2.png");
+	iTop = loadImage(dir + "fb_tun_top_x2.png");
+	iBtm = loadImage(dir + "fb_tun_bottom_x2.png");
+	iGameOver = loadImage(dir + "fb_gameover_x2.png");
+	iGetReady = loadImage(dir + "fb_getready_x2.png");
+	seJump = loadSound(dir + "se_jump.mp3");
+	seOmg = loadSound(dir + "se_omg.mp3");
 }
 
 function createPlayer(x, y){

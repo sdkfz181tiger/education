@@ -9,7 +9,7 @@ let speed = 3;
 let grdY = 0;
 
 function preload(){
-	loadAssets("assets");
+	loadAssets("assets/");
 }
 
 function setup(){
