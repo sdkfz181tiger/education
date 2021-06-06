@@ -18,15 +18,8 @@
 				TODOリスト done:{{ done }}
 			</p>
 			<ul v-for="todo in getTodos" v-bind:key="todo.id">
-				<li v-if="todo.id !== edit">
-					<button v-on:click="editTodo(todo.id)">Edit</button>
-					{{ todo.id }}_{{ todo.title }}_{{ todo.detail }}
-					<button v-on:click="toggleTodo(todo.id)">Toggle</button>
-					<button v-on:click="removeTodo(todo.id)">Remove</button>
-				</li>
-				<li v-else>
-					<button v-on:click="updateTodo(todo.id)">Update</button>
-					{{ todo.id }}_<input v-model="todo.title"/>_<input v-model="todo.detail"/>
+				<li>
+					{{ todo.id }}_{{ todo.title }}_{{ todo.date }}
 					<button v-on:click="toggleTodo(todo.id)">Toggle</button>
 					<button v-on:click="removeTodo(todo.id)">Remove</button>
 				</li>
@@ -34,7 +27,7 @@
 			<p>
 				TODO追加 title:{{ title }}
 			</p>
-			<input v-model="title"/>_<input v-model="detail"/>
+			<input type="text" v-model="title"/>
 			<button v-on:click="pushTodo">Push</button>
 		</div>
 		<script src="https://cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js"></script>

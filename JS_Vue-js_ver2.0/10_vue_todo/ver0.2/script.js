@@ -8,25 +8,25 @@ const todos = [
 	{
 		id: 1,
 		title: "Bitcoinを買う",
-		detail: "大人気だから",
+		date: "2021/06/01",
 		done: false
 	},
 	{
 		id: 2,
 		title: "Ethereumを買う",
-		detail: "今話題だから",
+		date: "2021/06/02",
 		done: true
 	},
 	{
 		id: 3,
 		title: "MonaCoinを買う",
-		detail: "ヲタクだから",
+		date: "2021/06/03",
 		done: false
 	},
 	{
 		id: 4,
 		title: "LightCoinを買う",
-		detail: "なんとなく",
+		date: "2021/06/04",
 		done: false
 	}
 ];
@@ -39,9 +39,7 @@ function createApp(){
 		data: {
 			done: false,
 			todos: todos,
-			title: "DogeCoinを買う",
-			detail: "ネタとして",
-			edit: -1
+			title: "DogeCoinを買う"
 		},
 		mounted: function(){
 			console.log("mounted!!");
@@ -66,7 +64,7 @@ function createApp(){
 				let todo = {
 					id: Date.now(),
 					title: this.title,
-					detail: this.detail,
+					date: "2021/07/01",
 					done: false
 				}
 				this.todos.push(todo);
@@ -78,16 +76,6 @@ function createApp(){
 				this.todos = this.todos.filter(todo=>{
 					return todo.id != id;
 				});
-				this.saveTodos();// Save
-			},
-			editTodo(id){
-				console.log("editTodo:" + id);
-				this.edit = id;
-				this.saveTodos();// Save
-			},
-			updateTodo(id){
-				console.log("updateTodo:" + id);
-				this.edit = -1;
 				this.saveTodos();// Save
 			},
 			saveTodos(){
