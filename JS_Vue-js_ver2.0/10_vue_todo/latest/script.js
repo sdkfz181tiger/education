@@ -41,6 +41,10 @@ function createApp(){
 			todos: todos,
 			title: "DogeCoinを買う"
 		},
+		mounted: function(){
+			console.log("mounted!!");
+			this.loadTodos();// Load
+		},
 		methods:{
 			switchTodos: function(){
 				console.log("switchTodos!!");
@@ -53,6 +57,7 @@ function createApp(){
 					if(todo.id == id) todo.done = !todo.done;
 					return todo;
 				});
+				this.saveTodos();// Save
 			},
 			pushTodo: function(){
 				console.log("pushTodo!!");
@@ -63,6 +68,7 @@ function createApp(){
 					done: false
 				}
 				this.todos.push(todo);
+				this.saveTodos();// Save
 			},
 			removeTodo: function(id){
 				console.log("removeTodo:" + id);
@@ -70,6 +76,17 @@ function createApp(){
 				this.todos = this.todos.filter(todo=>{
 					return todo.id != id;
 				});
+				this.saveTodos();// Save
+			},
+			saveTodos(){
+				console.log("saveTodos!!");
+				const json = JSON.stringify(this.todos);// Array -> JSON
+				localStorage.setItem("todo", json);// Save
+			},
+			loadTodos(){
+				console.log("loadTodos!!");
+				const json = localStorage.getItem("todo");// Load
+				this.todos = JSON.parse(json);// JSON -> Array
 			}
 		},
 		computed:{
