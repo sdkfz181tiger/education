@@ -7,27 +7,27 @@
 const todos = [
 	{
 		id: 1,
+		done: false,
 		title: "Bitcoinを買う",
-		detail: "大人気だから",
-		done: false
+		detail: "大人気だから"
 	},
 	{
 		id: 2,
+		done: true,
 		title: "Ethereumを買う",
-		detail: "今話題だから",
-		done: true
+		detail: "今話題だから"
 	},
 	{
 		id: 3,
+		done: false,
 		title: "MonaCoinを買う",
-		detail: "ヲタクだから",
-		done: false
+		detail: "ヲタクだから"
 	},
 	{
 		id: 4,
+		done: false,
 		title: "LightCoinを買う",
-		detail: "なんとなく",
-		done: false
+		detail: "なんとなく"
 	}
 ];
 
@@ -37,8 +37,8 @@ function createApp(){
 	new Vue({
 		el: "#wrapper",
 		data: {
-			done: false,
 			todos: todos,
+			done: false,
 			title: "DogeCoinを買う",
 			detail: "ネタとして",
 			edit: -1
@@ -65,9 +65,9 @@ function createApp(){
 				console.log("pushTodo!!");
 				let todo = {
 					id: Date.now(),
+					done: false,
 					title: this.title,
 					detail: this.detail,
-					done: false
 				}
 				this.todos.push(todo);
 				this.saveTodos();// Save
@@ -80,22 +80,22 @@ function createApp(){
 				});
 				this.saveTodos();// Save
 			},
-			editTodo(id){
+			editTodo: function(id){
 				console.log("editTodo:" + id);
 				this.edit = id;
 				this.saveTodos();// Save
 			},
-			updateTodo(id){
+			updateTodo: function(id){
 				console.log("updateTodo:" + id);
 				this.edit = -1;
 				this.saveTodos();// Save
 			},
-			saveTodos(){
+			saveTodos: function(){
 				console.log("saveTodos!!");
 				const json = JSON.stringify(this.todos);// Array -> JSON
 				localStorage.setItem("todo", json);// Save
 			},
-			loadTodos(){
+			loadTodos: function(){
 				console.log("loadTodos!!");
 				const json = localStorage.getItem("todo");// Load
 				this.todos = JSON.parse(json);// JSON -> Array

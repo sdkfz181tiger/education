@@ -12,11 +12,10 @@
 		<div id="wrapper">
 			<h1>TODO</h1>
 			<p>
-				<button v-on:click="switchTodos">Change</button>
+				<button v-on:click="switchTodos">Switch</button>
 			</p>
-			<p>
-				TODOリスト done:{{ done }}
-			</p>
+			<p v-if="done == false">TODOリスト(完了)</p>
+			<p v-else>TODOリスト(未完)</p>
 			<ul v-for="todo in getTodos" v-bind:key="todo.id">
 				<li v-if="todo.id !== edit">
 					<button v-on:click="editTodo(todo.id)">Edit</button>
