@@ -49,6 +49,7 @@ function draw(){
 	// 3-3, プレイヤーの動き1
 	if(player.position.y < grdY){
 		player.velocity.y += 2;
+		player.rotation = player.velocity.y * 3;
 	}else{
 		player.velocity.y = 0;
 		player.position.y = grdY;

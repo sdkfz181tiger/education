@@ -123,7 +123,9 @@ function gameOver(){
 
 function collideTunnels(tgt, ...tnls){
 	for(let tnl of tnls){
-		if(tnl.overlap(tgt)) return true;
+		const x = tgt.position.x;
+		const y = tgt.position.y;
+		if(tnl.overlapPoint(x, y)) return true;
 	}
 	return false;
 }
