@@ -43,12 +43,10 @@ function createBullet(x, y){
 }
 
 function createEnemy(x, y, s=1.0){
-	let spd = random(2, 4);
-	let deg = random(240, 300);
 	let enemy = createSprite(x, y, 16, 16);
 	enemy.addAnimation("fly", aKino02);
 	enemy.changeAnimation("fly");
-	enemy.setSpeed(spd, deg);
+	enemy.setSpeed(random(4, 8), random(240, 300));
 	enemy.scale = s;
 	enemies.push(enemy);
 }

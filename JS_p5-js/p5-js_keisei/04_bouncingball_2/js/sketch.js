@@ -59,10 +59,6 @@ function draw(){
 			enemy.remove();
 			continue;
 		}
-		// x Player
-		if(collideOther(player, enemy)){
-			gameOver();
-		}
 		// x Bullets
 		for(let b=bullets.length-1; 0<=b; b--){
 			let bullet = bullets[b];
@@ -77,7 +73,7 @@ function draw(){
 				// Score
 				score++;
 				// Enemy
-				enemy.setSpeed(random(2, 4), random(240, 300));
+				enemy.setSpeed(random(4, 8), random(240, 300));
 				enemy.scale *= 0.8;
 				let eX = enemy.position.x;
 				let eY = enemy.position.y;
@@ -88,6 +84,10 @@ function draw(){
 				continue;
 			}
 		}
+		// x Player
+		if(collideOther(player, enemy)){
+			gameOver();
+		}
 	}
 
 	drawSprites();
@@ -95,6 +95,7 @@ function draw(){
 }
 
 function keyPressed(){
+	//console.log(keyCode);
 	if(!isLooping()) return;
 	if(keyCode == LEFT_ARROW){
 		player.velocity.x = -5;
@@ -102,7 +103,7 @@ function keyPressed(){
 	if(keyCode == RIGHT_ARROW){
 		player.velocity.x = +5;
 	}
-	if(keyCode == 65){// A
+	if(keyCode == 90){// Z
 		let x = player.position.x;
 		let y = player.position.y;
 		createBullet(x, y);
@@ -111,7 +112,7 @@ function keyPressed(){
 
 function keyReleased(){
 	if(!isLooping()) return;
-	if(keyCode == 65) return;
+	if(keyCode == 90) return;
 	player.velocity.x = 0;
 }
 
