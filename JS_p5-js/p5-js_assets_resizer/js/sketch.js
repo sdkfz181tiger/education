@@ -1,9 +1,9 @@
 console.log("Hello p5.js!!");
 
-const FILE_PREFIX = "poison_";
-const FILE_FROM   = 1;
-const FILE_LAST   = 1;
-const FILE_SCALE  = 2;// FirefoxのZoomを50%にする事
+const FILE_PREFIX = "kinoko_";
+const FILE_FROM   = 1;// From...
+const FILE_LAST   = 2;// To...
+const FILE_SCALE  = 5;// FirefoxのZoomを50%にする事
 
 const DISP_W = 64;
 const DISP_H = 64;
