@@ -14,7 +14,7 @@ function setup(){
 	angleMode(DEGREES);
 	frameRate(16);
 	noLoop();
-	background(100);
+	background(33);
 	createBackground();
 
 	grdY = getGroundY();
@@ -28,7 +28,7 @@ function setup(){
 }
 
 function draw(){
-	background(100, 150, 250);
+	background(33);
 
 	// Player
 	if(player.position.x < 0) player.position.x = width;
@@ -81,6 +81,8 @@ function draw(){
 				// Remove
 				bullets.splice(b, 1);
 				bullet.remove();
+				// Sound
+				seDmg.play();
 				continue;
 			}
 		}

@@ -3,7 +3,7 @@ console.log("Hello utility.js!!");
 let aTanu, aKino01, aKino02;
 let iBkg, iGrd;
 let iGetReady, iGameOver;
-let seJump, seOmg;
+let seDmg, seJump, seOmg;
 
 let sBkgA, sGrdA;
 let sGetReady, sGameOver;
@@ -24,6 +24,8 @@ function loadAssets(dir){
 	iGrd = loadImage(dir + "fb_grd_x2.png");
 	iGameOver = loadImage(dir + "fb_gameover_x2.png");
 	iGetReady = loadImage(dir + "fb_getready_x2.png");
+	// Sounds
+	seDmg = loadSound(dir + "se_dmg.mp3");
 	seJump = loadSound(dir + "se_jump.mp3");
 	seOmg = loadSound(dir + "se_omg.mp3");
 }
@@ -53,8 +55,8 @@ function createEnemy(x, y, s=1.0){
 
 function createBackground(){
 
-	sBkgA = createSprite(width/2, height/2, 32, 32);
-	sBkgA.addImage(iBkg);
+	//sBkgA = createSprite(width/2, height/2, 32, 32);
+	//sBkgA.addImage(iBkg);
 
 	sGrdA = createSprite(width/2, height, 32, 32);
 	sGrdA.addImage(iGrd);
