@@ -74,7 +74,7 @@ function draw(){
 	btmB.position.y = topB.position.y + topB.height + 100;
 
 	// 6, 衝突判定
-	if(collideTunnels(player, topA, btmA)){
+	if(collideTunnels(player, topA, btmA, topB, btmB)){
 		gameOver();
 	}
 

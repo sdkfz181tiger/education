@@ -2,7 +2,11 @@
 const sushis = [
 	{word: "toro",  path:"s_toro.png",  img:null},
 	{word: "sake",  path:"s_sake.png",  img:null},
-	{word: "ikura", path:"s_ikura.png", img:null}
+	{word: "ikura", path:"s_ikura.png", img:null},
+	{word: "aho", path:"s_ikura.png", img:null},
+	{word: "baka", path:"s_ikura.png", img:null},
+	{word: "tare", path:"s_ikura.png", img:null},
+	{word: "ga", path:"s_ikura.png", img:null},
 ];
 
 let word = null;
@@ -30,6 +34,14 @@ function setup(){
 	fill(255);
 	textAlign(CENTER, CENTER);
 	textSize(48);
+
+	for(let i=sushis.length-1; 0<i; i--){
+		let k = Math.floor(Math.random() * i);
+		let tmp = sushis[k];
+		sushis[k] = sushis[i];
+		sushis[i] = tmp;
+	}
+	console.log(sushis);
 
 	word = sushis[0].word;
 	img = sushis[0].img;

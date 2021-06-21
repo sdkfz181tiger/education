@@ -1,9 +1,9 @@
 console.log("Hello p5.js!!");
 
-const FILE_PREFIX = "kinoko_";
+const FILE_PREFIX = "sushi_";
 const FILE_FROM   = 1;// From...
-const FILE_LAST   = 2;// To...
-const FILE_SCALE  = 5;// FirefoxのZoomを50%にする事
+const FILE_LAST   = 3;// To...
+const FILE_SCALE  = 8;// FirefoxのZoomを50%にする事
 
 const DISP_W = 64;
 const DISP_H = 64;
@@ -110,8 +110,8 @@ function savePng(fileName, size){
 	}
 
  	// Save(***_x4.png)
-	//let array = fileName.split(".");
-	//save(cvs, array[0] + "_x" + size + "." + array[1]);
+	let array = fileName.split(".");
+	save(cvs, array[0] + "_x" + size + "." + array[1]);
 	// Save(同じファイル名)
-	save(cvs, fileName);
+	//save(cvs, fileName);
 }
