@@ -1,0 +1,13 @@
+body{
+	width: 100%; height: 100%;
+	margin: 30px; padding: 0px;
+	background-color: silver;
+}
+
+#my-img{
+	position: absolute;
+}
+
+#my-cvs{
+	position: absolute;
+}
