@@ -44,12 +44,20 @@ function draw(){
 }
 
 function detectNose(position){
-	console.log("detectNose!!");
+	console.log("detectNose!!", position);
 	//ctrack.draw(cvs.canvas);// Debug
+
+	circle(width / 2, height / 2, 30);
+
 	let lX = position[42][0];
 	let lY = position[42][1];
 	let rX = position[43][0];
 	let rY = position[43][1];
+
+	fill(255, 0, 0);
+	circle(lX, lY, 10);
+	circle(rX, rY, 10);
+
 	drawHair(lX, lY, 60);
 	drawHair(rX, rY, 50);
 }

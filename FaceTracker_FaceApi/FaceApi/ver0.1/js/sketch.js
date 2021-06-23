@@ -49,13 +49,13 @@ function drawResult(data){
 	const box = det.box;
 
 	rect(box.x, box.y, box.width, box.height);
-	// for(let i=27; i<35; i++){
-	// 	let fX = mrk.positions[i].x;
-	// 	let fY = mrk.positions[i].y;
-	// 	let tX = mrk.positions[i+1].x;
-	// 	let tY = mrk.positions[i+1].y;
-	// 	line(fX, fY, tX, tY);
-	// }
+	for(let i=27; i<35; i++){
+		let fX = mrk.positions[i].x;
+		let fY = mrk.positions[i].y;
+		let tX = mrk.positions[i+1].x;
+		let tY = mrk.positions[i+1].y;
+		line(fX, fY, tX, tY);
+	}
 	let lX = mrk.positions[32].x;
 	let lY = mrk.positions[32].y;
 	let rX = mrk.positions[34].x;

@@ -17,6 +17,7 @@
 			<p>
 				<button v-on:click="connect">Connect</button>
 			</p>
+			<p>{{ message }}</p>
 			<div v-for="item in items" v-bind:key="item.area.name">
 				{{ item.area.name }}<br/>
 				<ul>

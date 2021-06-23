@@ -8,15 +8,17 @@ function createApp(){
 	new Vue({
 		el: "#wrapper",
 		data: {
-			items: []
+			items: [],
+			message: "Hello Vue.js!!"
 		},
 		methods:{
 			connect: function(){
 				console.log("connect!!");
 				// Axios
 				axios.get(JSON_URL).then(res=>{
-					console.log(res);// 通信成功
+					// 通信成功
 					this.items = res.data[0].timeSeries[0].areas;// Areas
+					this.message = res.data[0].timeSeries[0].areas[0].weathers[0];
 				}).catch(err=>{
 					console.log(err);// 通信失敗
 				});

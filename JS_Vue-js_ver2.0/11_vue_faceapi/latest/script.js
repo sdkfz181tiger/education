@@ -19,6 +19,7 @@ function createApp(){
 			},
 			async loadModels(){
 				console.log("loadModels");
+				// Face-API
 				Promise.all([
 					faceapi.loadSsdMobilenetv1Model(MODEL_URL),
 					faceapi.loadFaceLandmarkModel(MODEL_URL),
@@ -27,6 +28,7 @@ function createApp(){
 			},
 			async detectAllFaces(){
 				console.log("detectAllFaces");
+
 				const img = document.getElementById("my-img");// Image
 				const cvs = document.getElementById("my-cvs");// Canvas
 				cvs.width = img.width;
