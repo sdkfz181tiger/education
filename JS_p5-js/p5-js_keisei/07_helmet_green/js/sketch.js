@@ -1,7 +1,7 @@
 
 const PAD_X = 20;
 
-let iBkg, iGameOver;
+let iBkg, iNinja, iGameOver;
 let iLeftOpen, iRightOpen, iRightClose;
 let iItems = [];
 let iPlayers = [];
@@ -13,25 +13,26 @@ let dLeft, dRight, sPlayerDead;
 
 function preload(){
 	// Image
-	iBkg = loadImage("./assets/h_back.png");
+	iBkg = loadImage("./assets/n_back.png");
+	iNinja = loadImage("./assets/n_ninja.png");
 
-	iGameOver = loadImage("./assets/h_gameover.png");
-	iLeftOpen = loadImage("./assets/h_left_open.png");
-	iRightOpen = loadImage("./assets/h_right_open.png");
-	iRightClose = loadImage("./assets/h_right_close.png");
+	iGameOver = loadImage("./assets/n_gameover.png");
+	iLeftOpen = loadImage("./assets/d_left_open.png");
+	iRightOpen = loadImage("./assets/d_right_open.png");
+	iRightClose = loadImage("./assets/d_right_close.png");
 
 	iItems = [];
 	for(let i=1; i<=5; i++){
-		let img = loadImage("./assets/h_item_" + i + ".png");
+		let img = loadImage("./assets/n_item_" + i + ".png");
 		iItems.push(img);
 	}
 
 	iPlayers = [];
 	for(let i=1; i<=7; i++){
-		let img = loadImage("./assets/h_player_" + i + ".png");
+		let img = loadImage("./assets/n_player_" + i + ".png");
 		iPlayers.push(img);
 	}
-	iPlayerDead = loadImage("./assets/h_player_dead.png");
+	iPlayerDead = loadImage("./assets/n_player_dead.png");
 }
 
 function setup(){
@@ -43,6 +44,9 @@ function setup(){
 	// Background
 	let bkg = createSprite(width/2, height/2);
 	bkg.addImage(iBkg);
+	// Ninja
+	let ninja = createSprite(width-10, 20);
+	ninja.addImage(iNinja);
 	// Door
 	dLeft = createSprite(10, 76);
 	dLeft.addImage(iLeftOpen);
