@@ -1,13 +1,14 @@
 
 const PAD_X = 20;
 
-let iBkg, iNinja, iGameOver;
+let iBkg, iNinja, iGuide, iGameOver;
 let iLeftOpen, iRightOpen, iRightClose;
 let iItems = [];
 let iPlayers = [];
 
 let sItems = [];
 let sPlayers = [];
+let index = 0;
 
 let dLeft, dRight, sPlayerDead;
 
@@ -15,7 +16,7 @@ function preload(){
 	// Image
 	iBkg = loadImage("./assets/n_back.png");
 	iNinja = loadImage("./assets/n_ninja.png");
-
+	iGuide = loadImage("./assets/n_guide.png");
 	iGameOver = loadImage("./assets/n_gameover.png");
 	iLeftOpen = loadImage("./assets/d_left_open.png");
 	iRightOpen = loadImage("./assets/d_right_open.png");
@@ -47,10 +48,13 @@ function setup(){
 	// Ninja
 	let ninja = createSprite(width-10, 20);
 	ninja.addImage(iNinja);
+	// Guide
+	let guide = createSprite(width/2, height/2+18);
+	guide.addImage(iGuide);
 	// Door
-	dLeft = createSprite(10, 76);
+	dLeft = createSprite(15, 65);
 	dLeft.addImage(iLeftOpen);
-	dRight = createSprite(width-10, 76);
+	dRight = createSprite(width-25, 65);
 	dRight.addImage(iRightOpen);
 	// Items, Players
 	setItems();
@@ -80,6 +84,7 @@ function setPlayers(){
 		let player = createSprite(x, y);
 		player.addImage(iPlayers[i]);
 		player.rotation = 0;
+		player.visible = i == index;
 		sPlayers.push(player);
 	}
 	sPlayerDead = createSprite(width/2, height/2+38);
@@ -101,6 +106,12 @@ function draw(){
 
 function mousePressed(){
 	console.log("mousePressed");
+
+	index++;
+	if(sPlayers.length-1 < index) index = 0;
+	for(let i=0; i<sPlayers.length; i++){
+		sPlayers[i].visible = i == index;
+	}
 }
 
 function keyPressed(){
