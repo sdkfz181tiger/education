@@ -1,26 +1,36 @@
 console.log("Hello p5.js!!");
 
-const FILE_PREFIX = "sushi_";
+const files = [
+	"d_left_open.png",
+	"d_right_open.png",
+	"d_right_close.png",
+	"n_back.png",
+	"n_dead.png",
+	"n_gameover.png",
+	"n_guide.png",
+	"n_item_1.png",
+	"n_item_2.png",
+	"n_item_3.png",
+	"n_item_4.png",
+	"n_item_5.png",
+	"n_item_6.png",
+	"n_ninja.png",
+	"n_player_1.png",
+	"n_player_2.png",
+	"n_player_3.png",
+	"n_player_4.png",
+	"n_player_5.png",
+	"n_player_6.png",
+	"n_player_7.png"
+];
+
 const FILE_FROM   = 1;// From...
 const FILE_LAST   = 3;// To...
-const FILE_SCALE  = 8;// FirefoxのZoomを50%にする事
+const FILE_SCALE  = 3;// FirefoxのZoomを50%にする事
 
 const DISP_W = 64;
 const DISP_H = 64;
 const DEG_TO_RAD  = Math.PI / 180;
-
-const colors = [
-	[124,124,124], [0,0,252], [0,0,188], [68,40,188], [148,0,132],
-	[168,0,32], [168,16,0], [136,20,0], [0,120,0],
-	[0,120,248], [0,88,248], [104,68,252], [216,0,204], [228,0,88],
-	[248,56,0], [228,92,16], [172,124,0], [0,184,0], [0,168,0],
-	[0,168,68], [0,136,136], [248,248,248], [60,188,252], [104,136,252],
-	[152,120,248], [248,120,248], [248,88,152], [248,120,88], [252,160,68],
-	[248,184,0], [184,248,24], [88,216,84], [88,248,152], [0,232,216],
-	[120,120,120], [252,252,252], [164,228,252], [184,184,248], [216,184,248],
-	[248,184,248], [248,164,192], [240,208,176], [252,224,168], [248,216,120],
-	[216,248,120], [184,248,184], [184,248,216], [0,252,252], [248,216,248]
-];
 
 let imgObj  = new Object();
 let keys    = [];
@@ -30,11 +40,8 @@ function preload(){
 	console.log("preload");
 
 	// Files
-	for(let i=FILE_FROM; i<=FILE_LAST; i++){
-		let file = FILE_PREFIX;
-		if(i < 10) file += "0";
-		file +=  i + ".png";
-		imgObj[file] = loadImage("assets/" + file);
+	for(let file of files){
+		imgObj[file] = loadImage("./assets/" + file);
 	}
 
 	// Keys
