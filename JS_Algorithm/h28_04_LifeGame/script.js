@@ -1,0 +1,97 @@
+console.log("Hello, JavaScript!!");
+
+// H28春 午後問3
+//    ライフゲーム
+
+const ROWS = 10; // 行数
+const COLS = 10; // 列数
+let cells = [];  // 生死を格納する配列
+let dummies = [];// 判定結果を格納する配列
+
+window.onload = (event)=>{
+	
+	// 仮データを作成
+	for(let r=0; r<ROWS; r++){
+		let linesA = [];
+		let linesB = [];
+		for(let c=0; c<COLS; c++){
+			linesA.push(Math.random() < 0.5);
+			linesB.push(false);
+		}
+		cells.push(linesA);
+		dummies.push(linesB);
+	}
+
+	step();
+}
+
+function step(){
+
+	show();// Cellsを出力
+	clear(dummies);// Dummiesをリセット
+	// LifeGame
+	for(let r=0; r<ROWS; r++){
+		for(let c=0; c<COLS; c++){
+			let counter = getAliveCnt(r, c);// 周囲のセルの生存数
+			if(check(cells, r, c)){// 生のマス
+				if(2 <= counter && counter <= 3){
+					dummies[r][c] = true;// 2以上3以下の場合は生
+				}else{
+					dummies[r][c] = false;// それ以外の場合は死
+				}
+			}else{// 死のマス
+				if(counter == 3){
+					dummies[r][c] = true;// 生が3であれば生
+				}else{
+					dummies[r][c] = false;// それ以外は死
+				}
+			}
+		}
+	}
+	copy(dummies, cells);// 配列をコピーする
+	setTimeout(step, 1000);// 1000ミリ秒後に繰り返す
+}
+
+function getAliveCnt(r, c){
+	let counter = 0;
+	const dirs = [
+		[-1, -1], [-1, 0], [-1, 1], [0, -1], 
+		[0, 1], [1, -1], [1, 0], [1, 1]];
+	for(let dir of dirs){
+		if(check(cells, r+dir[0], c+dir[1])) counter++;
+	}
+	return counter;
+}
+
+function check(arr, r, c){
+	if(r < 0 || c < 0 || ROWS <= r || COLS <= c) return false;
+	return arr[r][c];
+}
+
+function clear(arr){
+	for(let r=0; r<ROWS; r++){
+		for(let c=0; c<COLS; c++){
+			arr[r][c] = false;
+		}
+	}
+}
+
+function copy(arrA, arrB){
+	for(let r=0; r<ROWS; r++){
+		for(let c=0; c<COLS; c++){
+			arrB[r][c] = arrA[r][c];
+		}
+	}
+}
+
+function show(){
+	let str = "";
+	for(let r=0; r<ROWS; r++){
+		for(let c=0; c<COLS; c++){
+			str += (cells[r][c])?"o":"-";
+		}
+		str += "\n";
+	}
+	console.clear();
+	console.log(str);
+}

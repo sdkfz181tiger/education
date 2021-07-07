@@ -13,9 +13,13 @@ const ACCESS_TOKEN = "pk.eyJ1Ijoic2RrZnoxODF0aWdlciIsImEiOiJja3FxNGU0cmcwdWFoMnh
 window.onload = (event)=>{
 	console.log("onload!!");
 
+	// Position
+	const nichibi = [35.3839023, 136.6083425];
+	const tandai  = [35.3866576, 136.6078114];
+
 	//==========
 	// Mapbox
-	let map = L.map("mapid").setView([35.3840842, 136.6073998], 16);
+	let map = L.map("mapid").setView(nichibi, 16);
 
 	// TileLayer
 	L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png", {
@@ -26,10 +30,6 @@ window.onload = (event)=>{
 		maxZoom: 18,
 		zoomOffset: -1
 	}).addTo(map);
-
-	// Position
-	const nichibi = [35.3839023,136.6083425];
-	const tandai  = [35.3866576,136.6078114];
 
 	// Marker
 	L.marker(nichibi).addTo(map)
@@ -56,6 +56,4 @@ window.onload = (event)=>{
 		let str = e.latlng.lat + ", " + e.latlng.lng;
 		popup.setLatLng(e.latlng).setContent(str).openOn(map);
 	});
-
-
 }
