@@ -5,21 +5,18 @@ console.log("Hello, 応用情報技術者試験!!");
 
 const ROWS = 10; // 行数
 const COLS = 10; // 列数
-let cells = [];  // 生死を格納する配列
-let dummies = [];// 判定結果を格納する配列
+// 生死を格納する配列
+let cells = Array.from(new Array(ROWS), ()=>new Array(COLS).fill(false));
+// 判定結果を格納する配列
+let dummies = Array.from(new Array(ROWS), ()=>new Array(COLS).fill(false));
 
 window.onload = (event)=>{
 	
 	// 仮データを作成
 	for(let r=0; r<ROWS; r++){
-		let linesA = [];
-		let linesB = [];
 		for(let c=0; c<COLS; c++){
-			linesA.push(Math.random() < 0.5);
-			linesB.push(false);
+			cells[r][c] = Math.random() < 0.4;
 		}
-		cells.push(linesA);
-		dummies.push(linesB);
 	}
 
 	step();

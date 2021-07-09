@@ -4,19 +4,11 @@ console.log("Hello, 応用情報技術者試験!!");
 //    魔法陣
 
 const N = 3;// 奇数である事
-let houjin = [];
+let houjin = Array.from(new Array(N), ()=>new Array(N).fill(0));
 let num = 1;
 
 window.onload = (event)=>{
 	
-	// 魔法陣用の配列を作り、0で初期化する
-	for(let y=0; y<N; y++){
-		let line = [];
-		for(let x=0; x<N; x++){
-			line.push(0);
-		}
-		houjin.push(line);
-	}
 	create();// 魔法陣を作成する
 	console.table(houjin);
 }
