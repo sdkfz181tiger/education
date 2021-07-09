@@ -1,6 +1,6 @@
-console.log("Hello, JavaScript!!");
+console.log("Hello, 応用情報技術者試験!!");
 
-// H27秋 午後問3
+// 応用情報_H27秋
 //    2分探索木
 
 window.onload = (event)=>{

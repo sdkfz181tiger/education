@@ -1,6 +1,6 @@
-console.log("Hello, JavaScript!!");
+console.log("Hello, 応用情報技術者試験!!");
 
-// H27春 午後問3
+// 応用情報_H27春
 //    データ圧縮の前処理として用いられるBlockSorting
 
 window.onload = (event)=>{

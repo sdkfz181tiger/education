@@ -1,6 +1,6 @@
-console.log("Hello, JavaScript!!");
+console.log("Hello, 応用情報技術者試験!!");
 
-// H28秋 午後問3
+// 応用情報_H28秋
 //    魔法陣
 
 const N = 3;// 奇数である事

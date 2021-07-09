@@ -1,6 +1,6 @@
-console.log("Hello, JavaScript!!");
+console.log("Hello, 応用情報技術者試験!!");
 
-// H25春_午後問2
+// 応用情報_H25春
 //    逆ポーランド記法
 
 window.onload = (event)=>{

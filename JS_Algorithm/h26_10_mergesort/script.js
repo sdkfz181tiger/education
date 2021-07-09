@@ -1,6 +1,6 @@
-console.log("Hello, JavaScript!!");
+console.log("Hello, 応用情報技術者試験!!");
 
-// H26秋 午後問3
+// 応用情報_H26秋
 //    連結リストを使用したマージソート
 
 window.onload = (event)=>{

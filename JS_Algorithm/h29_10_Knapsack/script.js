@@ -1,6 +1,6 @@
-console.log("Hello, JavaScript!!");
+console.log("Hello, 応用情報技術者試験!!");
 
-// H29秋 午後問3
+// 応用情報_H29秋
 //    ナップザック問題
 
 const N = 4;// 要素の種類

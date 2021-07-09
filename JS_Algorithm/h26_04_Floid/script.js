@@ -1,6 +1,6 @@
-console.log("Hello, JavaScript!!");
+console.log("Hello, 応用情報技術者試験!!");
 
-// H26春_午後問3
+// 応用情報_H26春
 //    フロイドの循環検出アルゴリズム
 
 window.onload = (event)=>{

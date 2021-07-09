@@ -1,6 +1,6 @@
-console.log("Hello, JavaScript!!");
+console.log("Hello, 応用情報技術者試験!!");
 
-// H30春 午後問3
+// 応用情報_H30春
 //    ナイト巡回問題
 
 const V = 4;// 盤面の行数

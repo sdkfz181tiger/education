@@ -1,6 +1,6 @@
-console.log("Hello, JavaScript!!");
+console.log("Hello, 応用情報技術者試験!!");
 
-// H28春 午後問3
+// 応用情報_H28春
 //    ライフゲーム
 
 const ROWS = 10; // 行数

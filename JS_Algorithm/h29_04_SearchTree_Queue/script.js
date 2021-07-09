@@ -1,6 +1,6 @@
-console.log("Hello, JavaScript!!");
+console.log("Hello, 応用情報技術者試験!!");
 
-// H29春 午後問3
+// 応用情報_H29春
 //    探索アルゴリズム
 
 const TARGET = 100;// 目標値
