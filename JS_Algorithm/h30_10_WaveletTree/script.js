@@ -1,7 +1,7 @@
 console.log("Hello, 応用情報技術者試験!!");
 
 // 応用情報_H30秋
-//    ウェーブレット木(作るだけ)
+//    ウェーブレット木(改造)
 
 // 2進数のパターン
 const PATTERN = {
@@ -28,7 +28,7 @@ window.onload = (event)=>{
 	// ウェーブレット木
 	let root = makeNode(str, 0);// ルート
 	makeTree(root, 1);// ウェーブレット木を作る
-	checkTree(root);// ウェーブレット木を確認する
+	checkTree(root);  // ウェーブレット木を確認する
 
 	// 文字数をカウントする
 	rank(root, 0, "A");
@@ -39,18 +39,19 @@ window.onload = (event)=>{
 
 function rank(node, d, c){
 
-	let bin = PATTERN[c];
+	let bin = PATTERN[c];// 2進数のパターン
 
+	// 左からdビット目を調べる
 	if(bin[d] == 0){
 		// 0であれば左のノードを探索
 		if(node.left != null){
-			rank(node.left, d+1, c);
+			rank(node.left, d+1, c);// 再帰
 			return;
 		}
 	}else{
 		// 1であれば右のノードを探索
 		if(node.right != null){
-			rank(node.right, d+1, c);
+			rank(node.right, d+1, c);// 再帰
 			return;
 		}
 	}
