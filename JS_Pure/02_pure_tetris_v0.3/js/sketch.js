@@ -2,6 +2,11 @@
 //==========
 // JavaScript
 
+// LeftArrow  -> move L
+// RightArrow -> move R
+// DownArrow  -> speed up
+// UpArrow    -> rotate mino
+
 const MINO_I = [
 	[0, 1, 0, 0,
 	 0, 1, 0, 0,
