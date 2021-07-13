@@ -3,11 +3,9 @@ console.log("custom.js");
 // GoogleSpreadSheet
 //   1, File -> Publish to the web
 //   2, Select Sheet, and Choise "Comma Separated values (csv)"
+//   3, Copy the URL
 
-const PATH_1 = "https://docs.google.com/spreadsheets/d/e/";
-const PATH_2 = "2PACX-1vTG2n5l9d-BKSR0P-9K3NuyEpZOXu7PYBwR1Wt2O1oE7FVvu0QV0sZ4Wv440DYPY5AX_a33yuselYmg/";
-const PATH_3 = "pub?gid=0&single=true&output=csv";
-const URL = PATH_1 + PATH_2 + PATH_3;
+const URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQTNtYa2s1mYs9S2pnrm9OzE0iUrzorKNp1hy_M35hYiyQaIL-XtOSqbkd2ccx_EpXoDOa21ckCE_nK/pub?gid=0&single=true&output=csv";
 
 window.onload = (event)=>{
 	console.log("onload!!");
@@ -23,4 +21,13 @@ window.onload = (event)=>{
 			console.table(arr);
 		});
 	});
+}
+
+function convertToArr(str){
+	let lines = str.split('\n');
+	let arr = [];
+	for(let line of lines){
+		arr.push(line.split(","));
+	}
+	return arr;
 }

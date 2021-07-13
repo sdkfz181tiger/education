@@ -3,7 +3,7 @@ console.log("Hello, JavaScript!!");
 // 番外編
 //    バブルソート
 
-let nums = [4, 3, 1, 2];
+let nums = [5, 4, 3, 2, 1];
 
 window.onload = (event)=>{
 
