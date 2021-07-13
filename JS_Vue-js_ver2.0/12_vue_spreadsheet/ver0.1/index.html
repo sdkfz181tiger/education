@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>SpreadSheet</title>
+		<link rel="stylesheet" href="css/normalize.css" />
+		<link rel="stylesheet" href="css/style.css" />
+	</head>
+	<body>
+		<div id="wrapper">
+			<h1>SpreadSheet</h1>
+			<p>
+				SpreadSheetからCSVデータを取得します
+			</p>
+			<p>
+				<button v-on:click="connect">Connect</button>
+			</p>
+			<p>{{ message }}</p>
+			<!-- Items -->
+			<ul v-for="item in items" v-bind:key="item[0]">
+				<li>{{ item[0] }}, {{ item[1] }}, {{ item[2] }}, {{ item[3] }}</li>
+			</ul>
+		</div>
+		<script src="https://cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+		<script src="script.js"></script>
+	</body>
+</html>

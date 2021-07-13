@@ -5,7 +5,10 @@ console.log("custom.js");
 //   2, Select Sheet, and Choise "Comma Separated values (csv)"
 //   3, Copy the URL
 
-const URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQTNtYa2s1mYs9S2pnrm9OzE0iUrzorKNp1hy_M35hYiyQaIL-XtOSqbkd2ccx_EpXoDOa21ckCE_nK/pub?gid=0&single=true&output=csv";
+const URL_GOOGLE = "https://docs.google.com/spreadsheets/d/e/";
+const URL_HASH = "2PACX-1vQTNtYa2s1mYs9S2pnrm9OzE0iUrzorKNp1hy_M35hYiyQaIL-XtOSqbkd2ccx_EpXoDOa21ckCE_nK/";
+const URL_CSV = "pub?gid=0&single=true&output=csv";
+const URL = URL_GOOGLE + URL_HASH + URL_CSV;
 
 window.onload = (event)=>{
 	console.log("onload!!");
