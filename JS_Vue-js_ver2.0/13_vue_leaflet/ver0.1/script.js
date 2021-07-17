@@ -5,13 +5,6 @@ const ATTRIBUTION = '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>
 const ACCESS_TOKEN = "pk.eyJ1Ijoic2RrZnoxODF0aWdlciIsImEiOiJja3FxNGU0cmcwdWFoMnhxaG5mcDYyaWwzIn0.acxWamqlCUkmAATOIUTlAQ";
 const POSITION = [35.3839023, 136.6083425];
 
-// SpreadSheet
-const URL_GOOGLE = "https://docs.google.com/spreadsheets/d/e/";
-const URL_HASH = "2PACX-1vQTNtYa2s1mYs9S2pnrm9OzE0iUrzorKNp1hy_M35hYiyQaIL-XtOSqbkd2ccx_EpXoDOa21ckCE_nK/";
-const URL_CSV = "pub?gid=0&single=true&output=csv";
-const URL = URL_GOOGLE + URL_HASH + URL_CSV;
-const OPTION = {responseType: "blob"};
-
 function createApp(){
 	console.log("Hello Vue.js!!");
 
