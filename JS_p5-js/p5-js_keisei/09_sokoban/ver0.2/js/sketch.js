@@ -1,9 +1,7 @@
 
 const TYPE = {
-	FLOOR: 0,
-	PLAYER: 1,
-	WALL: 2,
-	BLOCK: 3
+	FLOOR: 0, PLAYER: 1,
+	WALL: 2, BLOCK: 3
 }
 
 const MAP = [
@@ -62,7 +60,7 @@ function setup(){
 	// RandomWalk
 	for(let i=0; i<1000; i++){
 		let rdm = Math.floor(Math.random() * DIR.length);
-		player.step(DIR[rdm][0], DIR[rdm][1]);
+		player.move(DIR[rdm][0], DIR[rdm][1], true);
 	}
 	// Reset
 	for(let obj of objs){
@@ -93,23 +91,11 @@ function draw(){
 }
 
 function keyPressed(){
-
 	if(isCleared()) return;
-
-	if(keyCode == LEFT_ARROW){
-		player.move(0, -1);
-	}
-	if(keyCode == RIGHT_ARROW){
-		player.move(0, 1);
-	}
-	if(keyCode == UP_ARROW){
-		player.move(-1, 0);
-	}
-	if(keyCode == DOWN_ARROW){
-		player.move(1, 0);
-	}
-
-	// Clear
+	if(keyCode == LEFT_ARROW) player.move(0, -1);
+	if(keyCode == RIGHT_ARROW) player.move(0, 1);
+	if(keyCode == UP_ARROW) player.move(-1, 0);
+	if(keyCode == DOWN_ARROW) player.move(1, 0);
 	if(!isCleared()) return;
 	setTimeout(()=>{
 		msg = "Game Clear!!"
@@ -196,7 +182,7 @@ class Obj{
 	}
 
 	draw(){
-
+		// Move
 		let dX = this._toX - this._x;
 		if(2 < abs(dX)){
 			this._x += dX / 2;
@@ -209,7 +195,6 @@ class Obj{
 		}else{
 			this._y = this._toY;
 		}
-
 		// Draw
 		noStroke();
 		if(this._type == TYPE.WALL)   fill(11, 11, 99);
@@ -218,22 +203,22 @@ class Obj{
 		square(this._x, this._y, G_SIZE*0.8);
 	}
 
-	move(oR, oC){
+	move(oR, oC, skip=false){
 		let r = this._r + oR;
 		let c = this._c + oC;
 		let tgt = searchObjs(r, c);
 		if(tgt == null){
-			this.moveTo(r, c);
+			this.moveTo(r, c, skip);
 			return;
 		}
 		if(tgt.type != TYPE.BLOCK) return;
 		if(!isInside(tgt.r+oR, tgt.c+oC)) return;
 		if(searchObjs(tgt.r+oR, tgt.c+oC) != null) return;
-		tgt.moveTo(tgt.r+oR, tgt.c+oC);
-		this.moveTo(r, c);
+		tgt.moveTo(tgt.r+oR, tgt.c+oC, skip);
+		this.moveTo(r, c, skip);
 	}
 
-	moveTo(r, c){
+	moveTo(r, c, skip=false){
 		if(this._toX != this._x) return false;
 		if(this._toY != this._y) return false;
 		if(!isInside(r, c)) return false;
@@ -241,32 +226,10 @@ class Obj{
 		this._c = c;
 		this._toX = tiles[r][c].x;
 		this._toY = tiles[r][c].y;
-		return true;
-	}
-
-	step(oR, oC){
-		let r = this._r + oR;
-		let c = this._c + oC;
-		let tgt = searchObjs(r, c);
-		if(tgt == null){
-			this.stepTo(r, c);
-			return;
+		if(skip){
+			this._x = this._toX;
+			this._y = this._toY;
 		}
-		if(tgt.type != TYPE.BLOCK) return;
-		if(!isInside(tgt.r+oR, tgt.c+oC)) return;
-		if(searchObjs(tgt.r+oR, tgt.c+oC) != null) return;
-		tgt.stepTo(tgt.r+oR, tgt.c+oC);
-		this.stepTo(r, c);
-	}
-
-	stepTo(r, c){
-		if(this._toX != this._x) return false;
-		if(this._toY != this._y) return false;
-		if(!isInside(r, c)) return false;
-		this._r = r;
-		this._c = c;
-		this._x = this._toX = tiles[r][c].x;
-		this._y = this._toY = tiles[r][c].y;
 		return true;
 	}
 }
