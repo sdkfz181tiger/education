@@ -30,7 +30,7 @@ function createApp(){
 				console.log("connect!!");
 				this.choices = [];// 選択されデータを空にする
 				for(let item of this.items){
-					if(item[3]==11) this.choices.push(item);// 11月だったら追加!!
+					if(item[1]==11) this.choices.push(item);// 11月だったら追加!!
 				}
 			},
 			convertToArr:function(str){

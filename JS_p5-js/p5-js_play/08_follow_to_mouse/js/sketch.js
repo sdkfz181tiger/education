@@ -25,4 +25,8 @@ function draw(){
 
 	doku.attractionPoint(5, mouseX, mouseY);
 	doku.maxSpeed = 10;
+
+	if(mouseX < doku.position.x){
+		doku.mirrorY(-1);
+	}
 }

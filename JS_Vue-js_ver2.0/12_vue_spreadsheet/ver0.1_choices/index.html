@@ -19,8 +19,8 @@
 			</p>
 			<p>{{ message }}</p>
 			<!-- Items -->
-			<ul v-for="choise in choices" v-bind:key="choise[0]">
-				<li>{{ choise[0] }}, {{ choise[1] }}, {{ choise[2] }}, {{ choise[3] }}, {{ choise[4] }}</li>
+			<ul v-for="choise in choices" v-bind:key="choise[3]">
+				<li>{{ choise[0] }}, {{ choise[1] }}, {{ choise[2] }}, {{ choise[3] }}</li>
 			</ul>
 		</div>
 		<script src="https://cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js"></script>
