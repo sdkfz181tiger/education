@@ -4,7 +4,7 @@ const F_RATE = 32;
 let fDigital;
 let seDanger, seGameOver, seScore, seTempo;
 let deadFlg = false;
-let score = 999;
+let score = 0;
 
 let chainsPlayer, chainsEnemy;
 
@@ -23,7 +23,7 @@ function setup(){
 	noSmooth();
 	textFont(fDigital, 14);
 
-	//const back = new Chara(width/2, height/2, 0, "n_back.png");
+	const back = new Chara(width/2, height/2, 0, "n_back.png");
 	const pX = 50;
 
 	const p1 = new Chara(pX*1, height/2, 0, "n_play_1_off.png", "n_play_1_on.png");
@@ -43,6 +43,7 @@ function setup(){
 	const e6 = new Chara(pX*6, pX*6, 0, "n_play_6_off.png", "n_play_6_on.png");
 	const e7 = new Chara(pX*7, pX*7, 0, "n_play_7_off.png", "n_play_7_on.png");
 	chainsEnemy = new Chains([e1, e2, e3, e4, e5, e6, e7]);
+	chainsEnemy.random();
 }
 
 function draw(){
@@ -50,16 +51,25 @@ function draw(){
 	drawSprites();
 	showScore();
 
-	if(frameCount%F_RATE == 0){
-		//seTempo.play();
+	if(deadFlg == true) return;
+
+	let offset = F_RATE - floor(score/10)*8;
+	if(offset < 1) offset = 8;
+	if(frameCount%offset == 0){
+		seTempo.play();
 		chainsEnemy.ticktack();
 		if(chainsPlayer.collide(chainsEnemy)){
-			//seGameOver.play();
+			seGameOver.play();
+			deadFlg = true;// GameOver
 		}
 	}
 }
 
 function keyPressed(){
+	if(deadFlg == true) return;
+
+	score++;
+
 	if(keyCode == LEFT_ARROW){
 		chainsPlayer.prev();
 	}
@@ -67,7 +77,8 @@ function keyPressed(){
 		chainsPlayer.next();
 	}
 	if(chainsPlayer.collide(chainsEnemy)){
-		//seGameOver.play();
+		seGameOver.play();
+		deadFlg = true;// GameOver
 	}
 }
 
@@ -81,19 +92,20 @@ function showScore(){
 	let digits = "";
 	let length = score.toString().length;
 	for(let i=0; i<length; i++) digits += "8";
-	textAlign(CENTER, TOP);
-	textFont(fDigital, 50);
+	textAlign(LEFT, TOP);
+	textFont(fDigital, 32);
 	fill(120, 180, 120);
-	text(digits, width/2, 10);
+	text(digits, 8, 8);
 	fill(0, 66, 0);
-	text(score, width/2, 10);
+	text(score, 8, 8);
 	// GameOver
-	if(deadFlg){
-		textAlign(CENTER, BOTTOM);
-		textFont(fDigital, 36);
-		fill(0, 66, 0);
-		text("GAME OVER", width/2, height/2);
-	}
+	textAlign(RIGHT, TOP);
+	textFont(fDigital, 32);
+	fill(120, 180, 120);
+	text("GAME OVER", width-8, 8);
+	if(deadFlg == false) return;
+	fill(0, 66, 0);
+	text("GAME OVER", width-8, 8);
 }
 
 class Chains{
@@ -101,6 +113,7 @@ class Chains{
 	constructor(charas, index=0){
 		this._charas = charas;
 		this._index = index;
+		this._wait = 0;
 		this.show();
 	}
 
@@ -116,12 +129,16 @@ class Chains{
 		this.show();
 	}
 
-	ticktack(){
+	random(){
+		this._index = floor(random(this._charas.length));
+		this.show();
+	}
 
-		if(this._index < this._charas.length-1){
-			this._index++;
-		}else{
+	ticktack(){
+		if(0 < --this._wait) return;
+		if(this._charas.length-1 < ++this._index){
 			this._index = 0;
+			this._wait = floor(random(5));
 		}
 		this.show();
 	}
